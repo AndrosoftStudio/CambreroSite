@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cambrero - Contador de Idade">
+    <title>Cambrero - Contador de Idade</title>
+    <link rel="icon" type="image/png" href="../../images/ícone.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navegação -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-mountain"></i> Cambrero
+        </div>
+        <div class="nav-toggle" id="navToggle">
+            <i class="fas fa-bars"></i>
+        </div>
+        <div class="nav-menu" id="navMenu">
+            <a href="../../account/login.html"><i class="fas fa-user"></i> Entrar</a>
+            <a href="#"><i class="fas fa-cog"></i> Configurações</a>
+            <a href="#"><i class="fas fa-hand-holding-heart"></i> Doações</a>
+            <a href="#"><i class="fas fa-photo-video"></i> Mídias</a>
+        </div>
+    </nav>
+    <div class="nav-overlay" id="navOverlay"></div>
+
+    <!-- Cabeçalho -->
+    <header class="header">
+        <a href="../ferramentas.html" class="back-button">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </a>
+        <h1>Contador de Idade</h1>
+    </header>
+
+    <!-- Container Principal -->
+    <div class="container">
+        <div class="calculator-form">
+            <label for="birthdate">Data de Nascimento:</label>
+            <input type="date" id="birthdate" required>
+            <div class="button-group">
+                <button onclick="calculateAge()">Calcular Idade</button>
+                <button onclick="clearInputs()">Limpar</button>
+            </div>
+        </div>
+
+        <div class="results">
+            <p id="currentTime"></p>
+            <div class="result-box" id="result"></div>
+            <div class="result-box detailed" id="resultDetailed"></div>
+        </div>
+
+        <div class="history">
+            <h3>Histórico de Cálculos</h3>
+            <div class="history-list" id="historyList"></div>
+            <button class="clear-history" onclick="clearHistory()">Limpar Histórico</button>
+        </div>
+    </div>
+
+    <!-- Botão Voltar ao Topo -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <!-- Botão de Modo Escuro -->
+    <button class="theme-toggle" id="themeToggle">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- Rodapé -->
+    <footer class="footer">
+        <div class="social-links">
+            <a href="https://youtube.com/@devandre2970" target="_blank"><i class="fab fa-youtube"></i></a>
+            <a href="https://www.instagram.com/navon_oficial" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.tiktok.com/@drives.games" target="_blank"><i class="fab fa-tiktok"></i></a>
+        </div>
+        <p>© 2025 Cambrero. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

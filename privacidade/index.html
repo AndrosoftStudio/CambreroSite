@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Política de Privacidade do Cambrero - Como protegemos seus dados pessoais">
+    <title>Política de Privacidade - Cambrero</title>
+    <link rel="icon" type="image/png" href="https://cambrero.com/images/ícone.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap">
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        .legal-content {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            line-height: 1.8;
+        }
+        
+        .legal-content h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+        }
+        
+        .legal-content h2 {
+            color: var(--secondary-color);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            border-bottom: 2px solid var(--bg-color);
+            padding-bottom: 0.5rem;
+        }
+        
+        .legal-content h3 {
+            color: var(--primary-color);
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+            font-size: 1.2rem;
+        }
+        
+        .legal-content p {
+            margin-bottom: 1rem;
+            text-align: justify;
+        }
+        
+        .legal-content ul {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .legal-content li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .back-home {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--primary-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+        
+        .back-home:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        
+        .last-updated {
+            text-align: center;
+            color: #888;
+            font-style: italic;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--bg-color);
+        }
+        
+        .privacy-highlight {
+            background: rgba(39, 174, 96, 0.1);
+            border-left: 4px solid var(--accent-color);
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            background: var(--bg-color);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--card-bg);
+        }
+        
+        .data-table th {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+        
+        .warning-box {
+            background: rgba(231, 76, 60, 0.1);
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .warning-box h4 {
+            color: #e74c3c;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navegação -->
+    <nav class="navbar">
+        <button class="menu-toggle" id="menuToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <div class="logo">
+            <img src="https://cambrero.com/images/ícone.png" alt="Ícone Cambrero">
+            Cambrero
+        </div>
+        
+        <div id="auth-container">
+            <a href="https://login.cambrero.com" id="googleLoginBtn" class="google-login-btn">
+                <i class="fab fa-google"></i> Entrar
+            </a>
+            <div id="profileMenu" class="profile-menu" style="display: none;">
+                <button id="profileBtn" class="profile-btn">
+                    <img src="https://placehold.co/40x40/3498db/ffffff?text=C" alt="Foto de Perfil" id="profilePic">
+                </button>
+                <div id="profileDropdown" class="profile-dropdown">
+                    <div class="dropdown-header">
+                        <strong id="profileName">Nome do Usuário</strong>
+                        <span id="profileEmail">email@exemplo.com</span>
+                    </div>
+                    <a href="conta/index.html" class="dropdown-item">
+                        <i class="fas fa-user-circle"></i> Ver Conta
+                    </a>
+                    <a href="#" id="logoutBtn" class="dropdown-item">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Menu Lateral -->
+    <div class="side-menu" id="sideMenu">
+        <div class="side-menu-content">
+            <h3><i class="fas fa-bars"></i> Menu</h3>
+            <a href="https://cambrero.com" class="menu-item">
+                <i class="fas fa-home"></i> Início
+            </a>
+            <a href="https://cambrero.com/config/config.html" class="menu-item">
+                <i class="fas fa-cog"></i> Configurações
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-hand-holding-heart"></i> Doações
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-photo-video"></i> Mídias
+            </a>
+        </div>
+    </div>
+
+    <!-- Overlay do Menu -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <!-- Conteúdo Principal -->
+    <main class="legal-content">
+        <a href="https://cambrero.com" class="back-home">
+            <i class="fas fa-arrow-left"></i> Voltar ao Início
+        </a>
+        
+        <h1><i class="fas fa-user-shield"></i> Política de Privacidade</h1>
+        
+        <div class="privacy-highlight">
+            <p><strong>Compromisso com sua Privacidade:</strong> O Cambrero está comprometido em proteger sua privacidade e dados pessoais. Esta política explica como coletamos, usamos e protegemos suas informações.</p>
+        </div>
+        
+        <h2>1. Informações que Coletamos</h2>
+        
+        <h3>1.1 Informações de Conta</h3>
+        <p>Quando você cria uma conta usando Google OAuth, coletamos:</p>
+        <ul>
+            <li>Nome completo</li>
+            <li>Endereço de email</li>
+            <li>Foto de perfil (se disponível)</li>
+            <li>ID único do Google</li>
+        </ul>
+        
+        <h3>1.2 Dados de Uso</h3>
+        <p>Coletamos automaticamente:</p>
+        <ul>
+            <li>Páginas visitadas e tempo de permanência</li>
+            <li>Jogos jogados e pontuações</li>
+            <li>Preferências de tema (claro/escuro)</li>
+            <li>Horários de acesso e frequência de uso</li>
+            <li>Tipo de dispositivo e navegador</li>
+        </ul>
+        
+        <h3>1.3 Dados Técnicos</h3>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Tipo de Dado</th>
+                    <th>Finalidade</th>
+                    <th>Retenção</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Cookies de Sessão</td>
+                    <td>Manter login ativo</td>
+                    <td>7 dias</td>
+                </tr>
+                <tr>
+                    <td>Cookies de Preferências</td>
+                    <td>Lembrar tema escolhido</td>
+                    <td>1 ano</td>
+                </tr>
+                <tr>
+                    <td>Logs de Servidor</td>
+                    <td>Segurança e performance</td>
+                    <td>30 dias</td>
+                </tr>
+                <tr>
+                    <td>Dados de Analytics</td>
+                    <td>Melhorar experiência</td>
+                    <td>24 meses</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <h2>2. Como Usamos suas Informações</h2>
+        
+        <h3>2.1 Finalidades Principais</h3>
+        <ul>
+            <li><strong>Autenticação:</strong> Verificar sua identidade e manter sua conta segura</li>
+            <li><strong>Personalização:</strong> Adaptar a experiência às suas preferências</li>
+            <li><strong>Comunicação:</strong> Enviar atualizações importantes (quando necessário)</li>
+            <li><strong>Melhorias:</strong> Analisar uso para aprimorar nossos serviços</li>
+            <li><strong>Segurança:</strong> Detectar e prevenir atividades suspeitas</li>
+        </ul>
+        
+        <h3>2.2 Base Legal (LGPD)</h3>
+        <p>Processamos seus dados com base em:</p>
+        <ul>
+            <li><strong>Consentimento:</strong> Para cookies não essenciais</li>
+            <li><strong>Execução de contrato:</strong> Para fornecer nossos serviços</li>
+            <li><strong>Interesse legítimo:</strong> Para melhorias e segurança</li>
+            <li><strong>Obrigação legal:</strong> Quando exigido por lei</li>
+        </ul>
+        
+        <h2>3. Compartilhamento de Dados</h2>
+        
+        <div class="warning-box">
+            <h4><i class="fas fa-exclamation-triangle"></i> Importante</h4>
+            <p>Nunca vendemos seus dados pessoais para terceiros. Compartilhamos apenas quando estritamente necessário.</p>
+        </div>
+        
+        <h3>3.1 Quando Compartilhamos</h3>
+        <ul>
+            <li><strong>Google:</strong> Para autenticação OAuth (dados mínimos)</li>
+            <li><strong>Provedores de Hospedagem:</strong> Para manter o serviço funcionando</li>
+            <li><strong>Autoridades:</strong> Quando exigido por lei</li>
+            <li><strong>Emergências:</strong> Para proteger direitos e segurança</li>
+        </ul>
+        
+        <h3>3.2 Transferências Internacionais</h3>
+        <p>Alguns dados podem ser processados fora do Brasil por nossos provedores de serviços. Garantimos que essas transferências atendem aos requisitos da LGPD.</p>
+        
+        <h2>4. Seus Direitos (LGPD)</h2>
+        
+        <p>Você tem os seguintes direitos sobre seus dados pessoais:</p>
+        
+        <h3>4.1 Direitos Básicos</h3>
+        <ul>
+            <li><strong>Acesso:</strong> Saber quais dados temos sobre você</li>
+            <li><strong>Correção:</strong> Corrigir dados incorretos ou desatualizados</li>
+            <li><strong>Exclusão:</strong> Solicitar remoção de seus dados</li>
+            <li><strong>Portabilidade:</strong> Receber seus dados em formato estruturado</li>
+            <li><strong>Revogação:</strong> Retirar consentimento a qualquer momento</li>
+        </ul>
+        
+        <h3>4.2 Como Exercer seus Direitos</h3>
+        <p>Para exercer qualquer direito, você pode:</p>
+        <ul>
+            <li>Acessar as configurações da sua conta</li>
+            <li>Entrar em contato através dos canais oficiais</li>
+            <li>Utilizar as opções de privacidade na plataforma</li>
+        </ul>
+        
+        <h2>5. Segurança dos Dados</h2>
+        
+        <h3>5.1 Medidas de Proteção</h3>
+        <ul>
+            <li><strong>Criptografia:</strong> Dados sensíveis são criptografados</li>
+            <li><strong>Acesso Limitado:</strong> Apenas pessoal autorizado acessa dados</li>
+            <li><strong>Monitoramento:</strong> Sistemas de detecção de intrusão</li>
+            <li><strong>Backups Seguros:</strong> Cópias de segurança protegidas</li>
+            <li><strong>Atualizações:</strong> Sistemas sempre atualizados</li>
+        </ul>
+        
+        <h3>5.2 Cookies e Tecnologias Similares</h3>
+        <p>Utilizamos cookies para:</p>
+        
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Tipo de Cookie</th>
+                    <th>Finalidade</th>
+                    <th>Essencial</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Autenticação</td>
+                    <td>Manter você logado</td>
+                    <td>Sim</td>
+                </tr>
+                <tr>
+                    <td>Preferências</td>
+                    <td>Lembrar suas configurações</td>
+                    <td>Não</td>
+                </tr>
+                <tr>
+                    <td>Analytics</td>
+                    <td>Melhorar nossos serviços</td>
+                    <td>Não</td>
+                </tr>
+                <tr>
+                    <td>Segurança</td>
+                    <td>Proteger contra fraudes</td>
+                    <td>Sim</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <h2>6. Retenção de Dados</h2>
+        
+        <h3>6.1 Períodos de Retenção</h3>
+        <ul>
+            <li><strong>Dados de Conta:</strong> Até exclusão da conta</li>
+            <li><strong>Logs de Acesso:</strong> 30 dias</li>
+            <li><strong>Dados de Analytics:</strong> 24 meses</li>
+            <li><strong>Cookies:</strong> Conforme configuração (7 dias a 1 ano)</li>
+        </ul>
+        
+        <h3>6.2 Exclusão de Dados</h3>
+        <p>Quando você exclui sua conta:</p>
+        <ul>
+            <li>Dados pessoais são removidos em até 30 dias</li>
+            <li>Alguns dados podem ser mantidos por obrigações legais</li>
+            <li>Dados anonimizados podem ser mantidos para estatísticas</li>
+        </ul>
+        
+        <h2>7. Menores de Idade</h2>
+        <p>Nossos serviços são adequados para menores de 13 anos acompanhados pelos pais. Para menores entre 13-18 anos, recomendamos supervisão parental. Não coletamos intencionalmente dados de menores de 13 anos sem consentimento parental.</p>
+        
+        <h2>8. Alterações nesta Política</h2>
+        <p>Podemos atualizar esta política periodicamente. Mudanças significativas serão notificadas através da plataforma com pelo menos 30 dias de antecedência.</p>
+        
+        <h2>9. Contato e DPO</h2>
+        <p>Para questões sobre privacidade e proteção de dados:</p>
+        <ul>
+            <li>Entre em contato através dos canais oficiais do Cambrero</li>
+            <li>Responderemos solicitações em até 15 dias úteis</li>
+            <li>Você também pode contatar a ANPD se necessário</li>
+        </ul>
+        
+        <div class="privacy-highlight">
+            <p><strong>Lembre-se:</strong> Sua privacidade é fundamental para nós. Estamos sempre trabalhando para proteger seus dados e ser transparentes sobre nossas práticas.</p>
+        </div>
+        
+        <div class="last-updated">
+            Última atualização: 29 de julho de 2025<br>
+            Esta política está em conformidade com a LGPD (Lei Geral de Proteção de Dados)
+        </div>
+    </main>
+
+    <!-- Botão de Modo Escuro -->
+    <button class="theme-toggle" id="themeToggle">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- Rodapé -->
+    <footer class="footer">
+        <div class="social-links">
+            <a href="https://youtube.com/@devandre2970" target="_blank"><i class="fab fa-youtube"></i></a>
+            <a href="https://www.instagram.com/navon_oficial" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.tiktok.com/@drives.games" target="_blank"><i class="fab fa-tiktok"></i></a>
+        </div>
+        <p>© 2025 Cambrero. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="../script.js"></script>
+</body>
+</html>

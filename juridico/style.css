@@ -1,0 +1,239 @@
+:root {
+    --primary-color: #003366;
+    --secondary-color: #f4f4f4;
+    --border-color: #ccc;
+    --text-color: #333;
+    --bg-color: #ffffff;
+    --error-color: #D8000C;
+    --error-bg-color: #FFD2D2;
+    --card-shadow: 0 4px 8px rgba(0,0,0,0.08);
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 20px 40px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2em;
+}
+
+main {
+    padding: 20px;
+    max-width: 900px;
+    margin: 20px auto;
+}
+
+.form-container, .result-container {
+    background-color: var(--bg-color);
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    margin-bottom: 25px;
+}
+
+h2 {
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--secondary-color);
+    padding-bottom: 10px;
+    margin-top: 0;
+    font-size: 1.5em;
+}
+
+input[type="text"], select {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1em;
+}
+
+/* Ajustes para os novos formulários */
+.oab-input, .processo-input {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 5px;
+}
+
+.oab-input input, .processo-input input {
+    flex-grow: 1;
+}
+
+.oab-input select {
+    width: 100px;
+    flex-shrink: 0;
+}
+
+.processo-input select {
+    width: 200px; /* Um pouco mais largo para os textos */
+    flex-shrink: 0;
+}
+
+
+button {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    margin-top: 5px;
+}
+
+button:hover:not(:disabled) {
+    background-color: #0055a4;
+    transform: translateY(-1px);
+}
+
+button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+button:disabled {
+    background-color: #a0a0a0;
+    cursor: not-allowed;
+}
+
+.result-container h2, .result-container h3 {
+    margin-bottom: 20px;
+}
+
+.result-box h3 {
+    font-size: 1.1em;
+    color: #555;
+    font-weight: 600;
+}
+
+/* --- Estilos para os Resultados --- */
+.results-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.result-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.2s ease-in-out;
+}
+
+.result-card:hover {
+    transform: translateY(-3px);
+}
+
+.card-title {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: var(--primary-color);
+    font-size: 1.2em;
+}
+
+.card-data-point {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 0.95em;
+}
+
+.card-data-point:last-child {
+    border-bottom: none;
+}
+
+.card-data-point strong {
+    color: #333;
+}
+
+.card-data-point span {
+    color: #555;
+    text-align: right;
+}
+
+.card-data-point .valor-multa {
+    color: #c0392b;
+    font-weight: bold;
+}
+
+.result-card h5 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    color: var(--primary-color);
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 5px;
+}
+
+.result-card ul {
+    list-style-type: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.result-card li {
+    background-color: #fff;
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin-bottom: 5px;
+    font-size: 0.9em;
+}
+
+.error-box {
+    background-color: var(--error-bg-color);
+    color: var(--error-color);
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 5px solid var(--error-color);
+}
+
+.error-box h4 {
+    margin-top: 0;
+}
+
+.no-results {
+    text-align: center;
+    color: #777;
+    padding: 20px;
+    font-style: italic;
+}
+
+.loader {
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid var(--primary-color);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    color: #777;
+    font-size: 14px;
+}

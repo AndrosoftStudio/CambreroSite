@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cambrero - Nome em Números">
+    <title>Cambrero - Nome em Números</title>
+    <link rel="icon" type="image/png" href="../../images/ícone.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navegação -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-mountain"></i> Cambrero
+        </div>
+        <div class="nav-toggle" id="navToggle">
+            <i class="fas fa-bars"></i>
+        </div>
+        <div class="nav-menu" id="navMenu">
+            <a href="../../account/login.html"><i class="fas fa-user"></i> Entrar</a>
+            <a href="#"><i class="fas fa-cog"></i> Configurações</a>
+            <a href="#"><i class="fas fa-hand-holding-heart"></i> Doações</a>
+            <a href="#"><i class="fas fa-photo-video"></i> Mídias</a>
+        </div>
+    </nav>
+    <div class="nav-overlay" id="navOverlay"></div>
+
+    <!-- Cabeçalho -->
+    <header class="header">
+        <a href="../ferramentas.html" class="back-button">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </a>
+        <h1>Conversor Nome/Números</h1>
+    </header>
+
+    <!-- Container Principal -->
+    <div class="main-container">
+        <div class="converter-box">
+            <div class="tab active" id="inputTab">
+                <h1>Converta Seu Nome</h1>
+                <div class="input-group">
+                    <input type="text" id="nome" placeholder="Digite seu nome completo">
+                    <select id="tipoConversao">
+                        <option value="soma">Soma dos Valores</option>
+                        <option value="substituicao">Substituição Letra a Letra</option>
+                    </select>
+                    <div class="button-group">
+                        <button id="converterBtn">Calcular</button>
+                        <button id="clearBtn">Limpar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab" id="resultTab">
+                <h1>Resultado da Conversão</h1>
+                <div class="result-display" id="resultadoNumeros"></div>
+                <div class="result-display" id="resultadoDetalhado"></div>
+                <button id="voltarBtn">Nova Conversão</button>
+            </div>
+
+            <div class="history">
+                <h3>Histórico de Conversões</h3>
+                <div class="history-list" id="historyList"></div>
+                <button class="clear-history" onclick="clearHistory()">Limpar Histórico</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botão de Modo Escuro -->
+    <button class="theme-toggle" id="themeToggle">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- Rodapé -->
+    <footer class="footer">
+        <div class="social-links">
+            <a href="https://youtube.com/@devandre2970" target="_blank"><i class="fab fa-youtube"></i></a>
+            <a href="https://www.instagram.com/navon_oficial" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.tiktok.com/@drives.games" target="_blank"><i class="fab fa-tiktok"></i></a>
+        </div>
+        <p>© 2025 Cambrero. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

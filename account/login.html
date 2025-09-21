@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrar ou Cadastrar - Cambrero</title>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="login-style.css">
+
+</head>
+<body>
+
+    <button class="theme-toggle" id="themeToggle">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <div class="container">
+        <a href="https://cambrero.com" class="logo-link">
+            <div class="logo">
+                <img src="https://cambrero.com/images/ícone.png" alt="Ícone Cambrero">
+                <h1>Cambrero</h1>
+            </div>
+        </a>
+
+        <div id="login-section" class="form-section active">
+            <h2>Entrar</h2>
+            <form id="login-form">
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="login-email" placeholder="E-mail" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="login-password" placeholder="Senha" required>
+                </div>
+                <button type="submit">Entrar</button>
+            </form>
+            <p>Não tem conta? <a href="#" onclick="showSection('register-section'); return false;">Cadastre-se</a></p>
+        </div>
+
+        <div id="register-section" class="form-section">
+            <h2>Cadastrar</h2>
+            <form id="register-form">
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="reg-name" placeholder="Nome" required>
+                </div>
+                 <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="reg-surname" placeholder="Sobrenome" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="reg-email" placeholder="E-mail" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="reg-password" placeholder="Senha" required>
+                </div>
+                <button type="submit">Cadastrar</button>
+            </form>
+            <p>Já tem conta? <a href="#" onclick="showSection('login-section'); return false;">Entrar</a></p>
+        </div>
+
+        <div id="notification" class="notification"></div>
+    </div>
+
+    <script src="login-script.js"></script>
+</body>
+</html>

@@ -1,0 +1,1202 @@
+﻿[
+ {
+   "Pergunta": "Em que ano terminou a Guerra Civil dos EUA?",
+   "resposta": "1865",
+   "opcoes": [
+     "1861",
+     "1863",
+     "1865",
+     "1870"
+   ],
+   "explicacao": "A rendição do General Robert E. Lee ao General Ulysses S. Grant em Appomattox Court House em abril de 1865 marcou o fim da Guerra Civil Americana.",
+   "índice": 1
+ },
+ {
+   "Pergunta": "Qual foi o principal marco da Revolução Francesa?",
+   "resposta": "Queda da Bastilha",
+   "opcoes": [
+     "Tratado de Versalhes",
+     "Queda da Bastilha",
+     "Invasão da Polônia",
+     "Começo da Peste Negra"
+   ],
+   "explicacao": "A tomada da prisão da Bastilha em 14 de julho de 1789 é o evento simbólico que marca o início da Revolução Francesa.",
+   "índice": 2
+ },
+ {
+   "Pergunta": "Quem foi o líder mongol que criou o maior império contíguo da história?",
+   "resposta": "Gengis Khan",
+   "opcoes": [
+     "Átila, o Huno",
+     "Kublai Khan",
+     "Tamerlão",
+     "Gengis Khan"
+   ],
+   "explicacao": "Gengis Khan unificou as tribos mongóis e, através de conquistas, fundou o Império Mongol no início do século XIII.",
+   "índice": 3
+ },
+ {
+   "Pergunta": "Quem escreveu 'O Príncipe'?",
+   "resposta": "Nicolau Maquiavel",
+   "opcoes": [
+     "Tomás de Aquino",
+     "Nicolau Maquiavel",
+     "Jean-Jacques Rousseau",
+     "Karl Marx"
+   ],
+   "explicacao": "'O Príncipe', escrito por Maquiavel por volta de 1513, é um famoso tratado político sobre como governantes podem obter e manter o poder.",
+   "índice": 4
+ },
+ {
+   "Pergunta": "Quem liderou a União Soviética após a morte de Lenin?",
+   "resposta": "Joseph Stalin",
+   "opcoes": [
+     "Leon Trotsky",
+     "Nikita Khrushchev",
+     "Mikhail Gorbachev",
+     "Joseph Stalin"
+   ],
+   "explicacao": "Após a morte de Vladimir Lenin em 1924, Joseph Stalin manobrou politicamente para consolidar o poder e se tornou o ditador da URSS.",
+   "índice": 5
+ },
+ {
+   "Pergunta": "O que foi a Peste Negra?",
+   "resposta": "Uma pandemia que devastou a Europa no século XIV",
+   "opcoes": [
+     "Uma guerra religiosa",
+     "Uma crise econômica",
+     "Uma pandemia que devastou a Europa no século XIV",
+     "Uma revolta camponesa na Inglaterra"
+   ],
+   "explicacao": "A Peste Negra foi uma pandemia de peste bubônica que matou um terço da população europeia em meados do século XIV.",
+   "índice": 6
+ },
+ {
+   "Pergunta": "Qual foi a causa imediata da Primeira Guerra Mundial?",
+   "resposta": "O assassinato do arquiduque Francisco Fernando",
+   "opcoes": [
+     "A invasão da Polônia",
+     "A Queda da Bolsa de 1929",
+     "O assassinato do arquiduque Francisco Fernando",
+     "A Revolução Bolchevique"
+   ],
+   "explicacao": "O assassinato do herdeiro do trono austro-húngaro, Francisco Fernando, em Sarajevo em 1914, foi o estopim para o início da guerra.",
+   "índice": 7
+ },
+ {
+   "Pergunta": "Qual civilização pré-colombiana era conhecida por seu avançado sistema de escrita hieroglífica e calendário?",
+   "resposta": "Maia",
+   "opcoes": [
+     "Inca",
+     "Asteca",
+     "Maia",
+     "Olmeca"
+   ],
+   "explicacao": "A civilização Maia, localizada na Mesoamérica, desenvolveu o único sistema de escrita completo conhecido das Américas pré-colombianas.",
+   "índice": 8
+ },
+ {
+   "Pergunta": "Qual foi a primeira grande civilização da Mesopotâmia?",
+   "resposta": "Suméria",
+   "opcoes": [
+     "Babilônica",
+     "Suméria",
+     "Assíria",
+     "Acádia"
+   ],
+   "explicacao": "A Suméria, no sul da Mesopotâmia, é considerada a primeira civilização urbana do mundo, desenvolvendo a escrita cuneiforme.",
+   "índice": 9
+ },
+ {
+   "Pergunta": "O que foi a Revolução Industrial?",
+   "resposta": "A transição para novos processos de manufatura a partir do século XVIII",
+   "opcoes": [
+     "Uma revolta de trabalhadores na França",
+     "A invenção do motor a vapor",
+     "A transição para novos processos de manufatura a partir do século XVIII",
+     "A criação das primeiras universidades"
+   ],
+   "explicacao": "Iniciada na Grã-Bretanha, a Revolução Industrial marcou uma mudança fundamental da produção manual para a mecanizada.",
+   "índice": 10
+ },
+ {
+   "Pergunta": "Quem foi o primeiro czar da Rússia?",
+   "resposta": "Ivan IV, o Terrível",
+   "opcoes": [
+     "Pedro, o Grande",
+     "Catarina, a Grande",
+     "Ivan IV, o Terrível",
+     "Nicolau II"
+   ],
+   "explicacao": "Ivan IV foi o primeiro governante a ser formalmente coroado 'Czar de Toda a Rússia' em 1547.",
+   "índice": 11
+ },
+ {
+   "Pergunta": "Qual era o nome do navio em que Charles Darwin fez sua famosa viagem?",
+   "resposta": "HMS Beagle",
+   "opcoes": [
+     "Santa Maria",
+     "Mayflower",
+     "HMS Beagle",
+     "Endeavour"
+   ],
+   "explicacao": "A viagem a bordo do HMS Beagle, entre 1831 e 1836, foi fundamental para que Darwin desenvolvesse sua teoria da evolução.",
+   "índice": 12
+ },
+ {
+   "Pergunta": "O que foi a Guerra dos Sete Anos (1756-1763)?",
+   "resposta": "Um conflito global entre a Grã-Bretanha e a França por hegemonia colonial",
+   "opcoes": [
+     "Uma guerra civil na Inglaterra",
+     "Uma guerra entre Prússia e Áustria",
+     "Um conflito religioso na Alemanha",
+     "Um conflito global entre a Grã-Bretanha e a França por hegemonia colonial"
+   ],
+   "explicacao": "Considerada por muitos historiadores como a 'primeira guerra mundial', teve batalhas na Europa, Américas, África e Ásia.",
+   "índice": 13
+ },
+ {
+   "Pergunta": "Quem foi o líder da independência da Índia?",
+   "resposta": "Mahatma Gandhi",
+   "opcoes": [
+     "Jawaharlal Nehru",
+     "Subhas Chandra Bose",
+     "Mahatma Gandhi",
+     "Indira Gandhi"
+   ],
+   "explicacao": "Mahatma Gandhi liderou o movimento de independência da Índia do domínio britânico através da desobediência civil não-violenta.",
+   "índice": 14
+ },
+ {
+   "Pergunta": "O que foi a 'Noite dos Cristais'?",
+   "resposta": "Um pogrom contra judeus na Alemanha Nazista em 1938",
+   "opcoes": [
+     "A noite da queda do Muro de Berlim",
+     "A coroação de um rei",
+     "Um festival de luzes",
+     "Um pogrom contra judeus na Alemanha Nazista em 1938"
+   ],
+   "explicacao": "Na 'Kristallnacht', sinagogas foram queimadas, lojas judaicas foram destruídas e milhares de judeus foram presos.",
+   "índice": 15
+ },
+ {
+   "Pergunta": "Qual cidade foi destruída pela erupção do vulcão Vesúvio em 79 d.C.?",
+   "resposta": "Pompeia",
+   "opcoes": [
+     "Atenas",
+     "Roma",
+     "Cartago",
+     "Pompeia"
+   ],
+   "explicacao": "A cidade romana de Pompeia, juntamente com Herculano, foi soterrada por cinzas e pedras da erupção do Vesúvio.",
+   "índice": 16
+ },
+ {
+   "Pergunta": "Quem foi o inventor da prensa de tipos móveis na Europa?",
+   "resposta": "Johannes Gutenberg",
+   "opcoes": [
+     "Leonardo da Vinci",
+     "Galileu Galilei",
+     "Johannes Gutenberg",
+     "Isaac Newton"
+   ],
+   "explicacao": "A invenção de Gutenberg por volta de 1440 revolucionou a comunicação, permitindo a produção de livros em massa.",
+   "índice": 17
+ },
+ {
+   "Pergunta": "O que foi a Proclamação da República no Brasil?",
+   "resposta": "O fim do regime monárquico e início do republicano em 1889",
+   "opcoes": [
+     "A independência de Portugal",
+     "O fim da escravidão",
+     "O fim do regime monárquico e início do republicano em 1889",
+     "O início da ditadura militar"
+   ],
+   "explicacao": "Em 15 de novembro de 1889, um golpe militar liderado pelo Marechal Deodoro da Fonseca depôs o Imperador Dom Pedro II.",
+   "índice": 18
+ },
+ {
+   "Pergunta": "Qual o nome do primeiro imperador romano?",
+   "resposta": "Augusto",
+   "opcoes": [
+     "Júlio César",
+     "Nero",
+     "Augusto",
+     "Constantino"
+   ],
+   "explicacao": "Após o fim da República, Otaviano, sobrinho-neto de Júlio César, recebeu o título de Augusto em 27 a.C., tornando-se o primeiro imperador.",
+   "índice": 19
+ },
+ {
+   "Pergunta": "Qual foi o propósito do Pacto de Não Agressão Germano-Soviético (1939)?",
+   "resposta": "Dividir a Polônia e outras partes da Europa Oriental entre Alemanha e URSS",
+   "opcoes": [
+     "Formar uma aliança militar contra os Aliados",
+     "Garantir proteção mútua contra o Japão",
+     "Dividir a Polônia e outras partes da Europa Oriental entre Alemanha e URSS",
+     "Promover a paz na Europa"
+   ],
+   "explicacao": "Publicamente um pacto de não agressão, o acordo continha protocolos secretos para a divisão de territórios, abrindo caminho para a invasão da Polônia.",
+   "índice": 20
+ },
+ {
+   "Pergunta": "O que foi a Crise dos Mísseis de Cuba em 1962?",
+   "resposta": "Um confronto entre EUA e URSS sobre a instalação de mísseis soviéticos em Cuba",
+   "opcoes": [
+     "A invasão da Baía dos Porcos",
+     "A Revolução Cubana",
+     "Um embargo econômico contra Cuba",
+     "Um confronto entre EUA e URSS sobre a instalação de mísseis soviéticos em Cuba"
+   ],
+   "explicacao": "Foi o momento mais tenso da Guerra Fria, quando o mundo esteve mais perto de uma guerra nuclear.",
+   "índice": 21
+ },
+ {
+   "Pergunta": "Qual era a capital do Império Asteca, localizada onde hoje é a Cidade do México?",
+   "resposta": "Tenochtitlán",
+   "opcoes": [
+     "Cusco",
+     "Tikal",
+     "Tenochtitlán",
+     "Chichén Itzá"
+   ],
+   "explicacao": "Tenochtitlán era uma grande e complexa cidade construída em uma ilha no Lago Texcoco, sendo a capital do Império Asteca.",
+   "índice": 22
+ },
+ {
+   "Pergunta": "O que foi a 'Revolta da Vacina' no Brasil?",
+   "resposta": "Uma revolta popular no Rio de Janeiro contra a vacinação obrigatória",
+   "opcoes": [
+     "Uma campanha de vacinação bem-sucedida",
+     "Uma revolta de escravos",
+     "Uma revolta popular no Rio de Janeiro contra a vacinação obrigatória",
+     "Uma disputa entre médicos"
+   ],
+   "explicacao": "Em 1904, a população do Rio de Janeiro se rebelou contra a campanha de vacinação forçada contra a varíola, liderada por Oswaldo Cruz.",
+   "índice": 23
+ },
+ {
+   "Pergunta": "Qual expedição foi a primeira a circum-navegar o globo terrestre?",
+   "resposta": "A expedição de Fernão de Magalhães e Juan Sebastián Elcano",
+   "opcoes": [
+     "A expedição de Cristóvão Colombo",
+     "A expedição de Vasco da Gama",
+     "A expedição de James Cook",
+     "A expedição de Fernão de Magalhães e Juan Sebastián Elcano"
+   ],
+   "explicacao": "Iniciada em 1519 sob o comando de Magalhães e concluída em 1522 por Elcano, a expedição provou empiricamente que a Terra é redonda.",
+   "índice": 24
+ },
+ {
+   "Pergunta": "Quem foi a última rainha do Egito Ptolemaico?",
+   "resposta": "Cleópatra VII",
+   "opcoes": [
+     "Nefertiti",
+     "Hatshepsut",
+     "Cleópatra VII",
+     "Arsinoe II"
+   ],
+   "explicacao": "Cleópatra VII foi a última governante da dinastia ptolemaica, famosa por suas alianças com os líderes romanos Júlio César e Marco Antônio.",
+   "índice": 25
+ },
+ {
+   "Pergunta": "O que foi a Guerra das Rosas?",
+   "resposta": "Uma série de guerras civis pelo trono da Inglaterra entre as casas de Lancaster e York",
+   "opcoes": [
+     "Uma guerra entre Inglaterra e França",
+     "Uma revolta de jardineiros",
+     "Uma guerra por rotas comerciais de flores",
+     "Uma série de guerras civis pelo trono da Inglaterra entre as casas de Lancaster e York"
+   ],
+   "explicacao": "Ocorreu no século XV, e seus nomes derivam dos símbolos das casas: a rosa vermelha de Lancaster e a rosa branca de York.",
+   "índice": 26
+ },
+ {
+   "Pergunta": "Em que ano começou a Segunda Guerra Mundial?",
+   "resposta": "1939",
+   "opcoes": [
+     "1914",
+     "1929",
+     "1939",
+     "1945"
+   ],
+   "explicacao": "A guerra começou em 1º de setembro de 1939, quando a Alemanha Nazista invadiu a Polônia.",
+   "índice": 27
+ },
+ {
+   "Pergunta": "Quem foi a rainha da Inglaterra durante a maior parte da Era Vitoriana?",
+   "resposta": "Rainha Vitória",
+   "opcoes": [
+     "Rainha Elizabeth I",
+     "Rainha Maria I",
+     "Rainha Vitória",
+     "Rainha Ana"
+   ],
+   "explicacao": "O reinado da Rainha Vitória, de 1837 a 1901, foi o mais longo da história britânica até então e marcou o auge do Império Britânico.",
+   "índice": 28
+ },
+ {
+   "Pergunta": "O que foi o Apartheid?",
+   "resposta": "Um regime de segregação racial na África do Sul",
+   "opcoes": [
+     "Um partido político",
+     "Uma guerra civil em Ruanda",
+     "Um regime de segregação racial na África do Sul",
+     "Um acordo de paz no Oriente Médio"
+   ],
+   "explicacao": "Implementado em 1948, o Apartheid classificava os habitantes e restringia os direitos da maioria da população não-branca.",
+   "índice": 29
+ },
+ {
+   "Pergunta": "Quem foi Joana d'Arc?",
+   "resposta": "Uma heroína francesa e santa da Igreja Católica que liderou tropas na Guerra dos Cem Anos",
+   "opcoes": [
+     "Uma rainha da França",
+     "Uma espiã inglesa",
+     "Uma heroína francesa e santa da Igreja Católica que liderou tropas na Guerra dos Cem Anos",
+     "Uma escritora do século XV"
+   ],
+   "explicacao": "Joana d'Arc alegou ter visões divinas que a instruíram a ajudar Carlos VII a expulsar os ingleses da França.",
+   "índice": 30
+ },
+ {
+   "Pergunta": "Em que ano o homem pisou na Lua pela primeira vez?",
+   "resposta": "1969",
+   "opcoes": [
+     "1961",
+     "1965",
+     "1969",
+     "1972"
+   ],
+   "explicacao": "Em 20 de julho de 1969, o astronauta americano Neil Armstrong, da missão Apollo 11, tornou-se a primeira pessoa a caminhar na Lua.",
+   "índice": 31
+ },
+ {
+   "Pergunta": "O que foi a Inconfidência Mineira?",
+   "resposta": "Um movimento separatista no Brasil Colônia contra o domínio português",
+   "opcoes": [
+     "Uma revolta de escravos na Bahia",
+     "Uma conspiração para coroar um novo rei",
+     "Um movimento separatista no Brasil Colônia contra o domínio português",
+     "Uma rebelião por impostos mais baixos no Rio de Janeiro"
+   ],
+   "explicacao": "Ocorreu em Minas Gerais em 1789, motivada pela alta cobrança de impostos (a 'derrama') e influenciada pelas ideias do Iluminismo.",
+   "índice": 32
+ },
+ {
+   "Pergunta": "Qual foi a principal consequência da Batalha de Stalingrado na Segunda Guerra Mundial?",
+   "resposta": "Foi o ponto de virada da guerra na Frente Oriental, iniciando a derrota alemã",
+   "opcoes": [
+     "A rendição da França",
+     "A entrada dos EUA na guerra",
+     "Foi o ponto de virada da guerra na Frente Oriental, iniciando a derrota alemã",
+     "O desembarque na Normandia"
+   ],
+   "explicacao": "A derrota do Sexto Exército alemão em Stalingrado (1942-1943) foi uma perda catastrófica e marcou o início do avanço soviético em direção a Berlim.",
+   "índice": 33
+ },
+ {
+   "Pergunta": "Qual foi a importância da Conferência de Berlim (1884–1885)?",
+   "resposta": "Regulamentou a colonização e dividiu a África entre as potências europeias",
+   "opcoes": [
+     "Definiu as fronteiras do Império Austro-Húngaro",
+     "Criou a Liga das Nações",
+     "Regulamentou a colonização e dividiu a África entre as potências europeias",
+     "Estabeleceu o fim da escravidão globalmente"
+   ],
+   "explicacao": "A conferência formalizou a 'Partilha da África', onde as nações europeias dividiram o continente em esferas de influência sem a presença de líderes africanos.",
+   "índice": 34
+ },
+ {
+   "Pergunta": "O que foi a Guerra do Vietnã?",
+   "resposta": "Um longo conflito entre o Vietnã do Norte (comunista) e o Vietnã do Sul (capitalista)",
+   "opcoes": [
+     "Uma guerra de independência contra a França",
+     "Uma guerra civil na China",
+     "Um longo conflito entre o Vietnã do Norte (comunista) e o Vietnã do Sul (capitalista)",
+     "Uma invasão japonesa"
+   ],
+   "explicacao": "Ocorreu de 1955 a 1975 e teve intensa participação dos Estados Unidos, que apoiaram o Vietnã do Sul.",
+   "índice": 35
+ },
+ {
+   "Pergunta": "Quem foi o principal líder da Reforma Protestante?",
+   "resposta": "Martinho Lutero",
+   "opcoes": [
+     "João Calvino",
+     "Martinho Lutero",
+     "Henrique VIII",
+     "Erasmo de Roterdã"
+   ],
+   "explicacao": "Em 1517, o monge alemão Martinho Lutero publicou suas 95 Teses, criticando a venda de indulgências e dando início à Reforma.",
+   "índice": 36
+ },
+ {
+   "Pergunta": "No Brasil, o que a Lei Áurea, assinada em 1888, determinou?",
+   "resposta": "A abolição da escravidão",
+   "opcoes": [
+     "O direito ao voto feminino",
+     "A separação entre Igreja e Estado",
+     "A abolição da escravidão",
+     "A criação do salário mínimo"
+   ],
+   "explicacao": "Assinada pela Princesa Isabel, a Lei Áurea extinguiu oficialmente a escravidão no Brasil, sendo o último país das Américas a fazê-lo.",
+   "índice": 37
+ },
+ {
+   "Pergunta": "Qual foi o faraó cuja tumba foi encontrada quase intacta em 1922 por Howard Carter?",
+   "resposta": "Tutancâmon",
+   "opcoes": [
+     "Ramsés II",
+     "Quéops",
+     "Akhenaton",
+     "Tutancâmon"
+   ],
+   "explicacao": "A descoberta da tumba de Tutancâmon no Vale dos Reis foi um dos achados arqueológicos mais importantes da história.",
+   "índice": 38
+ },
+ {
+   "Pergunta": "O que foi o Renascimento?",
+   "resposta": "Um movimento cultural, artístico e científico que marcou a transição da Idade Média para a Moderna",
+   "opcoes": [
+     "Um estilo arquitetônico gótico",
+     "A reforma da Igreja Católica",
+     "Um movimento cultural, artístico e científico que marcou a transição da Idade Média para a Moderna",
+     "Um período de guerras na Itália"
+   ],
+   "explicacao": "Originado na Itália no século XIV, o Renascimento valorizava o humanismo, o classicismo e o racionalismo.",
+   "índice": 39
+ },
+ {
+   "Pergunta": "Quem é considerado o 'Pai da Aviação'?",
+   "resposta": "Santos Dumont",
+   "opcoes": [
+     "Irmãos Wright",
+     "Leonardo da Vinci",
+     "Santos Dumont",
+     "Ferdinand von Zeppelin"
+   ],
+   "explicacao": "O brasileiro Alberto Santos Dumont é aclamado em muitos países como o primeiro a voar publicamente em uma aeronave mais pesada que o ar, o 14-Bis, em 1906.",
+   "índice": 40
+ },
+ {
+   "Pergunta": "O que foi o Holocausto?",
+   "resposta": "O genocídio sistemático de cerca de seis milhões de judeus pela Alemanha Nazista",
+   "opcoes": [
+     "Uma batalha da Primeira Guerra Mundial",
+     "Uma fome na Ucrânia",
+     "O genocídio sistemático de cerca de seis milhões de judeus pela Alemanha Nazista",
+     "A perseguição de cristãos em Roma"
+   ],
+   "explicacao": "Durante a Segunda Guerra Mundial, o regime nazista e seus colaboradores assassinaram em massa judeus, ciganos, homossexuais e outras minorias.",
+   "índice": 41
+ },
+ {
+   "Pergunta": "Qual rei francês foi guilhotinado durante a Revolução Francesa?",
+   "resposta": "Luís XVI",
+   "opcoes": [
+     "Napoleão Bonaparte",
+     "Luís XVI",
+     "Luís XIV",
+     "Carlos X"
+   ],
+   "explicacao": "Luís XVI foi condenado por traição pela Convenção Nacional e executado na guilhotina em 21 de janeiro de 1793.",
+   "índice": 42
+ },
+ {
+   "Pergunta": "A 'Guerra Fria' foi uma disputa ideológica entre quais duas superpotências?",
+   "resposta": "Estados Unidos e União Soviética",
+   "opcoes": [
+     "Inglaterra e França",
+     "Alemanha e Japão",
+     "Estados Unidos e União Soviética",
+     "China e Índia"
+   ],
+   "explicacao": "Após a Segunda Guerra Mundial, o mundo foi polarizado entre o bloco capitalista, liderado pelos EUA, и o bloco comunista, liderado pela URSS.",
+   "índice": 43
+ },
+ {
+   "Pergunta": "Quem liderou a Revolução Chinesa de 1949, estabelecendo a República Popular da China?",
+   "resposta": "Mao Tsé-Tung",
+   "opcoes": [
+     "Sun Yat-sen",
+     "Chiang Kai-shek",
+     "Mao Tsé-Tung",
+     "Deng Xiaoping"
+   ],
+   "explicacao": "Mao Tsé-Tung foi o líder do Partido Comunista Chinês que saiu vitorioso da Guerra Civil Chinesa e fundou a RPC.",
+   "índice": 44
+ },
+ {
+   "Pergunta": "Qual império Alexandre, o Grande, liderou?",
+   "resposta": "Império Macedônico",
+   "opcoes": [
+     "Império Romano",
+     "Império Persa",
+     "Império Egípcio",
+     "Império Macedônico"
+   ],
+   "explicacao": "Partindo da Macedônia, Alexandre III conquistou o Império Persa e expandiu seus domínios da Grécia até a Índia.",
+   "índice": 45
+ },
+ {
+   "Pergunta": "Em que ano ocorreu a Independência dos EUA?",
+   "resposta": "1776",
+   "opcoes": [
+     "1776",
+     "1789",
+     "1804",
+     "1812"
+   ],
+   "explicacao": "A Declaração de Independência foi adotada pelo Segundo Congresso Continental em 4 de julho de 1776, declarando a separação das Treze Colônias da Grã-Bretanha.",
+   "índice": 46
+ },
+ {
+   "Pergunta": "O que foi a Guerra das Malvinas (Falklands)?",
+   "resposta": "Um conflito militar em 1982 entre Argentina e Reino Unido pela posse das ilhas",
+   "opcoes": [
+     "Uma guerra de independência",
+     "Uma disputa por petróleo",
+     "Um conflito militar em 1982 entre Argentina e Reino Unido pela posse das ilhas",
+     "Uma guerra civil argentina"
+   ],
+   "explicacao": "A guerra durou 74 dias e terminou com a vitória britânica, que mantém o controle sobre as ilhas até hoje.",
+   "índice": 47
+ },
+ {
+   "Pergunta": "Qual era o principal produto agrícola do Egito Antigo, fundamental para sua economia?",
+   "resposta": "Trigo",
+   "opcoes": [
+     "Arroz",
+     "Milho",
+     "Trigo",
+     "Batata"
+   ],
+   "explicacao": "Graças às cheias anuais do Nilo que fertilizavam o solo, o Egito era um grande produtor de trigo e cevada.",
+   "índice": 48
+ },
+ {
+   "Pergunta": "Quem foi o primeiro presidente do Brasil após a Proclamação da República?",
+   "resposta": "Marechal Deodoro da Fonseca",
+   "opcoes": [
+     "Prudente de Morais",
+     "Floriano Peixoto",
+     "Marechal Deodoro da Fonseca",
+     "Campos Salles"
+   ],
+   "explicacao": "Deodoro da Fonseca, líder do golpe que derrubou a monarquia, chefiou o governo provisório e depois foi eleito o primeiro presidente.",
+   "índice": 49
+ },
+ {
+   "Pergunta": "O que foi o 'Dia D' na Segunda Guerra Mundial?",
+   "resposta": "O dia do desembarque das forças aliadas na Normandia, França",
+   "opcoes": [
+     "O dia do ataque a Pearl Harbor",
+     "O dia da rendição da Alemanha",
+     "O dia do desembarque das forças aliadas na Normandia, França",
+     "O dia do bombardeio de Hiroshima"
+   ],
+   "explicacao": "Em 6 de junho de 1944, a Operação Overlord iniciou a libertação da Europa Ocidental do domínio nazista.",
+   "índice": 50
+ },
+ {
+   "Pergunta": "Qual antigo código de leis babilônico é famoso pelo princípio 'olho por olho, dente por dente'?",
+   "resposta": "Código de Hamurabi",
+   "opcoes": [
+     "Lei das Doze Tábuas",
+     "Código de Hamurabi",
+     "Código de Manu",
+     "Dez Mandamentos"
+   ],
+   "explicacao": "Criado pelo rei Hamurabi por volta de 1772 a.C., é um dos mais antigos conjuntos de leis escritas já decifrados.",
+   "índice": 51
+ },
+ {
+   "Pergunta": "O que foi a 'Corrida Espacial'?",
+   "resposta": "A competição entre EUA e URSS pela supremacia na exploração espacial",
+   "opcoes": [
+     "Uma corrida de naves espaciais",
+     "Um programa de colonização de Marte",
+     "A competição entre EUA e URSS pela supremacia na exploração espacial",
+     "A busca por vida extraterrestre"
+   ],
+   "explicacao": "Durante a Guerra Fria, as duas superpotências competiram em marcos como o primeiro satélite (Sputnik 1, URSS) e a primeira pessoa na Lua (Apollo 11, EUA).",
+   "índice": 52
+ },
+ {
+   "Pergunta": "Qual navegador português foi o primeiro europeu a chegar à Índia por via marítima?",
+   "resposta": "Vasco da Gama",
+   "opcoes": [
+     "Pedro Álvares Cabral",
+     "Fernão de Magalhães",
+     "Vasco da Gama",
+     "Bartolomeu Dias"
+   ],
+   "explicacao": "Vasco da Gama contornou a África e chegou a Calicute, na Índia, em 1498, estabelecendo uma rota comercial crucial para Portugal.",
+   "índice": 53
+ },
+ {
+   "Pergunta": "Quem foi o líder da Revolução Haitiana, a única revolta de escravos bem-sucedida da história?",
+   "resposta": "Toussaint Louverture",
+   "opcoes": [
+     "Jean-Jacques Dessalines",
+     "Toussaint Louverture",
+     "Zumbi dos Palmares",
+     "Nat Turner"
+   ],
+   "explicacao": "Toussaint Louverture foi o líder mais proeminente da Revolução Haitiana, que levou à independência do Haiti da França em 1804.",
+   "índice": 54
+ },
+ {
+   "Pergunta": "O que foi a 'Queda da Bolsa de 1929'?",
+   "resposta": "O colapso do mercado de ações dos EUA que deu início à Grande Depressão",
+   "opcoes": [
+     "Um ataque terrorista em Wall Street",
+     "O fechamento da Bolsa de Londres",
+     "O colapso do mercado de ações dos EUA que deu início à Grande Depressão",
+     "A falência de um único banco"
+   ],
+   "explicacao": "O crash da Bolsa de Nova York em outubro de 1929 desencadeou a mais severa crise econômica da história do mundo industrializado.",
+   "índice": 55
+ },
+ {
+   "Pergunta": "Qual o nome do sistema de escrita desenvolvido pelos antigos sumérios?",
+   "resposta": "Escrita Cuneiforme",
+   "opcoes": [
+     "Hieróglifos",
+     "Alfabeto Fenício",
+     "Escrita Cuneiforme",
+     "Sânscrito"
+   ],
+   "explicacao": "A escrita cuneiforme, feita com um estilete em forma de cunha em tábuas de argila, é um dos primeiros sistemas de escrita conhecidos.",
+   "índice": 56
+ },
+ {
+   "Pergunta": "O que foi a Revolução Cultural na China?",
+   "resposta": "Uma campanha sociopolítica lançada por Mao Tsé-Tung para purgar o capitalismo e a tradição",
+   "opcoes": [
+     "Um movimento artístico",
+     "Uma reforma educacional",
+     "Uma campanha sociopolítica lançada por Mao Tsé-Tung para purgar o capitalismo e a tradição",
+     "Uma abertura econômica para o ocidente"
+   ],
+   "explicacao": "De 1966 a 1976, a Revolução Cultural mergulhou a China no caos, perseguindo intelectuais e destruindo patrimônio histórico.",
+   "índice": 57
+ },
+ {
+   "Pergunta": "Onde ocorreu a Batalha de Waterloo, que marcou a derrota final de Napoleão?",
+   "resposta": "Na atual Bélgica",
+   "opcoes": [
+     "Na França",
+     "Na Alemanha",
+     "Na atual Bélgica",
+     "Na Áustria"
+   ],
+   "explicacao": "A batalha de 18 de junho de 1815, que derrotou Napoleão Bonaparte, aconteceu perto da cidade de Waterloo, na atual Bélgica.",
+   "índice": 58
+ },
+ {
+   "Pergunta": "Quem foi o imperador romano que se converteu ao cristianismo e acabou com a perseguição aos cristãos?",
+   "resposta": "Constantino",
+   "opcoes": [
+     "Nero",
+     "Diocleciano",
+     "Augusto",
+     "Constantino"
+   ],
+   "explicacao": "Através do Édito de Milão em 313 d.C., Constantino concedeu liberdade religiosa em todo o Império Romano.",
+   "índice": 59
+ },
+ {
+   "Pergunta": "O que foi a 'Guerra do Peloponeso'?",
+   "resposta": "Uma guerra na Grécia Antiga entre as cidades-estado de Atenas e Esparta",
+   "opcoes": [
+     "A guerra entre gregos e persas",
+     "A conquista da Grécia por Roma",
+     "Uma guerra na Grécia Antiga entre as cidades-estado de Atenas e Esparta",
+     "A Guerra de Troia"
+   ],
+   "explicacao": "O conflito (431-404 a.C.) foi uma luta pela hegemonia no mundo grego e terminou com a vitória de Esparta.",
+   "índice": 60
+ },
+ {
+   "Pergunta": "No Brasil, o período de 1964 a 1985 é conhecido como?",
+   "resposta": "Ditadura Militar",
+   "opcoes": [
+     "Estado Novo",
+     "República Velha",
+     "Ditadura Militar",
+     "Era Vargas"
+   ],
+   "explicacao": "Este período foi marcado por um regime autoritário liderado por sucessivos governos militares, com restrição de direitos políticos e censura.",
+   "índice": 61
+ },
+ {
+   "Pergunta": "Quem foi o líder sul-africano que lutou contra o Apartheid e se tornou o primeiro presidente negro do país?",
+   "resposta": "Nelson Mandela",
+   "opcoes": [
+     "Desmond Tutu",
+     "Steve Biko",
+     "Nelson Mandela",
+     "Thabo Mbeki"
+   ],
+   "explicacao": "Após passar 27 anos na prisão por sua luta, Mandela foi libertado e liderou a transição para uma democracia multirracial.",
+   "índice": 62
+ },
+ {
+   "Pergunta": "O que foi a 'Revolução Gloriosa' na Inglaterra?",
+   "resposta": "A deposição do rei Jaime II e a ascensão de Guilherme de Orange, que estabeleceu a monarquia parlamentar",
+   "opcoes": [
+     "A decapitação do rei Carlos I",
+     "Uma revolta camponesa",
+     "A deposição do rei Jaime II e a ascensão de Guilherme de Orange, que estabeleceu a monarquia parlamentar",
+     "A unificação da Grã-Bretanha"
+   ],
+   "explicacao": "Ocorreu em 1688, sem derramamento de sangue significativo, e resultou na Bill of Rights (Declaração de Direitos) de 1689.",
+   "índice": 63
+ },
+ {
+   "Pergunta": "Qual foi o primeiro país a declarar independência na América Latina?",
+   "resposta": "Haiti",
+   "opcoes": [
+     "Brasil",
+     "Argentina",
+     "Haiti",
+     "México"
+   ],
+   "explicacao": "O Haiti declarou sua independência da França em 1º de janeiro de 1804, após uma longa e brutal revolução liderada por escravos.",
+   "índice": 64
+ },
+ {
+   "Pergunta": "O que foi o Tratado de Versalhes?",
+   "resposta": "O tratado de paz que encerrou oficialmente a Primeira Guerra Mundial",
+   "opcoes": [
+     "O documento de fundação da OTAN",
+     "Uma reforma agrária na França",
+     "O tratado de paz que encerrou oficialmente a Primeira Guerra Mundial",
+     "Um acordo comercial europeu"
+   ],
+   "explicacao": "Assinado em 1919, o tratado impôs pesadas reparações e sanções à Alemanha, sendo considerado uma das causas da Segunda Guerra Mundial.",
+   "índice": 65
+ },
+ {
+   "Pergunta": "Quando ocorreu a queda do Império Romano do Ocidente?",
+   "resposta": "476 d.C.",
+   "opcoes": [
+     "410 d.C.",
+     "476 d.C.",
+     "395 d.C.",
+     "1453 d.C."
+   ],
+   "explicacao": "A deposição do último imperador, Rômulo Augústulo, em 476 d.C. por Odoacro, um chefe germânico, é tradicionalmente vista como o fim do império no Ocidente.",
+   "índice": 66
+ },
+ {
+   "Pergunta": "Qual o nome da rota comercial que ligava a Europa ao Extremo Oriente na antiguidade e Idade Média?",
+   "resposta": "Rota da Seda",
+   "opcoes": [
+     "Rota do Incenso",
+     "Rota do Âmbar",
+     "Rota da Seda",
+     "Rota das Especiarias"
+   ],
+   "explicacao": "A Rota da Seda era uma rede de rotas interconectadas crucial para o intercâmbio cultural e comercial entre o Ocidente e o Oriente.",
+   "índice": 67
+ },
+ {
+   "Pergunta": "Quem foi o líder da Revolução Russa de 1917?",
+   "resposta": "Vladimir Lenin",
+   "opcoes": [
+     "Joseph Stalin",
+     "Leon Trotsky",
+     "Czar Nicolau II",
+     "Vladimir Lenin"
+   ],
+   "explicacao": "Lenin foi o líder do Partido Bolchevique, que tomou o poder em outubro de 1917 e estabeleceu o primeiro estado socialista do mundo.",
+   "índice": 68
+ },
+ {
+   "Pergunta": "O que foi a 'Guerra Fria'?",
+   "resposta": "Um período de tensão geopolítica entre os Estados Unidos e a União Soviética",
+   "opcoes": [
+     "Uma guerra travada no Ártico",
+     "Um período de paz global",
+     "Um período de tensão geopolítica entre os Estados Unidos e a União Soviética",
+     "Uma série de conflitos comerciais"
+   ],
+   "explicacao": "Após a Segunda Guerra Mundial, as duas superpotências e seus aliados se envolveram em uma disputa ideológica, política e militar indireta.",
+   "índice": 69
+ },
+ {
+   "Pergunta": "Qual foi a dinastia que governou a China por mais tempo?",
+   "resposta": "Dinastia Zhou",
+   "opcoes": [
+     "Dinastia Han",
+     "Dinastia Tang",
+     "Dinastia Zhou",
+     "Dinastia Qin"
+   ],
+   "explicacao": "A Dinastia Zhou (c. 1046-256 a.C.) foi a dinastia mais longa da história chinesa, embora seu poder tenha se tornado fragmentado ao longo do tempo.",
+   "índice": 70
+ },
+ {
+   "Pergunta": "O que foi o Iluminismo?",
+   "resposta": "Um movimento intelectual europeu do século XVIII que enfatizava a razão e o individualismo",
+   "opcoes": [
+     "Um estilo artístico",
+     "Uma seita religiosa",
+     "Um movimento intelectual europeu do século XVIII que enfatizava a razão e o individualismo",
+     "Uma revolução agrícola"
+   ],
+   "explicacao": "Pensadores como Voltaire, Rousseau e Montesquieu defenderam a liberdade, a democracia e a separação entre Igreja e Estado, influenciando revoluções em todo o mundo.",
+   "índice": 71
+ },
+ {
+   "Pergunta": "Qual foi a civilização que desenvolveu a democracia em Atenas?",
+   "resposta": "Grega",
+   "opcoes": [
+     "Romana",
+     "Egípcia",
+     "Persa",
+     "Grega"
+   ],
+   "explicacao": "A democracia ateniense, desenvolvida por volta do século V a.C., foi um dos primeiros sistemas democráticos conhecidos no mundo.",
+   "índice": 72
+ },
+ {
+   "Pergunta": "Qual foi a motivação principal da Guerra dos Cem Anos (1337–1453)?",
+   "resposta": "A disputa pelo trono da França entre as casas reais da Inglaterra e da França",
+   "opcoes": [
+     "Conflitos religiosos entre católicos e protestantes",
+     "A disputa pelo trono da França entre as casas reais da Inglaterra e da França",
+     "Rivalidade comercial por lã",
+     "Uma invasão viking"
+   ],
+   "explicacao": "O conflito começou com a reivindicação do rei Eduardo III da Inglaterra ao trono francês, desencadeando mais de um século de hostilidades.",
+   "índice": 73
+ },
+ {
+   "Pergunta": "O que foi o 'Milagre Econômico Brasileiro'?",
+   "resposta": "Um período de crescimento econômico acelerado durante a Ditadura Militar (1968-1973)",
+   "opcoes": [
+     "A descoberta de ouro em Minas Gerais",
+     "O ciclo do café no século XIX",
+     "Um período de crescimento econômico acelerado durante a Ditadura Militar (1968-1973)",
+     "A estabilização da moeda com o Plano Real"
+   ],
+   "explicacao": "O período foi caracterizado por altas taxas de crescimento do PIB, mas também por aumento da concentração de renda e endividamento externo.",
+   "índice": 74
+ },
+ {
+   "Pergunta": "Quem foi o presidente dos EUA durante a Guerra Civil?",
+   "resposta": "Abraham Lincoln",
+   "opcoes": [
+     "Thomas Jefferson",
+     "Andrew Jackson",
+     "Abraham Lincoln",
+     "Ulysses S. Grant"
+   ],
+   "explicacao": "Abraham Lincoln liderou a União à vitória e foi fundamental na abolição da escravidão nos Estados Unidos.",
+   "índice": 75
+ },
+ {
+   "Pergunta": "O que foi a 'Reconquista' na Península Ibérica?",
+   "resposta": "O longo processo pelo qual os reinos cristãos retomaram o território dos mouros (muçulmanos)",
+   "opcoes": [
+     "A conquista da América",
+     "A expulsão dos judeus",
+     "O longo processo pelo qual os reinos cristãos retomaram o território dos mouros (muçulmanos)",
+     "A unificação da Espanha e Portugal"
+   ],
+   "explicacao": "Durou séculos, começando no século VIII e terminando em 1492 com a queda de Granada, o último reino muçulmano na península.",
+   "índice": 76
+ },
+ {
+   "Pergunta": "Qual foi o império derrotado pelos conquistadores espanhóis liderados por Hernán Cortés?",
+   "resposta": "Império Asteca",
+   "opcoes": [
+     "Império Inca",
+     "Império Maia",
+     "Império Asteca",
+     "Império Tepaneca"
+   ],
+   "explicacao": "Cortés e seus homens, com a ajuda de povos indígenas rivais, conquistaram o Império Asteca entre 1519 e 1521.",
+   "índice": 77
+ },
+ {
+   "Pergunta": "O que foi o movimento das 'Diretas Já' no Brasil?",
+   "resposta": "Um movimento popular que pedia eleições diretas para presidente no final da Ditadura Militar",
+   "opcoes": [
+     "Um movimento pelo voto feminino",
+     "Uma campanha para a criação do SUS",
+     "Um movimento popular que pedia eleições diretas para presidente no final da Ditadura Militar",
+     "Uma campanha pela anistia política"
+   ],
+   "explicacao": "Ocorreu entre 1983 e 1984, mobilizando milhões de brasileiros em comícios por todo o país.",
+   "índice": 78
+ },
+ {
+   "Pergunta": "Qual evento em 1911 é considerado o marco da Revolução Mexicana?",
+   "resposta": "A renúncia do ditador Porfirio Díaz",
+   "opcoes": [
+     "A Batalha de Puebla",
+     "A proclamação da Constituição de 1917",
+     "A renúncia do ditador Porfirio Díaz",
+     "A morte de Emiliano Zapata"
+   ],
+   "explicacao": "A pressão liderada por figuras como Francisco Madero forçou a renúncia de Díaz, dando início a um longo e complexo período revolucionário.",
+   "índice": 79
+ },
+ {
+   "Pergunta": "O que foi a 'Primavera de Praga'?",
+   "resposta": "Um período de liberalização política na Tchecoslováquia em 1968, esmagado pela União Soviética",
+   "opcoes": [
+     "Um festival de música na Polônia",
+     "A independência da Hungria",
+     "Um período de liberalização política na Tchecoslováquia em 1968, esmagado pela União Soviética",
+     "A queda do Muro de Berlim"
+   ],
+   "explicacao": "O líder Alexander Dubček tentou implementar um 'socialismo com uma face humana', mas a URSS e o Pacto de Varsóvia invadiram o país para reprimir o movimento.",
+   "índice": 80
+ },
+ {
+   "Pergunta": "Qual rainha da Inglaterra era conhecida como 'A Rainha Virgem'?",
+   "resposta": "Elizabeth I",
+   "opcoes": [
+     "Maria I",
+     "Vitória",
+     "Elizabeth I",
+     "Ana"
+   ],
+   "explicacao": "Elizabeth I nunca se casou, usando sua solteirice como uma ferramenta diplomática e para manter o poder, cultivando a imagem de ser 'casada com a Inglaterra'.",
+   "índice": 81
+ },
+ {
+   "Pergunta": "O que foi a 'Marcha sobre Roma' em 1922?",
+   "resposta": "Uma manifestação que levou Benito Mussolini e o Partido Fascista ao poder na Itália",
+   "opcoes": [
+     "Uma peregrinação religiosa",
+     "Uma parada militar vitoriosa",
+     "Uma manifestação que levou Benito Mussolini e o Partido Fascista ao poder na Itália",
+     "Um protesto contra a monarquia"
+   ],
+   "explicacao": "A marcha foi uma demonstração de força que intimidou o rei Vítor Emanuel III a nomear Mussolini como primeiro-ministro.",
+   "índice": 82
+ },
+ {
+   "Pergunta": "Quem foi o líder da Revolução Cubana?",
+   "resposta": "Fidel Castro",
+   "opcoes": [
+     "Che Guevara",
+     "Fidel Castro",
+     "Fulgencio Batista",
+     "Simón Bolívar"
+   ],
+   "explicacao": "Fidel Castro, juntamente com figuras como Che Guevara e seu irmão Raúl, liderou o Movimento 26 de Julho que derrubou o ditador Fulgencio Batista em 1959.",
+   "índice": 83
+ },
+ {
+   "Pergunta": "Quem foi o primeiro imperador do Brasil?",
+   "resposta": "Dom Pedro I",
+   "opcoes": [
+     "Dom João VI",
+     "Dom Pedro II",
+     "Dom Pedro I",
+     "Marechal Deodoro"
+   ],
+   "explicacao": "Após proclamar a Independência do Brasil em 7 de setembro de 1822, ele foi aclamado Imperador Constitucional e Defensor Perpétuo do Brasil.",
+   "índice": 84
+ },
+ {
+   "Pergunta": "O que foi o 'Macartismo' nos Estados Unidos?",
+   "resposta": "Um período de intensa perseguição anticomunista liderado pelo senador Joseph McCarthy",
+   "opcoes": [
+     "Um movimento pelos direitos civis",
+     "Uma política econômica",
+     "Um período de intensa perseguição anticomunista liderado pelo senador Joseph McCarthy",
+     "Um estilo de arquitetura"
+   ],
+   "explicacao": "No início da década de 1950, o Macartismo promoveu uma 'caça às bruxas' a supostos comunistas no governo, no cinema e em outras áreas.",
+   "índice": 85
+ },
+ {
+   "Pergunta": "Qual foi a principal causa da Guerra da Coreia (1950-1953)?",
+   "resposta": "A invasão da Coreia do Sul pela Coreia do Norte",
+   "opcoes": [
+     "Uma disputa por ilhas",
+     "A invasão da China pela Coreia",
+     "A invasão da Coreia do Sul pela Coreia do Norte",
+     "Um ataque nuclear"
+   ],
+   "explicacao": "Em 25 de junho de 1950, a Coreia do Norte, apoiada pela URSS e China, invadiu a Coreia do Sul, apoiada pelos EUA e ONU, iniciando o conflito.",
+   "índice": 86
+ },
+ {
+   "Pergunta": "Quem pintou a Mona Lisa?",
+   "resposta": "Leonardo da Vinci",
+   "opcoes": [
+     "Michelangelo",
+     "Leonardo da Vinci",
+     "Rafael",
+     "Donatello"
+   ],
+   "explicacao": "A Mona Lisa, ou La Gioconda, é uma das obras de arte mais famosas do mundo, pintada pelo mestre renascentista Leonardo da Vinci no início do século XVI.",
+   "índice": 87
+ },
+ {
+   "Pergunta": "O que foi a 'Comuna de Paris' de 1871?",
+   "resposta": "Um governo radical e socialista que assumiu o poder em Paris por um breve período",
+   "opcoes": [
+     "A construção da Torre Eiffel",
+     "A sede da monarquia francesa",
+     "Um governo radical e socialista que assumiu o poder em Paris por um breve período",
+     "Um festival artístico"
+   ],
+   "explicacao": "Após a derrota da França na Guerra Franco-Prussiana, trabalhadores e soldados de Paris se rebelaram e estabeleceram um governo revolucionário que durou cerca de dois meses.",
+   "índice": 88
+ },
+ {
+   "Pergunta": "Qual foi o império conquistado por Francisco Pizarro no Peru?",
+   "resposta": "Império Inca",
+   "opcoes": [
+     "Império Asteca",
+     "Império Inca",
+     "Império Moche",
+     "Império Chimú"
+   ],
+   "explicacao": "O conquistador espanhol Francisco Pizarro explorou a guerra civil inca para capturar o imperador Atahualpa e conquistar o vasto império na década de 1530.",
+   "índice": 89
+ },
+ {
+   "Pergunta": "Qual foi o objetivo principal da Doutrina Monroe (1823)?",
+   "resposta": "Impedir a recolonização ou intervenção europeia nas nações independentes das Américas",
+   "opcoes": [
+     "Promover a colonização americana na Europa",
+     "Criar uma aliança militar com a Europa",
+     "Impedir a recolonização ou intervenção europeia nas nações independentes das Américas",
+     "Estabelecer o dólar como moeda global"
+   ],
+   "explicacao": "A doutrina, expressa pelo presidente dos EUA James Monroe, afirmava que o continente americano não estava mais aberto à colonização europeia.",
+   "índice": 90
+ },
+ {
+   "Pergunta": "Quem foi o primeiro presidente dos Estados Unidos?",
+   "resposta": "George Washington",
+   "opcoes": [
+     "Thomas Jefferson",
+     "George Washington",
+     "John Adams",
+     "Benjamin Franklin"
+   ],
+   "explicacao": "George Washington foi o comandante do Exército Continental durante a Revolução Americana e serviu como o primeiro presidente de 1789 a 1797.",
+   "índice": 91
+ },
+ {
+   "Pergunta": "O que foi a Guerra do Ópio entre a Grã-Bretanha e a China?",
+   "resposta": "Conflitos motivados pelo comércio britânico de ópio na China",
+   "opcoes": [
+     "Uma guerra por plantações de papoula",
+     "Uma disputa sobre o preço do chá",
+     "Conflitos motivados pelo comércio britânico de ópio na China",
+     "Uma rebelião de usuários de ópio"
+   ],
+   "explicacao": "Ocorreram em meados do século XIX, quando a Grã-Bretanha usou a força militar para obrigar a China a aceitar o comércio de ópio, resultando nos 'Tratados Desiguais'.",
+   "índice": 92
+ },
+ {
+   "Pergunta": "Que civilização construiu Machu Picchu?",
+   "resposta": "Inca",
+   "opcoes": [
+     "Maia",
+     "Inca",
+     "Asteca",
+     "Olmeca"
+   ],
+   "explicacao": "Machu Picchu, uma cidadela inca situada nos Andes peruanos, foi construída no século XV e é um dos símbolos mais conhecidos do Império Inca.",
+   "índice": 93
+ },
+ {
+   "Pergunta": "Quem proclamou a Independência do Brasil?",
+   "resposta": "Dom Pedro I",
+   "opcoes": [
+     "Tiradentes",
+     "Dom Pedro II",
+     "Dom Pedro I",
+     "José Bonifácio"
+   ],
+   "explicacao": "Em 7 de setembro de 1822, às margens do riacho Ipiranga, o então príncipe regente Dom Pedro proclamou a separação do Brasil de Portugal.",
+   "índice": 94
+ },
+ {
+   "Pergunta": "Qual era o nome do muro que dividia Berlim até 1989?",
+   "resposta": "Muro de Berlim",
+   "opcoes": [
+     "Muro da Guerra Fria",
+     "Muro de Berlim",
+     "Muro de Ferro",
+     "Cortina de Aço"
+   ],
+   "explicacao": "Construído pela Alemanha Oriental em 1961, o Muro de Berlim se tornou o símbolo mais potente da divisão da Guerra Fria até sua queda em 1989.",
+   "índice": 95
+ },
+ {
+   "Pergunta": "Qual civilização antiga se desenvolveu às margens do rio Nilo?",
+   "resposta": "Egípcia",
+   "opcoes": [
+     "Mesopotâmica",
+     "Egípcia",
+     "Grega",
+     "Chinesa"
+   ],
+   "explicacao": "A civilização do Antigo Egito dependia inteiramente do Nilo para a agricultura, transporte e vida, sendo chamada de 'dádiva do Nilo'.",
+   "índice": 96
+ },
+ {
+   "Pergunta": "Quem liderou a unificação da Alemanha no século XIX?",
+   "resposta": "Otto von Bismarck",
+   "opcoes": [
+     "Napoleão Bonaparte",
+     "Otto von Bismarck",
+     "Guilherme II",
+     "Frederico, o Grande"
+   ],
+   "explicacao": "Como chanceler da Prússia, Bismarck utilizou a diplomacia e a guerra ('ferro e sangue') para unificar os estados alemães em um único império em 1871.",
+   "índice": 97
+ },
+ {
+   "Pergunta": "Em que país ocorreu a Revolução Russa de 1917?",
+   "resposta": "Rússia",
+   "opcoes": [
+     "China",
+     "Alemanha",
+     "Rússia",
+     "França"
+   ],
+   "explicacao": "A Revolução Russa, composta por duas fases em fevereiro e outubro, derrubou a monarquia czarista e levou os bolcheviques ao poder.",
+   "índice": 98
+ },
+ {
+   "Pergunta": "Qual império é conhecido por ter construído uma extensa rede de estradas na Antiguidade?",
+   "resposta": "Império Romano",
+   "opcoes": [
+     "Império Persa",
+     "Império Bizantino",
+     "Império Romano",
+     "Império Mongol"
+   ],
+   "explicacao": "Os romanos construíram mais de 400.000 km de estradas, incluindo 80.500 km de estradas pavimentadas, que conectavam todas as partes do império.",
+   "índice": 99
+ },
+ {
+   "Pergunta": "O que marcou o início da Idade Média?",
+   "resposta": "A Queda do Império Romano do Ocidente",
+   "opcoes": [
+     "A Queda de Constantinopla",
+     "O Descobrimento da América",
+     "A Queda do Império Romano do Ocidente",
+     "A Guerra dos Cem Anos"
+   ],
+   "explicacao": "A deposição do último imperador romano do ocidente em 476 d.C. é o marco tradicionalmente usado por historiadores para o início da Idade Média na Europa.",
+   "índice": 100
+ }
+]

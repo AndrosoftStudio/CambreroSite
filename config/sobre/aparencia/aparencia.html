@@ -1,0 +1,19 @@
+<h2>Aparência</h2>
+<p>Personalize a interface do Cambrero para se adequar às suas preferências visuais. Escolha o seu tema preferido abaixo.</p>
+
+<div class="form-group">
+    <label for="theme-selector">Modo Escuro</label>
+    <p style="font-size: 0.9rem; margin-top: -1rem; margin-bottom: 0.8rem;">Reduza o brilho do ecrã para uma experiência de visualização mais confortável à noite.</p>
+    <label class="switch">
+      <input type="checkbox" id="theme-selector" onchange="document.getElementById('theme-toggle').click()">
+      <span class="slider"></span>
+    </label>
+</div>
+
+<script>
+    // Sincroniza o interruptor com o estado atual do tema
+    const themeSwitch = document.getElementById('theme-selector');
+    if (document.body.classList.contains('dark-mode')) {
+        themeSwitch.checked = true;
+    }
+</script>

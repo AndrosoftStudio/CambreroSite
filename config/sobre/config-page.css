@@ -1,0 +1,208 @@
+/*
+================================================================================
+|                                                                              |
+|           FICHEIRO DE ESTILO PARA A PÁGINA DE CONFIGURAÇÕES (FINAL)            |
+|                                                                              |
+================================================================================
+|                                                                              |
+| OBJETIVO:                                                                    |
+|                                                                              |
+| 1. Garantir que a página de configurações tenha a mesma aparência da         |
+|    página inicial.                                                           |
+| 2. Usar as variáveis de cor e estilo do ficheiro /assets/css/style.css       |
+|    para manter a consistência visual (temas claro e escuro).                 |
+| 3. Estilizar apenas os elementos específicos da página de configurações,     |
+|    como a área de conteúdo e os formulários internos.                        |
+|                                                                              |
+|------------------------------------------------------------------------------|
+|                                                                              |
+| COMO FUNCIONA:                                                               |
+|                                                                              |
+| O 'config.html' agora carrega o seu 'style.css' principal primeiro.          |
+| Esse ficheiro define todas as cores, fontes e estilos base.                  |
+| Este ficheiro ('config-page.css') é carregado a seguir e apenas              |
+| adiciona/ajusta os estilos para o layout específico das configurações.       |
+|                                                                              |
+================================================================================
+*/
+
+
+/*
+================================================
+| LAYOUT PRINCIPAL DA PÁGINA DE CONFIGURAÇÕES  |
+================================================
+*/
+
+/*
+  A página de configurações agora usa o container '.tabs-container'
+  da sua 'index.html'. Isso garante que o espaçamento e o alinhamento
+  sejam idênticos aos da página inicial.
+  As regras abaixo são para os elementos DENTRO desse container.
+*/
+
+/* Título principal "Configurações" */
+.page-title {
+    font-size: 2.5rem; /* Tamanho grande e de impacto */
+    font-weight: 700; /* Fonte em negrito */
+    text-align: center; /* Alinhado ao centro */
+    margin-bottom: 2rem; /* Espaço abaixo do título */
+    color: var(--text-color); /* Cor de texto principal do seu tema */
+}
+
+
+/*
+=========================================================
+| BOTÕES DE NAVEGAÇÃO (Abas: Conta, Privacidade, etc.)  |
+=========================================================
+*/
+
+/*
+  O container dos botões usa a classe '.tabs' da sua 'index.html'
+  para herdar o alinhamento flexível e o espaçamento.
+  As regras abaixo garantem que os botões '.menu-btn' tenham a
+  aparência exata dos botões '.tab-link' da sua página inicial.
+*/
+
+.menu-btn {
+    /* Aparência base, usando as cores do seu tema */
+    background: var(--primary-color);
+    color: white;
+
+    /* Dimensões e espaçamento */
+    padding: 0.8rem 1.5rem;
+    border: none; /* Remove a borda padrão do botão */
+    border-radius: 25px; /* Bordas totalmente arredondadas */
+
+    /* Fonte e alinhamento do texto e ícone */
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    display: flex; /* Permite alinhar o ícone e o texto lado a lado */
+    align-items: center;
+    gap: 0.5rem; /* Espaço entre o ícone e o texto */
+
+    /* Efeitos de interação */
+    cursor: pointer;
+    transition: all 0.3s ease; /* Transição suave para todas as propriedades */
+}
+
+/* Efeito ao passar o rato por cima */
+.menu-btn:hover {
+    background: var(--secondary-color); /* Muda para a cor secundária ao passar o rato */
+    transform: translateY(-3px); /* Efeito de elevação */
+    box-shadow: var(--shadow); /* Adiciona a sombra padrão do seu tema */
+}
+
+/* Estilo do botão quando está ativo (seção selecionada) */
+.menu-btn.active {
+    background: var(--secondary-color); /* Cor de destaque para indicar a seleção */
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+}
+
+
+/*
+===============================================================
+| ÁREA DE CONTEÚDO (Onde o conteúdo de cada seção aparece)    |
+===============================================================
+*/
+
+/*
+  Esta é a "caixa" branca/escura que contém o formulário ou
+  as informações de cada seção. Ela é estilizada para se parecer
+  com um '.card' da sua página inicial.
+*/
+
+.content-area {
+    /* Cores e fundo herdados do '.card' do seu tema */
+    background: var(--card-bg);
+    color: var(--text-color);
+
+    /* Dimensões e espaçamento interno */
+    padding: 2.5rem;
+    border-radius: 15px; /* Bordas arredondadas do cartão */
+    margin-top: 2rem; /* Espaço entre as abas e o conteúdo */
+    min-height: 250px; /* Altura mínima para não parecer vazio */
+
+    /* Efeitos visuais */
+    box-shadow: var(--shadow); /* Sombra padrão do seu tema */
+    transition: all 0.3s ease; /* Transição suave ao mudar de tema */
+}
+
+
+/*
+======================================================================
+| ESTILOS PARA ELEMENTOS DENTRO DA ÁREA DE CONTEÚDO CARREGADA        |
+======================================================================
+*/
+
+/* Estilo para os títulos de cada seção (ex: "Sua Conta", "Privacidade") */
+.content-area h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--bg-color); /* Linha separadora subtil que se adapta ao tema */
+}
+
+/* Estilo para os parágrafos de descrição */
+.content-area p {
+    font-size: 1rem;
+    line-height: 1.7; /* Espaçamento entre linhas para melhor legibilidade */
+    margin-bottom: 2rem;
+    max-width: 65ch; /* Limita a largura da linha para conforto de leitura */
+}
+
+/* Estilo geral para os botões dentro do conteúdo (ex: "Editar Perfil") */
+.content-area button {
+    background: var(--primary-color);
+    color: white;
+    padding: 0.8rem 1.8rem;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    margin-right: 0.5rem; /* Espaço entre botões */
+}
+
+.content-area button:hover {
+    background: var(--secondary-color);
+    transform: scale(1.05); /* Efeito de zoom subtil */
+}
+
+/* Estilo para formulários e campos de texto, se houver */
+.content-area .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.content-area label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+.content-area input[type="text"],
+.content-area input[type="password"],
+.content-area input[type="email"] {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1px solid #ccc; /* Borda padrão que pode ser melhorada */
+    border-radius: 8px;
+    background-color: var(--bg-color); /* Fundo que se adapta ao tema */
+    color: var(--text-color); /* Cor de texto que se adapta ao tema */
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+/* Efeito de foco para os campos de texto */
+.content-area input[type="text"]:focus,
+.content-area input[type="password"]:focus,
+.content-area input[type="email"]:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2); /* Sombra de foco na cor do tema */
+}

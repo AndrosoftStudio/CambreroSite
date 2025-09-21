@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Termos de Uso do Cambrero - Condições para utilização da plataforma">
+    <title>Termos de Uso - Cambrero</title>
+    <link rel="icon" type="image/png" href="https://cambrero.com/images/ícone.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap">
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        .legal-content {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            line-height: 1.8;
+        }
+        
+        .legal-content h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+        }
+        
+        .legal-content h2 {
+            color: var(--secondary-color);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            border-bottom: 2px solid var(--bg-color);
+            padding-bottom: 0.5rem;
+        }
+        
+        .legal-content h3 {
+            color: var(--primary-color);
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+            font-size: 1.2rem;
+        }
+        
+        .legal-content p {
+            margin-bottom: 1rem;
+            text-align: justify;
+        }
+        
+        .legal-content ul {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .legal-content li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .back-home {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--primary-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+        
+        .back-home:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        
+        .last-updated {
+            text-align: center;
+            color: #888;
+            font-style: italic;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--bg-color);
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1.5rem 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navegação -->
+    <nav class="navbar">
+        <button class="menu-toggle" id="menuToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <div class="logo">
+            <img src="https://cambrero.com/images/ícone.png" alt="Ícone Cambrero">
+            Cambrero
+        </div>
+        
+        <div id="auth-container">
+            <a href="https://login.cambrero.com" id="googleLoginBtn" class="google-login-btn">
+                <i class="fab fa-google"></i> Entrar
+            </a>
+            <div id="profileMenu" class="profile-menu" style="display: none;">
+                <button id="profileBtn" class="profile-btn">
+                    <img src="https://placehold.co/40x40/3498db/ffffff?text=C" alt="Foto de Perfil" id="profilePic">
+                </button>
+                <div id="profileDropdown" class="profile-dropdown">
+                    <div class="dropdown-header">
+                        <strong id="profileName">Nome do Usuário</strong>
+                        <span id="profileEmail">email@exemplo.com</span>
+                    </div>
+                    <a href="conta/index.html" class="dropdown-item">
+                        <i class="fas fa-user-circle"></i> Ver Conta
+                    </a>
+                    <a href="#" id="logoutBtn" class="dropdown-item">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Menu Lateral -->
+    <div class="side-menu" id="sideMenu">
+        <div class="side-menu-content">
+            <h3><i class="fas fa-bars"></i> Menu</h3>
+            <a href="https://cambrero.com" class="menu-item">
+                <i class="fas fa-home"></i> Início
+            </a>
+            <a href="https://cambrero.com/config/config.html" class="menu-item">
+                <i class="fas fa-cog"></i> Configurações
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-hand-holding-heart"></i> Doações
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-photo-video"></i> Mídias
+            </a>
+        </div>
+    </div>
+
+    <!-- Overlay do Menu -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <!-- Conteúdo Principal -->
+    <main class="legal-content">
+        <a href="https://cambrero.com" class="back-home">
+            <i class="fas fa-arrow-left"></i> Voltar ao Início
+        </a>
+        
+        <h1><i class="fas fa-file-contract"></i> Termos de Uso</h1>
+        
+        <div class="highlight-box">
+            <p><strong>Importante:</strong> Ao utilizar a plataforma Cambrero, você concorda com todos os termos e condições descritos neste documento. Leia atentamente antes de prosseguir.</p>
+        </div>
+        
+        <h2>1. Aceitação dos Termos</h2>
+        <p>Ao acessar e utilizar o Cambrero (cambrero.com e seus subdomínios), você concorda em cumprir e estar vinculado a estes Termos de Uso. Se você não concordar com qualquer parte destes termos, não deve utilizar nossos serviços.</p>
+        
+        <h2>2. Descrição do Serviço</h2>
+        <p>O Cambrero é uma plataforma digital que oferece:</p>
+        <ul>
+            <li>Conteúdo de desenvolvimento pessoal e espiritual</li>
+            <li>Pregações e materiais edificantes</li>
+            <li>Jogos educativos e de entretenimento</li>
+            <li>Ferramentas para crescimento pessoal</li>
+            <li>Recursos de oração e reflexão</li>
+            <li>Bots e ferramentas interativas</li>
+        </ul>
+        
+        <h2>3. Requisitos de Idade e Elegibilidade</h2>
+        <p>Para utilizar nossos serviços, você deve:</p>
+        <ul>
+            <li>Ter pelo menos 13 anos de idade</li>
+            <li>Fornecer informações verdadeiras e precisas</li>
+            <li>Manter suas credenciais de acesso seguras</li>
+            <li>Não compartilhar sua conta com terceiros</li>
+        </ul>
+        
+        <h2>4. Conta de Usuário</h2>
+        <h3>4.1 Criação de Conta</h3>
+        <p>Você pode criar uma conta usando sua conta Google. Ao fazer isso, você concorda em:</p>
+        <ul>
+            <li>Fornecer informações precisas e atualizadas</li>
+            <li>Manter a segurança de suas credenciais</li>
+            <li>Notificar-nos sobre qualquer uso não autorizado</li>
+            <li>Aceitar responsabilidade por todas as atividades em sua conta</li>
+        </ul>
+        
+        <h3>4.2 Suspensão e Encerramento</h3>
+        <p>Reservamo-nos o direito de suspender ou encerrar sua conta por violação destes termos ou por conduta inadequada.</p>
+        
+        <h2>5. Uso Aceitável</h2>
+        <h3>5.1 Você PODE:</h3>
+        <ul>
+            <li>Usar nossos serviços para crescimento pessoal e espiritual</li>
+            <li>Compartilhar conteúdo edificante (quando permitido)</li>
+            <li>Interagir respeitosamente com outros usuários</li>
+            <li>Reportar problemas ou sugerir melhorias</li>
+        </ul>
+        
+        <h3>5.2 Você NÃO PODE:</h3>
+        <ul>
+            <li>Usar nossos serviços para atividades ilegais</li>
+            <li>Tentar hackear ou comprometer nossa segurança</li>
+            <li>Distribuir malware ou conteúdo malicioso</li>
+            <li>Violar direitos autorais ou propriedade intelectual</li>
+            <li>Assediar, intimidar ou prejudicar outros usuários</li>
+            <li>Criar contas falsas ou múltiplas</li>
+        </ul>
+        
+        <h2>6. Propriedade Intelectual</h2>
+        <p>Todo o conteúdo do Cambrero, incluindo textos, gráficos, logotipos, código e funcionalidades, é propriedade do Cambrero ou de seus licenciadores e está protegido por leis de direitos autorais.</p>
+        
+        <h2>7. Conteúdo do Usuário</h2>
+        <p>Ao enviar conteúdo para nossa plataforma, você:</p>
+        <ul>
+            <li>Garante que possui todos os direitos necessários</li>
+            <li>Nos concede licença para usar, modificar e exibir o conteúdo</li>
+            <li>Aceita que podemos remover conteúdo inadequado</li>
+            <li>Permanece responsável pelo conteúdo enviado</li>
+        </ul>
+        
+        <h2>8. Privacidade e Dados</h2>
+        <p>Sua privacidade é importante para nós. Nossa coleta e uso de dados pessoais são regidos por nossa <a href="https://cambrero.com/privacidade" style="color: var(--secondary-color);">Política de Privacidade</a>.</p>
+        
+        <h2>9. Jogos e Entretenimento</h2>
+        <p>Nossos jogos são fornecidos "como estão" para entretenimento. Você concorda que:</p>
+        <ul>
+            <li>Os jogos são para uso pessoal e não comercial</li>
+            <li>Não tentará modificar ou reverter a engenharia dos jogos</li>
+            <li>Reportará bugs e problemas através dos canais adequados</li>
+        </ul>
+        
+        <h2>10. Limitação de Responsabilidade</h2>
+        <p>O Cambrero é fornecido "como está" sem garantias. Não nos responsabilizamos por:</p>
+        <ul>
+            <li>Interrupções temporárias do serviço</li>
+            <li>Perda de dados devido a problemas técnicos</li>
+            <li>Danos indiretos ou consequenciais</li>
+            <li>Uso inadequado de nossos serviços por terceiros</li>
+        </ul>
+        
+        <h2>11. Modificações dos Termos</h2>
+        <p>Podemos atualizar estes termos periodicamente. Mudanças significativas serão notificadas através da plataforma. O uso continuado após as mudanças constitui aceitação dos novos termos.</p>
+        
+        <h2>12. Lei Aplicável</h2>
+        <p>Estes termos são regidos pelas leis brasileiras. Disputas serão resolvidas nos tribunais competentes do Brasil.</p>
+        
+        <h2>13. Contato</h2>
+        <p>Para questões sobre estes termos, entre em contato conosco através dos canais oficiais do Cambrero.</p>
+        
+        <div class="last-updated">
+            Última atualização: 29 de julho de 2025
+        </div>
+    </main>
+
+    <!-- Botão de Modo Escuro -->
+    <button class="theme-toggle" id="themeToggle">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- Rodapé -->
+    <footer class="footer">
+        <div class="social-links">
+            <a href="https://youtube.com/@devandre2970" target="_blank"><i class="fab fa-youtube"></i></a>
+            <a href="https://www.instagram.com/navon_oficial" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.tiktok.com/@drives.games" target="_blank"><i class="fab fa-tiktok"></i></a>
+        </div>
+        <p>© 2025 Cambrero. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="../script.js"></script>
+</body>
+</html>

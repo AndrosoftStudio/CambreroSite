@@ -1,0 +1,21 @@
+body.dark-mode {
+    --primary-color: #818cf8;
+    --secondary-color: #6366f1;
+    --text-color: #e2e8f0;
+    --bg-color: #0f172a;
+    --card-bg: #1e293b;
+}
+
+body.dark-mode .mouse {
+    border-color: var(--text-color);
+}
+
+body.dark-mode .mouse::after {
+    background: var(--text-color);
+}
+
+body.dark-mode input,
+body.dark-mode textarea {
+    background: rgba(255,255,255,0.05);
+    color: var(--text-color);
+}

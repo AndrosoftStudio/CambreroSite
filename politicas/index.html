@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Políticas do Cambrero - Conheça nossas diretrizes e compromissos">
+    <title>Políticas - Cambrero</title>
+    <link rel="icon" type="image/png" href="https://cambrero.com/images/ícone.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap">
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        .legal-content {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            line-height: 1.8;
+        }
+        
+        .legal-content h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+        }
+        
+        .legal-content h2 {
+            color: var(--secondary-color);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            border-bottom: 2px solid var(--bg-color);
+            padding-bottom: 0.5rem;
+        }
+        
+        .legal-content h3 {
+            color: var(--primary-color);
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+            font-size: 1.2rem;
+        }
+        
+        .legal-content p {
+            margin-bottom: 1rem;
+            text-align: justify;
+        }
+        
+        .legal-content ul {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .legal-content li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .back-home {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--primary-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+        
+        .back-home:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        
+        .last-updated {
+            text-align: center;
+            color: #888;
+            font-style: italic;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--bg-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navegação -->
+    <nav class="navbar">
+        <button class="menu-toggle" id="menuToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <div class="logo">
+            <img src="https://cambrero.com/images/ícone.png" alt="Ícone Cambrero">
+            Cambrero
+        </div>
+        
+        <div id="auth-container">
+            <a href="https://login.cambrero.com" id="googleLoginBtn" class="google-login-btn">
+                <i class="fab fa-google"></i> Entrar
+            </a>
+            <div id="profileMenu" class="profile-menu" style="display: none;">
+                <button id="profileBtn" class="profile-btn">
+                    <img src="https://placehold.co/40x40/3498db/ffffff?text=C" alt="Foto de Perfil" id="profilePic">
+                </button>
+                <div id="profileDropdown" class="profile-dropdown">
+                    <div class="dropdown-header">
+                        <strong id="profileName">Nome do Usuário</strong>
+                        <span id="profileEmail">email@exemplo.com</span>
+                    </div>
+                    <a href="conta/index.html" class="dropdown-item">
+                        <i class="fas fa-user-circle"></i> Ver Conta
+                    </a>
+                    <a href="#" id="logoutBtn" class="dropdown-item">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Menu Lateral -->
+    <div class="side-menu" id="sideMenu">
+        <div class="side-menu-content">
+            <h3><i class="fas fa-bars"></i> Menu</h3>
+            <a href="https://cambrero.com" class="menu-item">
+                <i class="fas fa-home"></i> Início
+            </a>
+            <a href="https://cambrero.com/config/config.html" class="menu-item">
+                <i class="fas fa-cog"></i> Configurações
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-hand-holding-heart"></i> Doações
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-photo-video"></i> Mídias
+            </a>
+        </div>
+    </div>
+
+    <!-- Overlay do Menu -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <!-- Conteúdo Principal -->
+    <main class="legal-content">
+        <a href="https://cambrero.com" class="back-home">
+            <i class="fas fa-arrow-left"></i> Voltar ao Início
+        </a>
+        
+        <h1><i class="fas fa-shield-alt"></i> Políticas do Cambrero</h1>
+        
+        <h2>1. Compromisso com a Comunidade</h2>
+        <p>O Cambrero é dedicado a criar um ambiente seguro, inclusivo e enriquecedor para todos os usuários em sua jornada de crescimento pessoal e espiritual. Nossas políticas refletem nosso compromisso com valores cristãos e desenvolvimento pessoal.</p>
+        
+        <h2>2. Política de Conteúdo</h2>
+        <h3>2.1 Conteúdo Permitido</h3>
+        <ul>
+            <li>Materiais de desenvolvimento pessoal e espiritual</li>
+            <li>Pregações e conteúdos edificantes</li>
+            <li>Jogos educativos e de entretenimento familiar</li>
+            <li>Ferramentas para crescimento pessoal</li>
+            <li>Orações e reflexões espirituais</li>
+        </ul>
+        
+        <h3>2.2 Conteúdo Proibido</h3>
+        <ul>
+            <li>Material ofensivo, discriminatório ou que incite ódio</li>
+            <li>Conteúdo adulto ou inadequado para menores</li>
+            <li>Spam, propaganda enganosa ou conteúdo malicioso</li>
+            <li>Violação de direitos autorais ou propriedade intelectual</li>
+            <li>Conteúdo que contradiga valores cristãos fundamentais</li>
+        </ul>
+        
+        <h2>3. Política de Comportamento</h2>
+        <h3>3.1 Conduta Esperada</h3>
+        <p>Esperamos que todos os usuários mantenham:</p>
+        <ul>
+            <li>Respeito mútuo em todas as interações</li>
+            <li>Linguagem apropriada e edificante</li>
+            <li>Apoio ao crescimento de outros usuários</li>
+            <li>Honestidade e integridade</li>
+            <li>Amor e compaixão cristã</li>
+        </ul>
+        
+        <h3>3.2 Consequências por Violações</h3>
+        <p>Violações das nossas políticas podem resultar em:</p>
+        <ul>
+            <li>Advertência e orientação</li>
+            <li>Remoção de conteúdo inadequado</li>
+            <li>Suspensão temporária de conta</li>
+            <li>Banimento permanente em casos graves</li>
+        </ul>
+        
+        <h2>4. Política de Jogos e Entretenimento</h2>
+        <p>Nossos jogos são desenvolvidos para:</p>
+        <ul>
+            <li>Proporcionar entretenimento saudável e família-friendly</li>
+            <li>Estimular o desenvolvimento cognitivo</li>
+            <li>Promover valores positivos</li>
+            <li>Criar momentos de descontração edificante</li>
+        </ul>
+        
+        <h2>5. Política de Moderação</h2>
+        <p>Nossa equipe de moderação trabalha para:</p>
+        <ul>
+            <li>Manter um ambiente seguro e acolhedor</li>
+            <li>Aplicar as políticas de forma justa e consistente</li>
+            <li>Responder rapidamente a relatórios de usuários</li>
+            <li>Fornecer suporte e orientação quando necessário</li>
+        </ul>
+        
+        <h2>6. Política de Feedback e Sugestões</h2>
+        <p>Valorizamos o feedback da nossa comunidade e encorajamos:</p>
+        <ul>
+            <li>Sugestões construtivas para melhorias</li>
+            <li>Relatórios de problemas técnicos</li>
+            <li>Ideias para novos conteúdos e recursos</li>
+            <li>Testemunhos de crescimento e transformação</li>
+        </ul>
+        
+        <h2>7. Atualizações das Políticas</h2>
+        <p>Estas políticas podem ser atualizadas periodicamente para melhor servir nossa comunidade. Mudanças significativas serão comunicadas com antecedência através da plataforma.</p>
+        
+        <h2>8. Contato</h2>
+        <p>Para dúvidas sobre estas políticas ou para reportar violações, entre em contato conosco através dos canais oficiais do Cambrero.</p>
+        
+        <div class="last-updated">
+            Última atualização: 29 de julho de 2025
+        </div>
+    </main>
+
+    <!-- Botão de Modo Escuro -->
+    <button class="theme-toggle" id="themeToggle">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- Rodapé -->
+    <footer class="footer">
+        <div class="social-links">
+            <a href="https://youtube.com/@devandre2970" target="_blank"><i class="fab fa-youtube"></i></a>
+            <a href="https://www.instagram.com/navon_oficial" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.tiktok.com/@drives.games" target="_blank"><i class="fab fa-tiktok"></i></a>
+        </div>
+        <p>© 2025 Cambrero. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="../script.js"></script>
+</body>
+</html>

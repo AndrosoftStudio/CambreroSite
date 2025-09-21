@@ -1,0 +1,19 @@
+<h1>Encha simbolicamente estes baldes para alcançar o sucesso:</h1>
+        <h2>Baú do Conhecimento:</h2>
+        <p>Autoconhecimento: Entenda a si mesmo, identifique seu inimigo e compreenda o campo de batalha antes de iniciar qualquer empreitada.</p>
+        <p>Conquiste o conhecimento estratégico: Evite informações inúteis; concentre-se em conhecimentos específicos da sua área e abranja também aqueles úteis em diversos setores.</p>
+        <h2>Habilidades Técnicas e Multidimensionais:</h2>
+        <p>Desenvolva Hard Skills (habilidades técnicas específicas da sua área).</p>
+        <p>Aprimore Soft Skills (habilidades gerais aplicáveis em qualquer campo).</p>
+        <h2>Relacionamentos e Networking:</h2>
+        <p>Cultive conexões no Balde dos Relacionamentos: Fortaleça sua rede de contatos.</p>
+        <h2>Recursos Pessoais:</h2>
+        <p>Analise o que você possui no Balde do que Você Tem: Identifique seus recursos e utilize-os estrategicamente.</p>
+        <h2>Reputação:</h2>
+        <p>Gerencie sua reputação no Balde da Reputação.</p>
+        <p>Reputação de Adição: Faça as pessoas pensarem razoavelmente positivamente sobre você.</p>
+        <p>Alcance a reputação de soma: Seja percebido de forma positiva no geral.</p>
+        <p>Reputação de Subtração: Evite que as pessoas pensem razoavelmente negativamente sobre você.</p>
+        <p>Reputação de Multiplicação: Conquiste a reputação ultra positiva. Busque maximizar as percepções positivas.</p>
+        <p>Lembre-se: O ideal é alcançar a reputação de soma e multiplicação ao máximo. Construa uma imagem que impulsione seu sucesso em todas as áreas da vida.</p>
+        <a href="../index.html" class="back-button">Voltar</a>
