@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cambrero - Biblioteca de Jogos para diversão e aprendizado">
+    <title>Cambrero - Biblioteca de Jogos</title>
+    <link rel="icon" type="image/png" href="https://cambrero.com/images/ícone.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap">
+    <link rel="stylesheet" href="jogos.css">
+</head>
+<body>
+    <!-- Navegação -->
+    <nav class="navbar">
+        <!-- Botão do Menu (lado esquerdo) -->
+        <button class="menu-toggle" id="menuToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <!-- Logo (centro) -->
+        <div class="logo">
+            <img src="https://cambrero.com/images/ícone.png" alt="Ícone Cambrero">
+            Cambrero
+        </div>
+        
+        <!-- Área de Autenticação (lado direito) -->
+        <div id="auth-container">
+            <!-- Botão de Login (aparece quando não logado) -->
+            <a href="https://login.cambrero.com" id="googleLoginBtn" class="google-login-btn">
+                <i class="fab fa-google"></i> Entrar
+            </a>
+
+            <!-- Menu de Perfil (aparece quando logado) -->
+            <div id="profileMenu" class="profile-menu" style="display: none;">
+                <button id="profileBtn" class="profile-btn">
+                    <img src="https://placehold.co/40x40/3498db/ffffff?text=C" alt="Foto de Perfil" id="profilePic">
+                </button>
+                <div id="profileDropdown" class="profile-dropdown">
+                    <div class="dropdown-header">
+                        <strong id="profileName">Nome do Usuário</strong>
+                        <span id="profileEmail">email@exemplo.com</span>
+                    </div>
+                    <a href="https://cambrero.com/conta/index.html" class="dropdown-item">
+                        <i class="fas fa-user-circle"></i> Ver Conta
+                    </a>
+                    <a href="#" id="logoutBtn" class="dropdown-item">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Menu Lateral -->
+    <div class="side-menu" id="sideMenu">
+        <div class="side-menu-content">
+            <h3><i class="fas fa-bars"></i> Menu</h3>
+            <a href="https://cambrero.com/config/config.html" class="menu-item">
+                <i class="fas fa-cog"></i> Configurações
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-hand-holding-heart"></i> Doações
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-photo-video"></i> Mídias
+            </a>
+            <!-- Botão de tema no menu lateral -->
+            <a href="#" class="menu-item" id="themeMenuToggle">
+                <i class="fas fa-moon"></i> <span id="themeMenuText">Modo Escuro</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Overlay do Menu -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <!-- Seção Principal -->
+    <section class="games-section">
+        <div class="container">
+            <a href="https://cambrero.com" class="back-button">
+                <i class="fas fa-arrow-left"></i> Voltar ao Início
+            </a>
+            <h1><i class="fas fa-gamepad"></i> Biblioteca de Jogos</h1>
+
+            <!-- Sistema de Busca e Filtros -->
+            <div class="games-controls">
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Pesquisar jogos...">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-category="all">Todos</button>
+                    <button class="filter-btn" data-category="tabuleiro">Tabuleiro</button>
+                    <button class="filter-btn" data-category="estrategia">Estratégia</button>
+                    <button class="filter-btn" data-category="classico">Clássicos</button>
+                    <button class="filter-btn" data-category="sobrevivencia">Sobrevivência</button>
+                    <button class="filter-btn" data-category="corrida">Corrida</button>
+                    <button class="filter-btn" data-category="SENAI">SENAI</button>
+                    <button class="filter-btn" data-category="Multjogador">Multjogador</button>
+                    <button class="filter-btn" data-category="Tycoon">Tycoon</button>
+                </div>
+            </div>
+
+            <!-- Container dos Jogos -->
+            <div class="games-grid" id="gamesContainer"></div>
+        </div>
+    </section>
+
+    <!-- Botão de Modo Escuro -->
+    <button class="theme-toggle" id="themeToggle">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- Rodapé -->
+    <footer class="footer">
+        <div class="social-links">
+            <a href="https://youtube.com/@devandre2970" target="_blank"><i class="fab fa-youtube"></i></a>
+            <a href="https://www.instagram.com/navon_oficial" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.tiktok.com/@drives.games" target="_blank"><i class="fab fa-tiktok"></i></a>
+        </div>
+        <p>© 2025 Cambrero. Todos os direitos reservados.</p>
+    </footer>
+
+    <!-- Google Sign-In API -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="jogos.js"></script>
+</body>
+</html>
