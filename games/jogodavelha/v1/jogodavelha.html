@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo da Velha</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <button class="dark-mode-toggle" id="darkModeToggle">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <div class="container">
+        <a href="../jogos.html" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+            Voltar
+        </a>
+
+        <h1><i class="fas fa-times-circle"></i> Jogo da Velha</h1>
+
+        <div class="controls">
+            <select id="gameMode">
+                <option value="pvp">Jogador vs Jogador</option>
+                <option value="ai">Jogador vs IA</option>
+            </select>
+            <button onclick="resetGame()">Novo Jogo</button>
+            <button onclick="resetScore()">Zerar Placar</button>
+        </div>
+
+        <div class="score-board">
+            <div>X: <span id="scoreX">0</span></div>
+            <div>Empates: <span id="scoreDraw">0</span></div>
+            <div>O: <span id="scoreO">0</span></div>
+        </div>
+
+        <div class="current-player" id="currentPlayer"></div>
+
+        <div class="game-board" id="board">
+            <div class="cell" data-index="0"></div>
+            <div class="cell" data-index="1"></div>
+            <div class="cell" data-index="2"></div>
+            <div class="cell" data-index="3"></div>
+            <div class="cell" data-index="4"></div>
+            <div class="cell" data-index="5"></div>
+            <div class="cell" data-index="6"></div>
+            <div class="cell" data-index="7"></div>
+            <div class="cell" data-index="8"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
