@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo da Velha - Cambrero Games</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- Para ícones de dark mode -->
+</head>
+<body>
+    <!-- Navbar do site principal -->
+    <nav class="navbar">
+        <button class="menu-toggle"><i class="fas fa-bars"></i></button>
+        <span class="logo">Cambrero Games</span>
+        <div id="auth-container"></div> <!-- Se precisar de login, adicione aqui -->
+    </nav>
+
+    <!-- Menu lateral (como no principal) -->
+    <div class="side-menu hidden">
+        <a href="https://games.cambrero.com">Voltar para Games</a>
+        <a href="#">Configurações</a>
+        <a href="#">Doações</a>
+        <a href="#">Mídias</a>
+        <button id="themeMenuToggle"><i class="fas fa-moon"></i> <span id="themeMenuText">Modo Escuro</span></button>
+    </div>
+
+    <div class="container">
+        <h1>Jogo da Velha</h1>
+        <select id="gameMode">
+            <option value="pvp">Jogador vs Jogador</option>
+            <option value="ai">Jogador vs IA</option>
+        </select>
+
+        <div class="controls">
+            <button onclick="resetGame()">Novo Jogo</button>
+            <button onclick="resetScore()">Zerar Placar</button>
+        </div>
+
+        <div class="score-board">
+            <div>X: <span id="scoreX">0</span></div>
+            <div>Empates: <span id="scoreDraw">0</span></div>
+            <div>O: <span id="scoreO">0</span></div>
+        </div>
+
+        <div class="game-board">
+            <div class="cell" data-index="0"></div>
+            <div class="cell" data-index="1"></div>
+            <div class="cell" data-index="2"></div>
+            <div class="cell" data-index="3"></div>
+            <div class="cell" data-index="4"></div>
+            <div class="cell" data-index="5"></div>
+            <div class="cell" data-index="6"></div>
+            <div class="cell" data-index="7"></div>
+            <div class="cell" data-index="8"></div>
+        </div>
+
+        <p id="currentPlayer" class="current-player">Vez do Jogador: X</p>
+    </div>
+
+    <!-- Botão dark mode (como no principal) -->
+    <button id="darkModeToggle" class="dark-mode-toggle"><i class="fas fa-moon"></i></button>
+
+    <script src="script.js"></script>
+</body>
+</html>

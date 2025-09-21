@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Jogo da Velha — Multiplayer por IP</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app" class="container">
+
+    <!-- MENU INICIAL -->
+    <div id="menu" class="panel">
+      <h1>Jogo da Velha</h1>
+      <div class="menu-buttons">
+        <button id="btn-local">Singleplayer / Local Players</button>
+        <button id="btn-mp">Multiplayer (por IP)</button>
+      </div>
+      <small class="hint">Hospede o servidor Node.js e use o IP/domínio do servidor para criar/entrar em salas.</small>
+    </div>
+
+    <!-- MENU MULTIPLAYER -->
+    <div id="menu-mp" class="panel hidden">
+      <h2>Multiplayer (por IP)</h2>
+
+      <div class="mp-row">
+        <label>Servidor (IP ou domínio):</label>
+        <input id="mp-server" placeholder="ex: ws://meuservidor.com:8080" />
+      </div>
+
+      <div class="mp-row split">
+        <div>
+          <button id="btn-create">Criar Sala</button>
+          <div id="create-status" class="status"></div>
+          <div id="room-block" class="hidden">
+            <input id="room-url" readonly />
+            <button id="copy-room">Copiar endereço</button>
+          </div>
+        </div>
+
+        <div>
+          <label>Entrar em Sala (Room ID):</label>
+          <input id="join-room-id" placeholder="Coloque Room ID aqui" />
+          <button id="btn-join">Entrar</button>
+          <div id="ping-status" class="status">Ping: —</div>
+        </div>
+      </div>
+
+      <div class="mp-row">
+        <button id="btn-back-to-menu">Voltar</button>
+      </div>
+    </div>
+
+    <!-- JOGO / TABULEIRO -->
+    <div id="game" class="panel hidden">
+      <div class="topbar">
+        <button id="btn-back">Sair</button>
+        <div id="game-info">Modo: <span id="mode-label">—</span> • Você: <span id="your-symbol">—</span> • Vez: <span id="turn-indicator">—</span></div>
+      </div>
+
+      <div class="score-board">
+        <div>X: <span id="scoreX">0</span></div>
+        <div>Empates: <span id="scoreDraw">0</span></div>
+        <div>O: <span id="scoreO">0</span></div>
+      </div>
+
+      <div id="board" class="game-board">
+        <!-- 9 células -->
+        <div class="cell" data-i="0"></div>
+        <div class="cell" data-i="1"></div>
+        <div class="cell" data-i="2"></div>
+        <div class="cell" data-i="3"></div>
+        <div class="cell" data-i="4"></div>
+        <div class="cell" data-i="5"></div>
+        <div class="cell" data-i="6"></div>
+        <div class="cell" data-i="7"></div>
+        <div class="cell" data-i="8"></div>
+      </div>
+
+      <div class="controls">
+        <button id="btn-new">Novo Jogo</button>
+        <button id="btn-reset-score">Zerar Placar</button>
+      </div>
+
+      <div id="mp-wait" class="status hidden">Aguardando o oponente...</div>
+    </div>
+
+  </div>
+
+  <script src="client.js"></script>
+</body>
+</html>

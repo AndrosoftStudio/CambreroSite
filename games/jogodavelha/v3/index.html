@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jogo da Velha</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+  <div class="container">
+    <div id="login-section">
+      <button id="google-login">Login com Google</button>
+    </div>
+    <div id="profile-section" class="hidden">
+      <span id="username"></span> | <button id="logout">Logout</button>
+    </div>
+
+    <div id="menu">
+      <h1>Jogo da Velha</h1>
+      <div class="menu-buttons">
+        <button id="btn-local">Singleplayer / Local Players</button>
+        <button id="btn-mp">Multiplayer (por IP)</button>
+      </div>
+      <span class="hint">Hospede o servidor Node.js e use o IP/domínio do servidor para criar/entrar em salas.</span>
+    </div>
+
+    <div id="menu-mp" class="hidden">
+      <h2>Multiplayer (por IP)</h2>
+      <div class="mp-row">
+        <label>Servidor (IP ou domínio):</label>
+        <input type="text" id="mp-server" value="localhost:8080">
+      </div>
+      <div class="split">
+        <div>
+          <button id="btn-create">Criar Sala</button>
+          <div id="create-status" class="status"></div>
+          <div id="room-block" class="hidden">
+            <input id="room-url" readonly>
+            <button id="copy-room">Copiar endereço</button>
+          </div>
+        </div>
+        <div>
+          <label>Entrar em Sala (Room ID):</label>
+          <input type="text" id="join-room-id">
+          <button id="btn-join">Entrar</button>
+          <span id="ping-status" class="status">Ping: —</span>
+        </div>
+      </div>
+      <button id="btn-back-to-menu">Voltar</button>
+    </div>
+
+    <div id="game" class="panel hidden">
+      <div class="topbar">
+        <button id="btn-back">Sair</button>
+        <span>Modo: <span id="mode-label">—</span> • Você: <span id="your-symbol">—</span> • Vez: <span id="turn-indicator">—</span></span>
+      </div>
+      <div class="score-board">
+        <div>X: <span id="scoreX">0</span></div>
+        <div>Empates: <span id="scoreDraw">0</span></div>
+        <div>O: <span id="scoreO">0</span></div>
+      </div>
+      <div id="board" class="game-board">
+        <div class="cell" data-index="0"></div>
+        <div class="cell" data-index="1"></div>
+        <div class="cell" data-index="2"></div>
+        <div class="cell" data-index="3"></div>
+        <div class="cell" data-index="4"></div>
+        <div class="cell" data-index="5"></div>
+        <div class="cell" data-index="6"></div>
+        <div class="cell" data-index="7"></div>
+        <div class="cell" data-index="8"></div>
+      </div>
+      <div class="controls">
+        <button id="btn-new">Novo Jogo</button>
+        <button id="btn-reset-score">Zerar Placar</button>
+      </div>
+      <div id="mp-wait" class="hidden">Aguardando o oponente...</div>
+    </div>
+
+    <!-- Novos elementos -->
+    <div id="online-status">Online: 0 | Ping: -- ms</div>
+    <button id="queue-btn">Buscar Partida</button>
+    <div id="friends-section">
+      <input id="add-friend-token" placeholder="Token do amigo">
+      <button id="add-friend">Adicionar Amigo</button>
+      <ul id="friends-list"></ul>
+    </div>
+  </div>
+  <script src="client.js"></script>
+</body>
+</html>
