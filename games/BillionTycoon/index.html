@@ -1,0 +1,1737 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BillionTycoon v1.3</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gold: #FFD700;
+            --primary-purple: #8B5CF6;
+            --dark-bg: #0F0F23;
+            --card-bg: #1A1A2E;
+            --accent-cyan: #00F5FF;
+            --success-green: #00FF88;
+            --warning-orange: #FF8C00;
+            --danger-red: #FF4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #16213E 50%, #0F3460 100%);
+            color: white;
+            overflow-x: hidden;
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        /* Temas - Removendo conflitos */
+        body.theme-light {
+            background: linear-gradient(135deg, #f0f2f5 0%, #e3e8f0 50%, #d1d9e6 100%);
+            color: #333;
+        }
+
+        body.theme-cyberpunk {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0033 50%, #330066 100%);
+            color: #fff;
+        }
+
+        body.theme-matrix {
+            background: linear-gradient(135deg, #000 0%, #001100 50%, #003300 100%);
+            color: #00ff00;
+        }
+
+        .orbitron { 
+            font-family: 'Orbitron', monospace; 
+        }
+
+        .glass-card {
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+            opacity: 1 !important; /* Força opacidade */
+            visibility: visible !important; /* Força visibilidade */
+        }
+
+        /* Estilos específicos para temas */
+        body.theme-light .glass-card {
+            background: rgba(255, 255, 255, 0.98);
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            color: #333;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+        body.theme-cyberpunk .glass-card {
+            background: rgba(26, 0, 52, 0.95);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+        body.theme-matrix .glass-card {
+            background: rgba(0, 17, 0, 0.95);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+        .neon-glow {
+            box-shadow: 0 0 20px currentColor, 0 0 40px currentColor, 0 0 60px currentColor;
+        }
+
+        .money-counter {
+            background: linear-gradient(45deg, var(--primary-gold), #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+        }
+
+        .floating-money {
+            position: absolute;
+            pointer-events: none;
+            font-weight: bold;
+            z-index: 1000;
+            color: var(--success-green);
+            text-shadow: 0 0 10px currentColor;
+        }
+
+        .floating-expense {
+            position: absolute;
+            pointer-events: none;
+            font-weight: bold;
+            z-index: 1000;
+            color: var(--danger-red);
+            text-shadow: 0 0 10px currentColor;
+        }
+
+        .upgrade-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            background: rgba(26, 26, 46, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            opacity: 1 !important; /* Força opacidade */
+            visibility: visible !important; /* Força visibilidade */
+        }
+
+        /* Tema específico para upgrade cards */
+        body.theme-light .upgrade-card {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            color: #333;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+        body.theme-cyberpunk .upgrade-card {
+            background: rgba(26, 0, 52, 0.9);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+        body.theme-matrix .upgrade-card {
+            background: rgba(0, 17, 0, 0.9);
+            border: 1px solid rgba(0, 255, 0, 0.2);
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+        /* Remover conflitos de opacidade */
+        .upgrade-card:not(.can-afford) {
+            opacity: 0.7 !important; /* Apenas reduz opacidade, não remove completamente */
+        }
+
+        .upgrade-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .upgrade-card:hover::before {
+            left: 100%;
+        }
+
+        .upgrade-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(139, 92, 246, 0.3);
+        }
+
+        .click-button {
+            background: linear-gradient(45deg, var(--primary-purple), var(--accent-cyan));
+            border: none;
+            border-radius: 50%;
+            width: 200px;
+            height: 200px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+        .click-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 50px var(--primary-purple);
+        }
+
+        .click-button:active {
+            transform: scale(0.95);
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, var(--primary-purple), var(--accent-cyan));
+            height: 8px;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .tab-button {
+            padding: 12px 24px;
+            border: none;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+        .tab-button.active {
+            background: linear-gradient(45deg, var(--primary-purple), var(--accent-cyan));
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        body.theme-light .tab-button {
+            color: #333;
+            background: rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+        }
+
+        .achievement-popup {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, var(--success-green), #00CC70);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
+            transform: translateX(400px);
+            z-index: 10000;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--primary-gold);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .prestige-glow {
+            animation: prestige-pulse 2s infinite;
+        }
+
+        @keyframes prestige-pulse {
+            0%, 100% { box-shadow: 0 0 20px var(--primary-gold); }
+            50% { box-shadow: 0 0 40px var(--primary-gold), 0 0 60px var(--primary-gold); }
+        }
+
+        .scroll-container {
+            max-height: 70vh;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-purple) transparent;
+        }
+
+        .scroll-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .scroll-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .scroll-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, var(--primary-purple), var(--accent-cyan));
+            border-radius: 4px;
+        }
+
+        .multiplier-display {
+            background: linear-gradient(45deg, var(--warning-orange), #FF6B35);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Menu Hamburger */
+        .menu-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 9999;
+            background: linear-gradient(45deg, var(--primary-purple), var(--accent-cyan));
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+        .menu-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px var(--primary-purple);
+        }
+
+        .hamburger {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .hamburger span {
+            width: 20px;
+            height: 3px;
+            background: white;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 9998;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .menu-overlay.active {
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+        .menu-panel {
+            position: fixed;
+            top: 0;
+            left: -400px;
+            width: 400px;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(26, 26, 46, 0.98) 0%, rgba(42, 42, 78, 0.98) 100%);
+            padding: 80px 30px 30px;
+            z-index: 9999;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 5px 0 20px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px);
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+        .menu-panel.active {
+            left: 0;
+        }
+
+        .menu-item {
+            padding: 15px 20px;
+            margin: 10px 0;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateX(10px);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .crypto-display {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+
+        .crypto-change.positive {
+            color: var(--success-green);
+        }
+
+        .crypto-change.negative {
+            color: var(--danger-red);
+        }
+
+        .expense-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, var(--danger-red), #cc0000);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            z-index: 1000;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .rank-1 { background: linear-gradient(45deg, #FFD700, #FFA500); color: #000; }
+        .rank-2 { background: linear-gradient(45deg, #C0C0C0, #A0A0A0); color: #000; }
+        .rank-3 { background: linear-gradient(45deg, #CD7F32, #A0522D); color: #fff; }
+        .rank-other { background: linear-gradient(45deg, #666, #444); color: #fff; }
+
+        /* Garantir que todos os elementos principais sejam visíveis */
+        .min-h-screen > * {
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+        /* Elementos de conteúdo sempre visíveis */
+        #tabContent * {
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+        /* Exceção apenas para elementos que devem ser semi-transparentes */
+        .upgrade-card:not(.can-afford) {
+            opacity: 0.6 !important;
+        }
+
+        @media (max-width: 768px) {
+            .menu-panel {
+                width: 100%;
+                left: -100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu Button -->
+    <button class="menu-button" id="menuButton">
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </button>
+
+    <!-- Menu Overlay -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+    
+    <!-- Menu Panel -->
+    <div class="menu-panel" id="menuPanel">
+        <h2 class="text-2xl font-bold mb-6 orbitron">Menu</h2>
+        
+        <div class="menu-item" id="themeButton">
+            <span class="text-2xl">🎨</span>
+            <div>
+                <p class="font-bold">Alterar Tema</p>
+                <p class="text-sm opacity-70">Personalize a aparência</p>
+            </div>
+        </div>
+
+        <div class="menu-item">
+            <span class="text-2xl">👤</span>
+            <div>
+                <p class="font-bold">Perfil Online</p>
+                <p class="text-sm opacity-70" id="playerName">Carregando...</p>
+            </div>
+        </div>
+
+        <div class="menu-item">
+            <span class="text-2xl">🏆</span>
+            <div>
+                <p class="font-bold">Ranking Global</p>
+                <p class="text-sm opacity-70" id="playerRank">Posição: -</p>
+            </div>
+        </div>
+
+        <div class="menu-item">
+            <span class="text-2xl">💰</span>
+            <div>
+                <p class="font-bold">Status Financeiro</p>
+                <p class="text-sm opacity-70" id="netWorth">Patrimônio: R$ 0</p>
+            </div>
+        </div>
+
+        <div class="menu-item" onclick="window.location.href='https://games.cambrero.com'">
+            <span class="text-2xl">🏠</span>
+            <div>
+                <p class="font-bold">Voltar ao Hub</p>
+                <p class="text-sm opacity-70">games.cambrero.com</p>
+            </div>
+        </div>
+
+        <div class="menu-item">
+            <span class="text-2xl">📊</span>
+            <div>
+                <p class="font-bold">Estatísticas</p>
+                <p class="text-sm opacity-70">Progresso detalhado</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="min-h-screen p-4">
+        <!-- Header -->
+        <div class="glass-card p-6 mb-6">
+            <h1 class="text-4xl md:text-6xl font-bold text-center orbitron money-counter mb-4">
+                SUPER BILIONÁRIO TYCOON ONLINE
+            </h1>
+            <div class="flex flex-wrap justify-center gap-4 text-center">
+                <div class="glass-card p-4 min-w-[200px]">
+                    <p class="text-sm text-gray-300">Patrimônio Líquido</p>
+                    <p id="moneyDisplay" class="text-2xl font-bold money-counter">R$ 0,00</p>
+                    <div id="rankBadge" class="mt-2"></div>
+                </div>
+                <div class="glass-card p-4 min-w-[200px]">
+                    <p class="text-sm text-gray-300">Renda/Segundo</p>
+                    <p id="incomeDisplay" class="text-2xl font-bold text-green-400">R$ 0,00</p>
+                </div>
+                <div class="glass-card p-4 min-w-[200px]">
+                    <p class="text-sm text-gray-300">Despesas/Segundo</p>
+                    <p id="expensesDisplay" class="text-2xl font-bold text-red-400">R$ 0,00</p>
+                </div>
+                <div class="glass-card p-4 min-w-[200px]">
+                    <p class="text-sm text-gray-300">Multiplicador</p>
+                    <p id="multiplierDisplay" class="text-2xl font-bold multiplier-display">x1.0</p>
+                </div>
+                <div class="glass-card p-4 min-w-[200px]">
+                    <p class="text-sm text-gray-300">Prestígio</p>
+                    <p id="prestigeDisplay" class="text-2xl font-bold text-purple-400">0</p>
+                </div>
+            </div>
+            
+            <!-- Country Tax Display -->
+            <div class="mt-4 text-center">
+                <div class="glass-card p-3 max-w-md mx-auto">
+                    <p class="text-sm text-gray-400">Taxa de Imposto: <span id="taxRate" class="font-bold text-red-400">25%</span> (Brasil)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Game Area -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Click Area -->
+            <div class="glass-card p-8 text-center">
+                <h2 class="text-2xl font-bold mb-6 orbitron">Centro de Comando</h2>
+                <div class="relative mb-6">
+                    <button id="clickButton" class="click-button mx-auto block neon-glow">
+                        <span class="orbitron">CLIQUE<br>PARA<br>GANHAR</span>
+                    </button>
+                    <div id="clickPowerDisplay" class="mt-4 text-lg font-bold text-cyan-400">
+                        Poder: R$ <span id="clickPowerValue">1,00</span>
+                    </div>
+                </div>
+                
+                <!-- Click Upgrades -->
+                <div class="space-y-3">
+                    <h3 class="text-lg font-bold text-purple-400">Melhorias de Clique</h3>
+                    <div id="clickUpgrades" class="space-y-2">
+                        <!-- Click upgrades will be inserted here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs and Content -->
+            <div class="lg:col-span-2 glass-card p-6">
+                <!-- Tab Navigation -->
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <button class="tab-button active" data-tab="businesses">Negócios</button>
+                    <button class="tab-button" data-tab="investments">Investimentos</button>
+                    <button class="tab-button" data-tab="crypto">Criptomoedas</button>
+                    <button class="tab-button" data-tab="research">Pesquisa</button>
+                    <button class="tab-button" data-tab="achievements">Conquistas</button>
+                    <button class="tab-button" data-tab="ranking">Ranking</button>
+                    <button class="tab-button" data-tab="prestige">Prestígio</button>
+                </div>
+
+                <!-- Tab Content -->
+                <div id="tabContent" class="scroll-container">
+                    <!-- Content will be dynamically loaded -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Elements -->
+        <div id="floatingMoney"></div>
+        <div id="particles"></div>
+        <div id="achievementContainer"></div>
+        
+        <!-- Expense Indicator -->
+        <div id="expenseIndicator" class="expense-indicator" style="display: none;">
+            <span id="nextExpense"></span>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAqYfQkMwiaWqnKaJhF4T5bnjS6dg2HZnM",
+            authDomain: "billiontycoon-8d49e.firebaseapp.com",
+            projectId: "billiontycoon-8d49e",
+            storageBucket: "billiontycoon-8d49e.firebasestorage.app",
+            messagingSenderId: "847041607327",
+            appId: "1:847041607327:web:0e75f70e4251ae967dd4aa",
+            measurementId: "G-18P0E9QSYQ"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+        let playerRanking = [];
+
+        // Game State (Dificuldade aumentada significativamente)
+        let gameState = {
+            money: 0,
+            totalEarned: 0,
+            clickPower: 1,
+            passiveIncome: 0,
+            expenses: 0,
+            multiplier: 1,
+            prestigePoints: 0,
+            prestigeLevel: 0,
+            country: 'BR',
+            taxRate: 0.25,
+            
+            clickUpgrades: [
+                { id: 'cursor', name: 'Cursor Mágico', cost: 50, power: 1, owned: 0, costMultiplier: 1.25 },
+                { id: 'hand', name: 'Mão Dourada', cost: 500, power: 5, owned: 0, costMultiplier: 1.25 },
+                { id: 'gauntlet', name: 'Manopla do Poder', cost: 5000, power: 25, owned: 0, costMultiplier: 1.25 },
+                { id: 'robot', name: 'Robô Clicador', cost: 50000, power: 100, owned: 0, costMultiplier: 1.25 }
+            ],
+
+            businesses: [
+                { id: 'lemonade', name: 'Barraca de Limonada', cost: 200, income: 1, expenses: 0.2, owned: 0, costMultiplier: 1.3, icon: '🍋' },
+                { id: 'coffee', name: 'Cafeteria', cost: 2000, income: 8, expenses: 2, owned: 0, costMultiplier: 1.3, icon: '☕' },
+                { id: 'restaurant', name: 'Restaurante', cost: 10000, income: 32, expenses: 8, owned: 0, costMultiplier: 1.3, icon: '🍽️' },
+                { id: 'mall', name: 'Shopping Center', cost: 50000, income: 150, expenses: 40, owned: 0, costMultiplier: 1.3, icon: '🏬' },
+                { id: 'factory', name: 'Fábrica', cost: 250000, income: 750, expenses: 200, owned: 0, costMultiplier: 1.3, icon: '🏭' },
+                { id: 'tech', name: 'Empresa de Tech', cost: 1000000, income: 3500, expenses: 1000, owned: 0, costMultiplier: 1.3, icon: '💻' },
+                { id: 'bank', name: 'Banco', cost: 5000000, income: 20000, expenses: 6000, owned: 0, costMultiplier: 1.3, icon: '🏦' },
+                { id: 'oil', name: 'Petrolífera', cost: 25000000, income: 100000, expenses: 30000, owned: 0, costMultiplier: 1.3, icon: '🛢️' },
+                { id: 'space', name: 'Colônia Espacial', cost: 100000000, income: 500000, expenses: 150000, owned: 0, costMultiplier: 1.3, icon: '🚀' }
+            ],
+
+            investments: [
+                { id: 'stock', name: 'Ações', cost: 5000, multiplier: 0.05, owned: 0, costMultiplier: 1.35, icon: '📈' },
+                { id: 'bonds', name: 'Títulos', cost: 25000, multiplier: 0.2, owned: 0, costMultiplier: 1.35, icon: '📄' },
+                { id: 'real_estate', name: 'Imóveis', cost: 500000, multiplier: 1, owned: 0, costMultiplier: 1.35, icon: '🏠' },
+                { id: 'gold', name: 'Ouro', cost: 2500000, multiplier: 4, owned: 0, costMultiplier: 1.35, icon: '🏆' }
+            ],
+
+            cryptos: [
+                { id: 'bitcoin', name: 'Bitcoin', symbol: 'BTC', owned: 0, price: 250000, change: 0, volatility: 0.05 },
+                { id: 'ethereum', name: 'Ethereum', symbol: 'ETH', owned: 0, price: 15000, change: 0, volatility: 0.08 },
+                { id: 'dogecoin', name: 'Dogecoin', symbol: 'DOGE', owned: 0, price: 2.5, change: 0, volatility: 0.15 }
+            ],
+
+            research: [
+                { id: 'efficiency', name: 'Eficiência', cost: 25000, effect: 'Reduz despesas em 10%', owned: 0, maxLevel: 10, icon: '⚡' },
+                { id: 'automation', name: 'Automação', cost: 100000, effect: 'Reduz custos de upgrade em 5%', owned: 0, maxLevel: 5, icon: '🤖' },
+                { id: 'marketing', name: 'Marketing', cost: 500000, effect: 'Aumenta poder de clique em 25%', owned: 0, maxLevel: 8, icon: '📢' },
+                { id: 'innovation', name: 'Inovação', cost: 2500000, effect: 'Multiplica toda renda por 1.2x', owned: 0, maxLevel: 3, icon: '💡' }
+            ],
+
+            achievements: [
+                { id: 'first_click', name: 'Primeiro Clique', desc: 'Clique pela primeira vez', reward: 50, unlocked: false },
+                { id: 'first_business', name: 'Primeiro Negócio', desc: 'Compre seu primeiro negócio', reward: 200, unlocked: false },
+                { id: 'millionaire', name: 'Milionário', desc: 'Tenha R$ 1.000.000', reward: 5000, unlocked: false },
+                { id: 'business_empire', name: 'Império Empresarial', desc: 'Possua 50 negócios', reward: 100000, unlocked: false },
+                { id: 'click_master', name: 'Mestre do Clique', desc: 'Clique 10.000 vezes', reward: 50000, unlocked: false },
+                { id: 'billionaire', name: 'Bilionário', desc: 'Tenha R$ 1.000.000.000', reward: 5000000, unlocked: false },
+                { id: 'crypto_trader', name: 'Trader de Cripto', desc: 'Possua pelo menos 1 de cada criptomoeda', reward: 250000, unlocked: false },
+                { id: 'research_master', name: 'Mestre da Pesquisa', desc: 'Complete todas as pesquisas', reward: 1000000, unlocked: false }
+            ],
+
+            statistics: {
+                totalClicks: 0,
+                businessesOwned: 0,
+                timePlayedSeconds: 0,
+                prestigeCount: 0,
+                taxesPaid: 0,
+                cryptoTrades: 0
+            },
+
+            lastSave: Date.now(),
+            currentTab: 'businesses',
+            theme: 'dark'
+        };
+
+        // DOM Elements
+        const elements = {
+            moneyDisplay: document.getElementById('moneyDisplay'),
+            incomeDisplay: document.getElementById('incomeDisplay'),
+            expensesDisplay: document.getElementById('expensesDisplay'),
+            multiplierDisplay: document.getElementById('multiplierDisplay'),
+            prestigeDisplay: document.getElementById('prestigeDisplay'),
+            clickButton: document.getElementById('clickButton'),
+            clickPowerValue: document.getElementById('clickPowerValue'),
+            clickUpgrades: document.getElementById('clickUpgrades'),
+            tabContent: document.getElementById('tabContent'),
+            floatingMoney: document.getElementById('floatingMoney'),
+            achievementContainer: document.getElementById('achievementContainer'),
+            rankBadge: document.getElementById('rankBadge'),
+            taxRate: document.getElementById('taxRate'),
+            expenseIndicator: document.getElementById('expenseIndicator'),
+            nextExpense: document.getElementById('nextExpense'),
+            menuButton: document.getElementById('menuButton'),
+            menuOverlay: document.getElementById('menuOverlay'),
+            menuPanel: document.getElementById('menuPanel'),
+            playerName: document.getElementById('playerName'),
+            playerRank: document.getElementById('playerRank'),
+            netWorth: document.getElementById('netWorth')
+        };
+
+        // Utility Functions
+        function formatNumber(num) {
+            if (num >= 1e15) return (num / 1e15).toFixed(2) + 'Q';
+            if (num >= 1e12) return (num / 1e12).toFixed(2) + 'T';
+            if (num >= 1e9) return (num / 1e9).toFixed(2) + 'B';
+            if (num >= 1e6) return (num / 1e6).toFixed(2) + 'M';
+            if (num >= 1e3) return (num / 1e3).toFixed(2) + 'K';
+            return num.toFixed(2);
+        }
+
+        function formatCurrency(amount) {
+            return 'R$ ' + formatNumber(amount);
+        }
+
+        function calculateCost(item) {
+            const automationDiscount = gameState.research.find(r => r.id === 'automation').owned * 0.05;
+            const baseCost = Math.floor(item.cost * Math.pow(item.costMultiplier, item.owned));
+            return Math.floor(baseCost * (1 - automationDiscount));
+        }
+
+        function getRankInfo(netWorth) {
+            if (netWorth >= 1e12) return { rank: 1, name: 'Trilionário', class: 'rank-1' };
+            if (netWorth >= 1e9) return { rank: 2, name: 'Bilionário', class: 'rank-2' };
+            if (netWorth >= 1e6) return { rank: 3, name: 'Milionário', class: 'rank-3' };
+            if (netWorth >= 1e3) return { rank: 4, name: 'Rico', class: 'rank-other' };
+            return { rank: 5, name: 'Iniciante', class: 'rank-other' };
+        }
+
+        // Menu Functions
+        function toggleMenu() {
+            const isActive = elements.menuPanel.classList.contains('active');
+            if (isActive) {
+                closeMenu();
+            } else {
+                openMenu();
+            }
+        }
+
+        function openMenu() {
+            elements.menuOverlay.classList.add('active');
+            elements.menuPanel.classList.add('active');
+            updateMenuInfo();
+        }
+
+        function closeMenu() {
+            elements.menuOverlay.classList.remove('active');
+            elements.menuPanel.classList.remove('active');
+        }
+
+        function updateMenuInfo() {
+            if (currentUser) {
+                elements.playerName.textContent = `Jogador: ${currentUser.uid.substring(0, 8)}`;
+                elements.netWorth.textContent = `Patrimônio: ${formatCurrency(gameState.money)}`;
+                
+                // Update player rank
+                const playerData = playerRanking.find(p => p.id === currentUser.uid);
+                if (playerData) {
+                    elements.playerRank.textContent = `Posição: #${playerData.rank}`;
+                } else {
+                    elements.playerRank.textContent = 'Posição: Não rankeado';
+                }
+            }
+        }
+
+        function changeTheme() {
+            const themes = ['dark', 'light', 'cyberpunk', 'matrix'];
+            const currentIndex = themes.indexOf(gameState.theme);
+            const nextIndex = (currentIndex + 1) % themes.length;
+            gameState.theme = themes[nextIndex];
+            
+            // Remove all theme classes
+            document.body.classList.remove('theme-light', 'theme-cyberpunk', 'theme-matrix');
+            
+            // Add new theme class
+            if (gameState.theme !== 'dark') {
+                document.body.classList.add(`theme-${gameState.theme}`);
+            }
+            
+            saveGameToFirebase();
+        }
+
+        // Animation Functions
+        function createFloatingMoney(amount, x, y, isExpense = false) {
+            const floating = document.createElement('div');
+            floating.className = isExpense ? 'floating-expense' : 'floating-money';
+            floating.textContent = (isExpense ? '-' : '+') + formatCurrency(amount);
+            floating.style.left = x + 'px';
+            floating.style.top = y + 'px';
+            elements.floatingMoney.appendChild(floating);
+
+            gsap.to(floating, {
+                y: isExpense ? 50 : -100,
+                x: isExpense ? -50 : 0,
+                opacity: 0,
+                duration: 2,
+                ease: "power2.out",
+                onComplete: () => floating.remove()
+            });
+        }
+
+        function createParticles(x, y, count = 10) {
+            for (let i = 0; i < count; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = x + 'px';
+                particle.style.top = y + 'px';
+                document.getElementById('particles').appendChild(particle);
+
+                gsap.to(particle, {
+                    x: (Math.random() - 0.5) * 200,
+                    y: (Math.random() - 0.5) * 200,
+                    opacity: 0,
+                    duration: 1,
+                    ease: "power2.out",
+                    onComplete: () => particle.remove()
+                });
+            }
+        }
+
+        function showAchievement(achievement) {
+            const popup = document.createElement('div');
+            popup.className = 'achievement-popup';
+            popup.innerHTML = `
+                <h3 class="font-bold text-lg">🏆 Conquista Desbloqueada!</h3>
+                <p class="font-semibold">${achievement.name}</p>
+                <p class="text-sm opacity-80">${achievement.desc}</p>
+                <p class="text-sm font-bold">Recompensa: ${formatCurrency(achievement.reward)}</p>
+            `;
+            elements.achievementContainer.appendChild(popup);
+
+            gsap.fromTo(popup, 
+                { x: 400 }, 
+                { x: 0, duration: 0.5, ease: "back.out(1.7)" }
+            );
+
+            setTimeout(() => {
+                gsap.to(popup, {
+                    x: 400,
+                    duration: 0.5,
+                    ease: "back.in(1.7)",
+                    onComplete: () => popup.remove()
+                });
+            }, 4000);
+        }
+
+        // Crypto Functions
+        function updateCryptoPrices() {
+            gameState.cryptos.forEach(crypto => {
+                const change = (Math.random() - 0.5) * crypto.volatility;
+                crypto.price *= (1 + change);
+                crypto.change = change * 100;
+                
+                // Prevent prices from going below 0.01
+                if (crypto.price < 0.01) crypto.price = 0.01;
+            });
+        }
+
+        function buyCrypto(cryptoId, amount) {
+            const crypto = gameState.cryptos.find(c => c.id === cryptoId);
+            const totalCost = crypto.price * amount;
+            
+            if (gameState.money >= totalCost) {
+                gameState.money -= totalCost;
+                crypto.owned += amount;
+                gameState.statistics.cryptoTrades++;
+                checkAchievements();
+                updateDisplay();
+                renderCurrentTab();
+            }
+        }
+
+        function sellCrypto(cryptoId, amount) {
+            const crypto = gameState.cryptos.find(c => c.id === cryptoId);
+            if (crypto.owned >= amount) {
+                const totalValue = crypto.price * amount;
+                gameState.money += totalValue;
+                crypto.owned -= amount;
+                gameState.statistics.cryptoTrades++;
+                updateDisplay();
+                renderCurrentTab();
+            }
+        }
+
+        // Game Logic
+        function handleClick(event) {
+            const clickValue = gameState.clickPower * gameState.multiplier;
+            const afterTax = clickValue * (1 - gameState.taxRate);
+            const taxes = clickValue - afterTax;
+            
+            gameState.money += afterTax;
+            gameState.totalEarned += afterTax;
+            gameState.statistics.totalClicks++;
+            gameState.statistics.taxesPaid += taxes;
+
+            const rect = elements.clickButton.getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top + rect.height / 2;
+
+            createFloatingMoney(afterTax, x, y);
+            if (taxes > 0.01) {
+                createFloatingMoney(taxes, x + 50, y + 20, true);
+            }
+            createParticles(x, y, 5);
+
+            // Button animation
+            gsap.to(elements.clickButton, {
+                scale: 0.95,
+                duration: 0.1,
+                yoyo: true,
+                repeat: 1
+            });
+
+            checkAchievements();
+            updateDisplay();
+        }
+
+        function buyUpgrade(type, id) {
+            let item;
+            if (type === 'click') item = gameState.clickUpgrades.find(u => u.id === id);
+            else if (type === 'business') item = gameState.businesses.find(b => b.id === id);
+            else if (type === 'investment') item = gameState.investments.find(i => i.id === id);
+            else if (type === 'research') item = gameState.research.find(r => r.id === id);
+
+            if (!item) return;
+
+            const cost = calculateCost(item);
+            if (gameState.money >= cost) {
+                gameState.money -= cost;
+                item.owned++;
+
+                if (type === 'click') {
+                    gameState.clickPower += item.power;
+                } else if (type === 'business') {
+                    gameState.passiveIncome += item.income;
+                    gameState.expenses += item.expenses;
+                    gameState.statistics.businessesOwned++;
+                } else if (type === 'investment') {
+                    gameState.multiplier += item.multiplier;
+                } else if (type === 'research') {
+                    applyResearchEffect(item);
+                }
+
+                checkAchievements();
+                updateDisplay();
+                renderCurrentTab();
+                saveGameToFirebase();
+            }
+        }
+
+        function applyResearchEffect(research) {
+            switch (research.id) {
+                case 'efficiency':
+                    // Applied in expense calculation
+                    recalculateExpenses();
+                    break;
+                case 'automation':
+                    // Applied in cost calculation
+                    break;
+                case 'marketing':
+                    gameState.clickPower *= 1.25;
+                    break;
+                case 'innovation':
+                    gameState.multiplier *= 1.2;
+                    break;
+            }
+        }
+
+        function recalculatePassiveIncome() {
+            gameState.passiveIncome = 0;
+            gameState.businesses.forEach(business => {
+                gameState.passiveIncome += business.income * business.owned;
+            });
+        }
+
+        function recalculateExpenses() {
+            gameState.expenses = 0;
+            const efficiencyDiscount = gameState.research.find(r => r.id === 'efficiency').owned * 0.1;
+            gameState.businesses.forEach(business => {
+                const baseExpense = business.expenses * business.owned;
+                gameState.expenses += baseExpense * (1 - efficiencyDiscount);
+            });
+        }
+
+        function checkAchievements() {
+            gameState.achievements.forEach(achievement => {
+                if (!achievement.unlocked) {
+                    let shouldUnlock = false;
+
+                    switch (achievement.id) {
+                        case 'first_click':
+                            shouldUnlock = gameState.statistics.totalClicks >= 1;
+                            break;
+                        case 'first_business':
+                            shouldUnlock = gameState.statistics.businessesOwned >= 1;
+                            break;
+                        case 'millionaire':
+                            shouldUnlock = gameState.money >= 1000000;
+                            break;
+                        case 'business_empire':
+                            shouldUnlock = gameState.statistics.businessesOwned >= 50;
+                            break;
+                        case 'click_master':
+                            shouldUnlock = gameState.statistics.totalClicks >= 10000;
+                            break;
+                        case 'billionaire':
+                            shouldUnlock = gameState.money >= 1000000000;
+                            break;
+                        case 'crypto_trader':
+                            shouldUnlock = gameState.cryptos.every(c => c.owned >= 1);
+                            break;
+                        case 'research_master':
+                            shouldUnlock = gameState.research.every(r => r.owned >= r.maxLevel);
+                            break;
+                    }
+
+                    if (shouldUnlock) {
+                        achievement.unlocked = true;
+                        gameState.money += achievement.reward;
+                        showAchievement(achievement);
+                    }
+                }
+            });
+        }
+
+        function prestige() {
+            if (gameState.totalEarned >= 10000000) { // Increased requirement
+                const prestigeGain = Math.floor(Math.sqrt(gameState.totalEarned / 10000000));
+                gameState.prestigePoints += prestigeGain;
+                gameState.prestigeLevel++;
+                gameState.statistics.prestigeCount++;
+
+                // Reset game state but keep prestige
+                const keepers = {
+                    prestigePoints: gameState.prestigePoints,
+                    prestigeLevel: gameState.prestigeLevel,
+                    statistics: {...gameState.statistics},
+                    theme: gameState.theme,
+                    country: gameState.country,
+                    taxRate: gameState.taxRate
+                };
+                
+                resetGameState();
+                Object.assign(gameState, keepers);
+                gameState.multiplier = 1 + (gameState.prestigePoints * 0.05); // Reduced bonus
+
+                showAchievement({
+                    name: 'Prestígio!',
+                    desc: `Você ganhou ${prestigeGain} pontos de prestígio!`,
+                    reward: 0
+                });
+
+                updateDisplay();
+                renderCurrentTab();
+                saveGameToFirebase();
+            }
+        }
+
+        function resetGameState() {
+            gameState.money = 0;
+            gameState.totalEarned = 0;
+            gameState.clickPower = 1;
+            gameState.passiveIncome = 0;
+            gameState.expenses = 0;
+            gameState.multiplier = 1;
+            
+            gameState.clickUpgrades.forEach(u => u.owned = 0);
+            gameState.businesses.forEach(b => b.owned = 0);
+            gameState.investments.forEach(i => i.owned = 0);
+            gameState.research.forEach(r => r.owned = 0);
+            gameState.cryptos.forEach(c => c.owned = 0);
+        }
+
+        // Firebase Functions
+        async function saveGameToFirebase() {
+            if (!currentUser) return;
+            
+            try {
+                const playerData = {
+                    ...gameState,
+                    lastSave: Date.now(),
+                    playerId: currentUser.uid,
+                    netWorth: gameState.money + gameState.cryptos.reduce((total, crypto) => 
+                        total + (crypto.owned * crypto.price), 0)
+                };
+
+                await setDoc(doc(db, 'players', currentUser.uid), playerData);
+                console.log('Game saved to Firebase successfully!');
+            } catch (error) {
+                console.error('Error saving to Firebase:', error);
+            }
+        }
+
+        async function loadGameFromFirebase() {
+            if (!currentUser) return;
+            
+            try {
+                const docRef = doc(db, 'players', currentUser.uid);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    
+                    // Calculate offline earnings
+                    const offlineTime = (Date.now() - data.lastSave) / 1000;
+                    const maxOfflineTime = 3600; // 1 hour max
+                    const effectiveOfflineTime = Math.min(offlineTime, maxOfflineTime);
+                    
+                    const offlineIncome = (data.passiveIncome * data.multiplier) * effectiveOfflineTime;
+                    const offlineExpenses = data.expenses * effectiveOfflineTime;
+                    const netOfflineEarnings = Math.max(0, offlineIncome - offlineExpenses);
+                    
+                    // Merge data
+                    Object.assign(gameState, data);
+                    gameState.money += netOfflineEarnings;
+                    gameState.totalEarned += netOfflineEarnings;
+                    
+                    if (netOfflineEarnings > 0) {
+                        showAchievement({
+                            name: 'Ganhos Offline!',
+                            desc: `Você ganhou ${formatCurrency(netOfflineEarnings)} (líquido)`,
+                            reward: 0
+                        });
+                    }
+                    
+                    // Apply theme
+                    if (gameState.theme && gameState.theme !== 'dark') {
+                        document.body.classList.add(`theme-${gameState.theme}`);
+                    }
+                    
+                    console.log('Game loaded from Firebase successfully!');
+                }
+            } catch (error) {
+                console.error('Error loading from Firebase:', error);
+            }
+        }
+
+        async function loadRanking() {
+            try {
+                const q = query(
+                    collection(db, 'players'),
+                    orderBy('netWorth', 'desc'),
+                    limit(100)
+                );
+                
+                const querySnapshot = await getDocs(q);
+                playerRanking = [];
+                
+                querySnapshot.forEach((doc, index) => {
+                    const data = doc.data();
+                    playerRanking.push({
+                        id: doc.id,
+                        rank: index + 1,
+                        netWorth: data.netWorth || 0,
+                        money: data.money || 0,
+                        prestigeLevel: data.prestigeLevel || 0,
+                        totalEarned: data.totalEarned || 0,
+                        playerId: data.playerId || doc.id.substring(0, 8)
+                    });
+                });
+                
+                console.log('Ranking loaded successfully!');
+            } catch (error) {
+                console.error('Error loading ranking:', error);
+            }
+        }
+
+        // Rendering Functions
+        function renderClickUpgrades() {
+            elements.clickUpgrades.innerHTML = '';
+            gameState.clickUpgrades.forEach(upgrade => {
+                const cost = calculateCost(upgrade);
+                const canAfford = gameState.money >= cost;
+
+                const upgradeEl = document.createElement('div');
+                upgradeEl.className = `upgrade-card glass-card p-3 cursor-pointer ${canAfford ? 'can-afford hover:bg-purple-900/20' : ''}`;
+                upgradeEl.setAttribute('data-id', upgrade.id);
+                upgradeEl.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h4 class="font-bold text-sm">${upgrade.name}</h4>
+                            <p class="text-xs text-gray-400">+${formatCurrency(upgrade.power)} por clique</p>
+                            <p class="text-xs text-green-400">Possui: ${upgrade.owned}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-bold text-sm">${formatCurrency(cost)}</p>
+                        </div>
+                    </div>
+                `;
+
+                if (canAfford) {
+                    upgradeEl.addEventListener('click', () => buyUpgrade('click', upgrade.id));
+                }
+
+                elements.clickUpgrades.appendChild(upgradeEl);
+            });
+        }
+
+        function renderBusinesses() {
+            return `
+                <div class="space-y-4">
+                    <h2 class="text-2xl font-bold orbitron mb-4">Negócios</h2>
+                    <div class="grid gap-4">
+                        ${gameState.businesses.map(business => {
+                            const cost = calculateCost(business);
+                            const canAfford = gameState.money >= cost;
+                            const netIncome = business.income - business.expenses;
+                            return `
+                                <div class="upgrade-card glass-card p-4 ${canAfford ? 'can-afford cursor-pointer hover:bg-purple-900/20' : ''}" 
+                                     data-id="${business.id}" ${canAfford ? `onclick="buyUpgrade('business', '${business.id}')"` : ''}>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center space-x-3">
+                                            <span class="text-3xl">${business.icon}</span>
+                                            <div>
+                                                <h3 class="font-bold text-lg">${business.name}</h3>
+                                                <p class="text-sm text-green-400">Renda: ${formatCurrency(business.income)}/s</p>
+                                                <p class="text-sm text-red-400">Despesas: ${formatCurrency(business.expenses)}/s</p>
+                                                <p class="text-sm text-cyan-400">Lucro: ${formatCurrency(netIncome)}/s</p>
+                                                <p class="text-sm text-gray-400">Possui: ${business.owned}</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="font-bold text-xl">${formatCurrency(cost)}</p>
+                                            ${business.owned > 0 ? `<p class="text-sm text-cyan-400">Total: ${formatCurrency(netIncome * business.owned)}/s</p>` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderInvestments() {
+            return `
+                <div class="space-y-4">
+                    <h2 class="text-2xl font-bold orbitron mb-4">Investimentos</h2>
+                    <p class="text-gray-400 mb-4">Investimentos aumentam seu multiplicador global de renda!</p>
+                    <div class="grid gap-4">
+                        ${gameState.investments.map(investment => {
+                            const cost = calculateCost(investment);
+                            const canAfford = gameState.money >= cost;
+                            return `
+                                <div class="upgrade-card glass-card p-4 ${canAfford ? 'can-afford cursor-pointer hover:bg-purple-900/20' : ''}" 
+                                     data-id="${investment.id}" ${canAfford ? `onclick="buyUpgrade('investment', '${investment.id}')"` : ''}>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center space-x-3">
+                                            <span class="text-3xl">${investment.icon}</span>
+                                            <div>
+                                                <h3 class="font-bold text-lg">${investment.name}</h3>
+                                                <p class="text-sm text-gray-400">Multiplicador: +${investment.multiplier.toFixed(2)}x</p>
+                                                <p class="text-sm text-green-400">Possui: ${investment.owned}</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="font-bold text-xl">${formatCurrency(cost)}</p>
+                                            ${investment.owned > 0 ? `<p class="text-sm text-cyan-400">Bônus: +${(investment.multiplier * investment.owned).toFixed(2)}x</p>` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderCrypto() {
+            return `
+                <div class="space-y-4">
+                    <h2 class="text-2xl font-bold orbitron mb-4">Criptomoedas</h2>
+                    <p class="text-gray-400 mb-4">Mercado volátil! Preços atualizam em tempo real.</p>
+                    <div class="grid gap-4">
+                        ${gameState.cryptos.map(crypto => {
+                            const changeClass = crypto.change >= 0 ? 'positive' : 'negative';
+                            const changeIcon = crypto.change >= 0 ? '📈' : '📉';
+                            return `
+                                <div class="glass-card p-4">
+                                    <div class="flex justify-between items-center mb-4">
+                                        <div>
+                                            <h3 class="font-bold text-lg">${crypto.name} (${crypto.symbol})</h3>
+                                            <p class="text-xl font-bold">${formatCurrency(crypto.price)}</p>
+                                            <p class="text-sm crypto-change ${changeClass}">
+                                                ${changeIcon} ${crypto.change >= 0 ? '+' : ''}${crypto.change.toFixed(2)}%
+                                            </p>
+                                            <p class="text-sm text-gray-400">Possui: ${crypto.owned.toFixed(4)} ${crypto.symbol}</p>
+                                            <p class="text-sm text-cyan-400">Valor: ${formatCurrency(crypto.owned * crypto.price)}</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <button onclick="buyCrypto('${crypto.id}', 0.1)" 
+                                                class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition-all">
+                                            Comprar 0.1
+                                        </button>
+                                        <button onclick="buyCrypto('${crypto.id}', 1)" 
+                                                class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition-all">
+                                            Comprar 1
+                                        </button>
+                                        <button onclick="sellCrypto('${crypto.id}', Math.min(0.1, ${crypto.owned}))" 
+                                                class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition-all"
+                                                ${crypto.owned < 0.1 ? 'disabled' : ''}>
+                                            Vender 0.1
+                                        </button>
+                                        <button onclick="sellCrypto('${crypto.id}', ${crypto.owned})" 
+                                                class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition-all"
+                                                ${crypto.owned === 0 ? 'disabled' : ''}>
+                                            Vender Tudo
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderRanking() {
+            return `
+                <div class="space-y-4">
+                    <h2 class="text-2xl font-bold orbitron mb-4">🏆 Ranking Global</h2>
+                    <p class="text-gray-400 mb-4">Top 100 jogadores mais ricos do mundo!</p>
+                    <div class="grid gap-3">
+                        ${playerRanking.slice(0, 20).map(player => {
+                            const rankInfo = getRankInfo(player.netWorth);
+                            const isCurrentPlayer = currentUser && player.id === currentUser.uid;
+                            return `
+                                <div class="glass-card p-4 ${isCurrentPlayer ? 'border-2 border-gold' : ''}">
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center space-x-3">
+                                            <span class="text-2xl font-bold ${player.rank <= 3 ? 'text-yellow-400' : 'text-gray-400'}">
+                                                #${player.rank}
+                                            </span>
+                                            <div>
+                                                <p class="font-bold">${isCurrentPlayer ? 'VOCÊ' : `Jogador ${player.playerId}`}</p>
+                                                <span class="rank-badge ${rankInfo.class}">${rankInfo.name}</span>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="font-bold text-lg">${formatCurrency(player.netWorth)}</p>
+                                            <p class="text-sm text-gray-400">Prestígio: ${player.prestigeLevel}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                    <button onclick="loadRanking()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg transition-all">
+                        🔄 Atualizar Ranking
+                    </button>
+                </div>
+            `;
+        }
+
+        function renderResearch() {
+            return `
+                <div class="space-y-4">
+                    <h2 class="text-2xl font-bold orbitron mb-4">Centro de Pesquisa</h2>
+                    <p class="text-gray-400 mb-4">Pesquisas fornecem bônus permanentes poderosos!</p>
+                    <div class="grid gap-4">
+                        ${gameState.research.map(research => {
+                            const cost = calculateCost(research);
+                            const canAfford = gameState.money >= cost && research.owned < research.maxLevel;
+                            const isMaxed = research.owned >= research.maxLevel;
+                            return `
+                                <div class="upgrade-card glass-card p-4 ${canAfford ? 'can-afford cursor-pointer hover:bg-purple-900/20' : ''}" 
+                                     data-id="${research.id}" ${canAfford ? `onclick="buyUpgrade('research', '${research.id}')"` : ''}>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center space-x-3">
+                                            <span class="text-3xl">${research.icon}</span>
+                                            <div>
+                                                <h3 class="font-bold text-lg">${research.name}</h3>
+                                                <p class="text-sm text-gray-400">${research.effect}</p>
+                                                <p class="text-sm text-green-400">Nível: ${research.owned}/${research.maxLevel}</p>
+                                                <div class="w-32 bg-gray-700 rounded-full h-2 mt-1">
+                                                    <div class="progress-bar h-2 rounded-full" style="width: ${(research.owned / research.maxLevel) * 100}%"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            ${isMaxed ? 
+                                                '<p class="font-bold text-xl text-green-400">MAXED</p>' :
+                                                `<p class="font-bold text-xl">${formatCurrency(cost)}</p>`
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderAchievements() {
+            const unlockedCount = gameState.achievements.filter(a => a.unlocked).length;
+            return `
+                <div class="space-y-4">
+                    <h2 class="text-2xl font-bold orbitron mb-4">Conquistas</h2>
+                    <p class="text-gray-400 mb-4">Progresso: ${unlockedCount}/${gameState.achievements.length} desbloqueadas</p>
+                    <div class="grid gap-4">
+                        ${gameState.achievements.map(achievement => {
+                            return `
+                                <div class="glass-card p-4 ${achievement.unlocked ? 'border-green-500' : 'border-gray-600'}">
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center space-x-3">
+                                            <span class="text-2xl">${achievement.unlocked ? '🏆' : '🔒'}</span>
+                                            <div>
+                                                <h3 class="font-bold text-lg ${achievement.unlocked ? 'text-green-400' : 'text-gray-400'}">${achievement.name}</h3>
+                                                <p class="text-sm text-gray-400">${achievement.desc}</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="font-bold text-lg text-yellow-400">${formatCurrency(achievement.reward)}</p>
+                                            <p class="text-sm ${achievement.unlocked ? 'text-green-400' : 'text-gray-500'}">${achievement.unlocked ? 'DESBLOQUEADA' : 'BLOQUEADA'}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderPrestige() {
+            const canPrestige = gameState.totalEarned >= 10000000;
+            const prestigeGain = canPrestige ? Math.floor(Math.sqrt(gameState.totalEarned / 10000000)) : 0;
+            
+            return `
+                <div class="space-y-6">
+                    <h2 class="text-2xl font-bold orbitron mb-4">Sistema de Prestígio</h2>
+                    
+                    <div class="glass-card p-6 ${canPrestige ? 'prestige-glow' : ''}">
+                        <h3 class="text-xl font-bold mb-4">Reiniciar para Prestígio</h3>
+                        <p class="text-gray-400 mb-4">O prestígio reinicia seu progresso, mas fornece multiplicadores permanentes!</p>
+                        
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div class="glass-card p-4">
+                                <p class="text-sm text-gray-400">Pontos de Prestígio Atuais</p>
+                                <p class="text-2xl font-bold text-purple-400">${gameState.prestigePoints}</p>
+                            </div>
+                            <div class="glass-card p-4">
+                                <p class="text-sm text-gray-400">Multiplicador Atual</p>
+                                <p class="text-2xl font-bold text-cyan-400">${gameState.multiplier.toFixed(2)}x</p>
+                            </div>
+                            <div class="glass-card p-4">
+                                <p class="text-sm text-gray-400">Total Ganho</p>
+                                <p class="text-2xl font-bold text-green-400">${formatCurrency(gameState.totalEarned)}</p>
+                            </div>
+                            <div class="glass-card p-4">
+                                <p class="text-sm text-gray-400">Prestígios Realizados</p>
+                                <p class="text-2xl font-bold text-yellow-400">${gameState.statistics.prestigeCount}</p>
+                            </div>
+                        </div>
+
+                        ${canPrestige ? `
+                            <div class="glass-card p-4 mb-4 border-green-500">
+                                <p class="text-lg font-bold text-green-400">Você pode fazer prestígio!</p>
+                                <p class="text-sm text-gray-400">Você ganhará: <span class="text-purple-400 font-bold">${prestigeGain} pontos de prestígio</span></p>
+                                <p class="text-sm text-gray-400">Novo multiplicador: <span class="text-cyan-400 font-bold">${(1 + ((gameState.prestigePoints + prestigeGain) * 0.05)).toFixed(2)}x</span></p>
+                            </div>
+                            <button onclick="prestige()" class="w-full bg-gradient-to-r from-purple-600 to-cyan-500 text-white font-bold py-4 px-6 rounded-lg hover:scale-105 transition-transform neon-glow">
+                                🚀 FAZER PRESTÍGIO 🚀
+                            </button>
+                        ` : `
+                            <div class="glass-card p-4 mb-4 border-gray-600">
+                                <p class="text-lg font-bold text-gray-400">Prestígio Indisponível</p>
+                                <p class="text-sm text-gray-500">Você precisa ter ganhado pelo menos R$ 10.000.000 no total</p>
+                                <p class="text-sm text-gray-500">Faltam: ${formatCurrency(Math.max(0, 10000000 - gameState.totalEarned))}</p>
+                            </div>
+                            <button disabled class="w-full bg-gray-600 text-gray-400 font-bold py-4 px-6 rounded-lg cursor-not-allowed">
+                                Prestígio Bloqueado
+                            </button>
+                        `}
+                    </div>
+
+                    <div class="glass-card p-6">
+                        <h3 class="text-xl font-bold mb-4">Estatísticas Detalhadas</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-sm text-gray-400">Total de Cliques</p>
+                                <p class="text-lg font-bold">${gameState.statistics.totalClicks.toLocaleString()}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-400">Negócios Possuídos</p>
+                                <p class="text-lg font-bold">${gameState.statistics.businessesOwned.toLocaleString()}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-400">Tempo de Jogo</p>
+                                <p class="text-lg font-bold">${Math.floor(gameState.statistics.timePlayedSeconds / 60)} min</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-400">Prestígios Totais</p>
+                                <p class="text-lg font-bold">${gameState.statistics.prestigeCount}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-400">Impostos Pagos</p>
+                                <p class="text-lg font-bold">${formatCurrency(gameState.statistics.taxesPaid)}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-400">Trades de Crypto</p>
+                                <p class="text-lg font-bold">${gameState.statistics.cryptoTrades}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderCurrentTab() {
+            let content = '';
+            switch (gameState.currentTab) {
+                case 'businesses':
+                    content = renderBusinesses();
+                    break;
+                case 'investments':
+                    content = renderInvestments();
+                    break;
+                case 'crypto':
+                    content = renderCrypto();
+                    break;
+                case 'research':
+                    content = renderResearch();
+                    break;
+                case 'achievements':
+                    content = renderAchievements();
+                    break;
+                case 'ranking':
+                    content = renderRanking();
+                    break;
+                case 'prestige':
+                    content = renderPrestige();
+                    break;
+            }
+            elements.tabContent.innerHTML = content;
+        }
+
+        function updateDisplay() {
+            const netWorth = gameState.money + gameState.cryptos.reduce((total, crypto) => 
+                total + (crypto.owned * crypto.price), 0);
+            const netIncome = (gameState.passiveIncome * gameState.multiplier) - gameState.expenses;
+            
+            elements.moneyDisplay.textContent = formatCurrency(gameState.money);
+            elements.incomeDisplay.textContent = formatCurrency(gameState.passiveIncome * gameState.multiplier);
+            elements.expensesDisplay.textContent = formatCurrency(gameState.expenses);
+            elements.multiplierDisplay.textContent = 'x' + gameState.multiplier.toFixed(2);
+            elements.prestigeDisplay.textContent = gameState.prestigePoints.toString();
+            elements.clickPowerValue.textContent = formatNumber(gameState.clickPower * gameState.multiplier);
+            elements.taxRate.textContent = (gameState.taxRate * 100).toFixed(0) + '%';
+            
+            // Update rank badge
+            const rankInfo = getRankInfo(netWorth);
+            elements.rankBadge.innerHTML = `<span class="rank-badge ${rankInfo.class}">${rankInfo.name}</span>`;
+            
+            // Update expense indicator
+            if (gameState.expenses > 0) {
+                elements.expenseIndicator.style.display = 'block';
+                elements.nextExpense.textContent = `Despesas: ${formatCurrency(gameState.expenses)}/s`;
+            } else {
+                elements.expenseIndicator.style.display = 'none';
+            }
+            
+            renderClickUpgrades();
+        }
+
+        // Game Loop
+        function gameLoop() {
+            const netIncome = (gameState.passiveIncome * gameState.multiplier) - gameState.expenses;
+            const afterTax = netIncome * (1 - gameState.taxRate);
+            const taxes = netIncome - afterTax;
+            
+            if (netIncome > 0) {
+                gameState.money += afterTax / 10; // Divided by 10 because loop runs 10 times per second
+                gameState.totalEarned += afterTax / 10;
+                gameState.statistics.taxesPaid += taxes / 10;
+            } else if (netIncome < 0) {
+                // Negative income (more expenses than income)
+                gameState.money += netIncome / 10;
+                if (gameState.money < 0) gameState.money = 0; // Can't go negative
+            }
+            
+            // Update time played
+            gameState.statistics.timePlayedSeconds += 0.1;
+            
+            checkAchievements();
+            updateDisplay();
+        }
+
+        // Crypto update loop
+        function cryptoLoop() {
+            updateCryptoPrices();
+            if (gameState.currentTab === 'crypto') {
+                renderCurrentTab();
+            }
+        }
+
+        // Auto-update buttons loop
+        function buttonUpdateLoop() {
+            renderClickUpgrades();
+            if (gameState.currentTab === 'businesses' || 
+                gameState.currentTab === 'investments' || 
+                gameState.currentTab === 'research') {
+                renderCurrentTab();
+            }
+        }
+
+        // Event Listeners
+        elements.clickButton.addEventListener('click', handleClick);
+        elements.menuButton.addEventListener('click', toggleMenu);
+        elements.menuOverlay.addEventListener('click', closeMenu);
+
+        // Theme button
+        document.getElementById('themeButton').addEventListener('click', changeTheme);
+
+        // Tab switching
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+                button.classList.add('active');
+                gameState.currentTab = button.dataset.tab;
+                renderCurrentTab();
+            });
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                handleClick();
+            }
+            if (e.code === 'Escape') {
+                closeMenu();
+            }
+        });
+
+        // Make functions global for onclick handlers
+        window.buyUpgrade = buyUpgrade;
+        window.buyCrypto = buyCrypto;
+        window.sellCrypto = sellCrypto;
+        window.prestige = prestige;
+        window.loadRanking = loadRanking;
+
+        // Firebase Authentication
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                console.log('User authenticated:', user.uid);
+                await loadGameFromFirebase();
+                await loadRanking();
+                updateDisplay();
+                renderCurrentTab();
+                updateMenuInfo();
+                
+                // Start auto-save
+                setInterval(() => {
+                    saveGameToFirebase();
+                }, 10000); // Save every 10 seconds
+            } else {
+                // Sign in anonymously
+                try {
+                    await signInAnonymously(auth);
+                } catch (error) {
+                    console.error('Error signing in anonymously:', error);
+                }
+            }
+        });
+
+        // Initialize game
+        function initGame() {
+            updateDisplay();
+            renderCurrentTab();
+            
+            // Start game loops
+            setInterval(gameLoop, 100); // 10 times per second
+            setInterval(cryptoLoop, 2000); // Update crypto every 2 seconds
+            setInterval(buttonUpdateLoop, 1000); // Update buttons every second
+            setInterval(loadRanking, 30000); // Update ranking every 30 seconds
+            
+            // Initial animations - Removidas para evitar conflitos
+            console.log('Super Bilionário Tycoon Online initialized!');
+        }
+
+        // Start the game
+        initGame();
+    </script>
+</body>
+</html>
