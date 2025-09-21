@@ -1,0 +1,56 @@
+tank-warfare/
+├── index.html
+├── css/
+│   ├── main.css
+│   ├── game.css
+│   ├── ui.css
+│   └── animations.css
+├── js/
+│   ├── config/
+│   │   ├── firebase.config.js
+│   │   ├── mercadopago.config.js
+│   │   └── game.config.js
+│   ├── core/
+│   │   ├── auth.js
+│   │   ├── database.js
+│   │   └── storage.js
+│   ├── systems/
+│   │   ├── player.js
+│   │   ├── matchmaking.js
+│   │   ├── ranking.js
+│   │   ├── shop.js
+│   │   ├── payment.js
+│   │   ├── i18n.js
+│   │   └── analytics.js
+│   ├── game/
+│   │   ├── tank.js
+│   │   ├── projectile.js
+│   │   ├── powerup.js
+│   │   ├── map.js
+│   │   ├── controls.js
+│   │   ├── renderer.js
+│   │   ├── physics.js
+│   │   ├── network.js
+│   │   └── game.js
+│   ├── ui/
+│   │   ├── screens.js
+│   │   ├── menu.js
+│   │   ├── hud.js
+│   │   └── notifications.js
+│   └── main.js
+└── loja/
+    └── products/
+        ├── tanks/
+        │   ├── basic.json
+        │   ├── light.json
+        │   ├── medium.json
+        │   └── heavy.json
+        ├── skins/
+        │   ├── default.json
+        │   ├── desert.json
+        │   ├── jungle.json
+        │   └── golden.json
+        └── powerups/
+            ├── shield.json
+            ├── ammo.json
+            └── fuel.json

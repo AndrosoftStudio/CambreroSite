@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Avião 3D Infinito</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+    <div id="hud">
+        <div>KM: <span id="distance">0</span></div>
+        <div>Obstáculos: <span id="obstaclesAvoided">0</span></div>
+        <div>Tempo: <span id="timeSurvived">0</span>s</div>
+        <div>Recorde KM: <span id="best">0</span></div>
+        <div>Recorde Vel.: <span id="bestSpeed">0</span> km/h</div>
+    </div>
+    
+    <div id="speedDisplay">0 km/h</div>
+    
+    <button id="pauseBtn"><span class="material-icons">pause</span></button>
+    <button id="boostBtn" class="control-btn"><span class="material-icons">arrow_upward</span></button>
+    <button id="brakeBtn" class="control-btn"><span class="material-icons">speed</span></button>
+    
+    <div id="gameOverScreen" class="overlay">
+        <h1>Você perdeu!</h1>
+        <div class="stats">
+            <p>Distância: <span id="finalDistance">0</span> KM</p>
+            <p>Velocidade Máx.: <span id="maxSpeed">0</span> km/h</p>
+            <p>Tempo: <span id="finalTime">0</span>s</p>
+            <p>Obstáculos Evitados: <span id="finalObstacles">0</span></p>
+        </div>
+    </div>
+    
+    <div id="pauseScreen" class="overlay">
+        <h1>Jogo Pausado</h1>
+        <button onclick="resetGame()">Novo Jogo</button>
+        <button onclick="window.location.href='../jogos.html'">Voltar</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

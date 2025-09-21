@@ -1,0 +1,2639 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Damas Multiplayer Pro - Cambrero Games</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --success: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --warning: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --danger: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            --dark: #1a1a2e;
+            --darker: #16213e;
+            --light: #eee;
+            --white: #ffffff;
+            --text-primary: #2c3e50;
+            --text-secondary: #7f8c8d;
+            --shadow: 0 10px 30px rgba(0,0,0,0.2);
+            --shadow-lg: 0 20px 60px rgba(0,0,0,0.3);
+            --border-radius: 15px;
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body.dark-mode {
+            --primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --text-primary: #ecf0f1;
+            --text-secondary: #bdc3c7;
+            --light: #2c3e50;
+            --white: #34495e;
+            --dark: #ecf0f1;
+            --darker: #bdc3c7;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--light);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            transition: var(--transition);
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        body.dark-mode .navbar {
+            background: rgba(26, 26, 46, 0.95);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: var(--primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .nav-btn {
+            background: var(--primary);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .nav-btn.secondary {
+            background: var(--secondary);
+        }
+
+        .nav-btn.accent {
+            background: var(--accent);
+        }
+
+        /* Online Status */
+        .online-status {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(67, 233, 123, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #43e97b;
+            border: 1px solid rgba(67, 233, 123, 0.3);
+        }
+
+        .online-count {
+            font-weight: 600;
+        }
+
+        .ping-indicator {
+            display: flex;
+            gap: 2px;
+            align-items: end;
+        }
+
+        .ping-bar {
+            width: 4px;
+            background: #333;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .ping-bar:nth-child(1) { height: 8px; }
+        .ping-bar:nth-child(2) { height: 12px; }
+        .ping-bar:nth-child(3) { height: 16px; }
+
+        .ping-good .ping-bar { background: #43e97b; }
+        .ping-medium .ping-bar:nth-child(1),
+        .ping-medium .ping-bar:nth-child(2) { background: #fee140; }
+        .ping-bad .ping-bar:nth-child(1) { background: #ff6b6b; }
+
+        /* Auth Container */
+        #auth-container {
+            display: flex;
+            align-items: center;
+        }
+
+        /* Google Login Button */
+        .google-login-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #4285f4;
+            color: white;
+            border: none;
+            padding: 0.7rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .google-login-btn:hover {
+            background: #3367d6;
+            transform: translateY(-2px);
+        }
+
+        /* Profile Menu */
+        .profile-menu {
+            position: relative;
+        }
+
+        .profile-btn {
+            border: 2px solid var(--secondary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            overflow: hidden;
+            background: none;
+            padding: 0;
+        }
+
+        .profile-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-dropdown {
+            display: none;
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: var(--white);
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            width: 220px;
+            padding: 1rem;
+            z-index: 1001;
+        }
+
+        .profile-dropdown.active {
+            display: block;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: background-color 0.2s ease;
+            border-radius: 8px;
+        }
+
+        .dropdown-item:hover {
+            background: var(--light);
+        }
+
+        /* Main Menu */
+        .main-menu {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .menu-title {
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 3rem;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .menu-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .menu-card i {
+            font-size: 3rem;
+            background: var(--primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .menu-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .menu-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            transform: rotate(90deg);
+        }
+
+        /* Room Creation Modal */
+        .room-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .option-label {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .option-control {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #ccc;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .toggle-switch.active {
+            background: var(--primary);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .toggle-switch.active::after {
+            left: 33px;
+        }
+
+        .time-selector {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .time-option {
+            padding: 0.5rem 1rem;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 8px;
+            background: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .time-option.active {
+            background: var(--primary);
+            color: white;
+            border-color: transparent;
+        }
+
+        /* Game Search Modal */
+        .search-container {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .search-animation {
+            width: 150px;
+            height: 150px;
+            margin: 2rem auto;
+            position: relative;
+        }
+
+        .search-circle {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 4px solid rgba(102, 126, 234, 0.3);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .search-circle:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .search-circle:nth-child(3) {
+            animation-delay: 1s;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(0.8);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        .search-text {
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            margin-top: 1rem;
+        }
+
+        /* Match Result Modal */
+        .match-result {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 2rem;
+            align-items: center;
+            margin: 2rem 0;
+        }
+
+        .player-result {
+            text-align: center;
+        }
+
+        .player-result.winner {
+            transform: scale(1.1);
+        }
+
+        .player-result img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 1rem;
+            border: 3px solid transparent;
+        }
+
+        .player-result.winner img {
+            border-color: #43e97b;
+            box-shadow: 0 0 20px rgba(67, 233, 123, 0.5);
+        }
+
+        .player-result.loser img {
+            opacity: 0.7;
+        }
+
+        .result-vs {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+        }
+
+        .points-change {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+
+        .points-gain {
+            color: #43e97b;
+        }
+
+        .points-loss {
+            color: #ff6b6b;
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        /* Game UI */
+        .game-container {
+            margin-top: 60px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: calc(100vh - 60px);
+        }
+
+        .game-header {
+            background: var(--white);
+            padding: 1rem 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .opponent-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+        }
+
+        .opponent-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid var(--primary);
+        }
+
+        .opponent-details {
+            flex: 1;
+        }
+
+        .opponent-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .opponent-rank {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .opponent-ping {
+            margin-left: auto;
+        }
+
+        /* Board */
+        .board-container {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+        }
+
+        #board {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 2px;
+            width: min(80vw, 500px);
+            height: min(80vw, 500px);
+            margin: 0 auto;
+            background: #8B4513;
+            padding: 10px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .square {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border-radius: 8px;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .square.light {
+            background: linear-gradient(135deg, #f0d9b5 0%, #e8c7a0 100%);
+        }
+
+        .square.dark {
+            background: linear-gradient(135deg, #b58863 0%, #8B4513 100%);
+        }
+
+        .square:hover {
+            transform: scale(1.02);
+            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .square.possible-move {
+            box-shadow: inset 0 0 20px rgba(67, 233, 123, 0.6);
+            animation: pulse 1s infinite;
+        }
+
+        .square.must-capture {
+            box-shadow: inset 0 0 20px rgba(255, 107, 107, 0.6);
+            animation: pulse 0.5s infinite;
+        }
+
+        .piece {
+            width: 85%;
+            height: 85%;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            transition: var(--transition);
+            position: relative;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .piece:hover {
+            transform: scale(1.1) translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        }
+
+        .piece.red {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            border: 3px solid #c8102e;
+        }
+
+        .piece.black {
+            background: linear-gradient(135deg, #2c2c54 0%, #40407a 100%);
+            border: 3px solid #1a1a2e;
+        }
+
+        .piece.selected {
+            transform: scale(1.15);
+            box-shadow: 0 0 0 4px #ffd700, 0 10px 30px rgba(0,0,0,0.4);
+        }
+
+        .piece.king::before {
+            content: '👑';
+            position: absolute;
+            font-size: 1.2rem;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+        }
+
+        /* Profile Page */
+        .profile-page {
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .profile-header {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid var(--primary);
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-name {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Shop Page */
+        .shop-page {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .shop-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .shop-balance {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .balance-icon {
+            font-size: 2rem;
+            color: #ffd700;
+        }
+
+        .balance-amount {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .shop-tabs {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .shop-tab {
+            padding: 0.75rem 1.5rem;
+            background: var(--white);
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .shop-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .shop-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .shop-item {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .shop-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .item-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .item-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .item-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .buy-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--success);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .buy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 233, 123, 0.4);
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 80px;
+            right: 2rem;
+            background: var(--success);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            z-index: 1002;
+            transform: translateX(400px);
+            transition: var(--transition);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: var(--danger);
+        }
+
+        .notification.warning {
+            background: var(--warning);
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--primary);
+            border: none;
+            padding: 1rem;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            font-size: 1.2rem;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+            z-index: 100;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0.75rem 1rem;
+            }
+            
+            .game-header {
+                padding: 1rem;
+            }
+            
+            #board {
+                width: 90vw;
+                height: 90vw;
+            }
+
+            .menu-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .menu-title {
+                font-size: 2rem;
+            }
+
+            .shop-items {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">🎯 Damas Pro</div>
+        
+        <!-- Online Status -->
+        <div class="online-status">
+            <i class="fas fa-users"></i>
+            <span class="online-count" id="onlineCount">0</span>
+            <span>online</span>
+            <div class="ping-indicator" id="pingIndicator">
+                <div class="ping-bar"></div>
+                <div class="ping-bar"></div>
+                <div class="ping-bar"></div>
+            </div>
+        </div>
+        
+        <!-- Auth Container -->
+        <div id="auth-container">
+            <a href="https://login.cambrero.com" id="googleLoginBtn" class="google-login-btn">
+                <i class="fab fa-google"></i> Entrar
+            </a>
+
+            <div id="profileMenu" class="profile-menu" style="display: none;">
+                <button id="profileBtn" class="profile-btn">
+                    <img src="https://placehold.co/40x40/3498db/ffffff?text=U" alt="Foto de Perfil" id="profilePic">
+                </button>
+                <div id="profileDropdown" class="profile-dropdown">
+                    <div class="dropdown-header">
+                        <strong id="profileName">Nome do Usuário</strong>
+                        <span id="profileEmail">email@exemplo.com</span>
+                    </div>
+                    <a href="#" class="dropdown-item" id="viewProfile">
+                        <i class="fas fa-user"></i> Ver Perfil
+                    </a>
+                    <a href="#" class="dropdown-item" id="viewAccount">
+                        <i class="fas fa-user-circle"></i> Ver Conta
+                    </a>
+                    <a href="#" id="logoutBtn" class="dropdown-item">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Menu -->
+    <div class="main-menu" id="mainMenu">
+        <h1 class="menu-title">🎯 Damas Pro</h1>
+        <div class="menu-grid">
+            <div class="menu-card" id="playCard">
+                <i class="fas fa-play"></i>
+                <h3>Jogar</h3>
+                <p>Buscar partida online</p>
+            </div>
+            <div class="menu-card" id="createJoinCard">
+                <i class="fas fa-gamepad"></i>
+                <h3>Criar/Entrar</h3>
+                <p>Criar ou entrar em sala</p>
+            </div>
+            <div class="menu-card" id="shopCard">
+                <i class="fas fa-shopping-cart"></i>
+                <h3>Loja</h3>
+                <p>Compre itens e moedas</p>
+            </div>
+            <div class="menu-card" id="profileCard">
+                <i class="fas fa-user"></i>
+                <h3>Perfil</h3>
+                <p>Veja suas estatísticas</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Container -->
+    <div class="game-container hidden" id="gameContainer">
+        <div class="game-header">
+            <div class="opponent-info">
+                <img src="https://placehold.co/50x50/3498db/ffffff?text=?" alt="Oponente" class="opponent-avatar" id="opponentAvatar">
+                <div class="opponent-details">
+                    <div class="opponent-name" id="opponentName">Aguardando oponente...</div>
+                    <div class="opponent-rank" id="opponentRank">Rank: -</div>
+                </div>
+            </div>
+            <div class="opponent-ping ping-indicator" id="opponentPing">
+                <div class="ping-bar"></div>
+                <div class="ping-bar"></div>
+                <div class="ping-bar"></div>
+            </div>
+        </div>
+        
+        <div class="board-container">
+            <div id="board"></div>
+        </div>
+    </div>
+
+    <!-- Profile Page -->
+    <div class="profile-page hidden" id="profilePage">
+        <div class="profile-header">
+            <img src="https://placehold.co/120x120/3498db/ffffff?text=U" alt="Perfil" class="profile-avatar" id="profilePageAvatar">
+            <div class="profile-info">
+                <h2 class="profile-name" id="profilePageName">Nome do Jogador</h2>
+                <div class="profile-rank">Rank: <span id="profileRank">Bronze I</span></div>
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalGames">0</div>
+                        <div class="stat-label">Partidas</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalWins">0</div>
+                        <div class="stat-label">Vitórias</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalFriends">0</div>
+                        <div class="stat-label">Amigos</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalLikes">0</div>
+                        <div class="stat-label">Likes</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button class="nav-btn" onclick="showMainMenu()">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </button>
+    </div>
+
+    <!-- Shop Page -->
+    <div class="shop-page hidden" id="shopPage">
+        <div class="shop-header">
+            <h1 class="menu-title">🛍️ Loja</h1>
+            <div class="shop-balance">
+                <i class="fas fa-coins balance-icon"></i>
+                <span class="balance-amount" id="userBalance">0</span>
+            </div>
+        </div>
+        
+        <div class="shop-tabs">
+            <button class="shop-tab active" data-tab="coins">Moedas</button>
+            <button class="shop-tab" data-tab="boards">Tabuleiros</button>
+            <button class="shop-tab" data-tab="pieces">Peças</button>
+            <button class="shop-tab" data-tab="effects">Efeitos</button>
+        </div>
+        
+        <div class="shop-items" id="shopItems">
+            <!-- Items will be populated by JavaScript -->
+        </div>
+        
+        <button class="nav-btn" onclick="showMainMenu()" style="margin-top: 2rem;">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </button>
+    </div>
+
+    <!-- Modals -->
+    
+    <!-- Create/Join Room Modal -->
+    <div class="modal" id="createJoinModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Criar ou Entrar</h2>
+                <button class="modal-close" onclick="closeModal('createJoinModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <button class="control-btn success" id="showCreateOptions">
+                    <i class="fas fa-plus"></i> Criar Nova Sala
+                </button>
+                
+                <div style="text-align: center; color: var(--text-secondary); margin: 1rem 0;">ou</div>
+                
+                <input type="text" class="game-input" id="gameCodeInput" placeholder="Código da Sala" style="padding: 1rem; border: 2px solid rgba(102, 126, 234, 0.3); border-radius: var(--border-radius);">
+                <button class="control-btn warning" id="joinGameBtn">
+                    <i class="fas fa-sign-in-alt"></i> Entrar na Sala
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Room Settings Modal -->
+    <div class="modal" id="roomSettingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Configurações da Sala</h2>
+                <button class="modal-close" onclick="closeModal('roomSettingsModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="room-options">
+                <div class="option-group">
+                    <label class="option-label">Tempo de Partida</label>
+                    <div class="time-selector">
+                        <button class="time-option" data-time="0">Sem limite</button>
+                        <button class="time-option active" data-time="5">5 min</button>
+                        <button class="time-option" data-time="10">10 min</button>
+                        <button class="time-option" data-time="15">15 min</button>
+                    </div>
+                </div>
+                
+                <div class="option-group">
+                    <div class="option-control">
+                        <span>Captura obrigatória</span>
+                        <div class="toggle-switch active" id="mandatoryCaptureToggle"></div>
+                    </div>
+                    <div class="option-control">
+                        <span>Capturas múltiplas</span>
+                        <div class="toggle-switch active" id="multipleCaptureToggle"></div>
+                    </div>
+                    <div class="option-control">
+                        <span>Modo ranqueado</span>
+                        <div class="toggle-switch" id="rankedModeToggle"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="control-btn success" id="createGameBtn" style="width: 100%; margin-top: 2rem;">
+                <i class="fas fa-check"></i> Criar Sala
+            </button>
+        </div>
+    </div>
+
+    <!-- Game Search Modal -->
+    <div class="modal" id="searchModal">
+        <div class="modal-content">
+            <div class="search-container">
+                <h2 class="modal-title">Buscando Partida...</h2>
+                <div class="search-animation">
+                    <div class="search-circle"></div>
+                    <div class="search-circle"></div>
+                    <div class="search-circle"></div>
+                </div>
+                <div class="search-text" id="searchText">Procurando oponente...</div>
+                <button class="control-btn" style="background: var(--danger); margin-top: 2rem;" onclick="cancelSearch()">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Match Result Modal -->
+    <div class="modal" id="resultModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="resultTitle">Fim de Jogo!</h2>
+                <button class="modal-close" onclick="closeModal('resultModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="match-result">
+                <div class="player-result" id="leftPlayer">
+                    <img src="https://placehold.co/80x80/3498db/ffffff?text=?" alt="Jogador">
+                    <div class="player-name">Jogador 1</div>
+                    <div class="points-change">-</div>
+                    <div class="player-rank">Bronze I</div>
+                    <div class="ping-indicator">
+                        <div class="ping-bar"></div>
+                        <div class="ping-bar"></div>
+                        <div class="ping-bar"></div>
+                    </div>
+                </div>
+                
+                <div class="result-vs">VS</div>
+                
+                <div class="player-result" id="rightPlayer">
+                    <img src="https://placehold.co/80x80/3498db/ffffff?text=?" alt="Jogador">
+                    <div class="player-name">Jogador 2</div>
+                    <div class="points-change">-</div>
+                    <div class="player-rank">Bronze I</div>
+                    <div class="ping-indicator">
+                        <div class="ping-bar"></div>
+                        <div class="ping-bar"></div>
+                        <div class="ping-bar"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="result-actions">
+                <button class="control-btn" id="rematchBtn">
+                    <i class="fas fa-redo"></i> Revanche
+                </button>
+                <button class="control-btn secondary" id="addFriendBtn">
+                    <i class="fas fa-user-plus"></i> Add Amigo
+                </button>
+                <button class="control-btn accent" onclick="showMainMenu()">
+                    <i class="fas fa-home"></i> Menu
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" id="themeToggle">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <span id="notificationText"></span>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot, updateDoc, collection, query, where, getDocs, increment, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDfcZ60iyls9hWDKiE53dMwjgjKJeF7JHQ",
+            authDomain: "damasgrokpro.firebaseapp.com",
+            projectId: "damasgrokpro",
+            storageBucket: "damasgrokpro.firebasestorage.app",
+            messagingSenderId: "587478111907",
+            appId: "1:587478111907:web:13c92c19e2a6fbb0ef9116"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Estado do jogo
+        let gameState = {
+            currentGameId: null,
+            currentPlayer: null,
+            playerId: null,
+            playerData: null,
+            board: [],
+            selectedPiece: null,
+            turn: 'red',
+            gameStatus: 'waiting',
+            captureChain: [],
+            mustCapture: true,
+            multipleCapture: true,
+            gameTime: 300, // 5 minutes default
+            ranked: false,
+            searchInterval: null,
+            pingInterval: null,
+            currentPing: 0,
+            onlineInterval: null,
+            settings: {
+                darkMode: false,
+                animations: true,
+                sound: true,
+                showMoves: true
+            }
+        };
+
+        // Rank System
+        const ranks = [
+            { name: 'Bronze I', minPoints: 0 },
+            { name: 'Bronze II', minPoints: 100 },
+            { name: 'Bronze III', minPoints: 200 },
+            { name: 'Prata I', minPoints: 400 },
+            { name: 'Prata II', minPoints: 600 },
+            { name: 'Prata III', minPoints: 800 },
+            { name: 'Ouro I', minPoints: 1200 },
+            { name: 'Ouro II', minPoints: 1600 },
+            { name: 'Ouro III', minPoints: 2000 },
+            { name: 'Platina I', minPoints: 2500 },
+            { name: 'Platina II', minPoints: 3000 },
+            { name: 'Platina III', minPoints: 3500 },
+            { name: 'Diamante I', minPoints: 4500 },
+            { name: 'Diamante II', minPoints: 5500 },
+            { name: 'Diamante III', minPoints: 6500 },
+            { name: 'Mestre', minPoints: 8000 },
+            { name: 'Grão-Mestre', minPoints: 10000 }
+        ];
+
+        function getRankByPoints(points) {
+            for (let i = ranks.length - 1; i >= 0; i--) {
+                if (points >= ranks[i].minPoints) {
+                    return ranks[i].name;
+                }
+            }
+            return ranks[0].name;
+        }
+
+        // Shop Items
+        const shopItems = {
+            coins: [
+                { id: 'coins_100', name: '100 Moedas', price: 'R$ 4,99', coins: 100, icon: '💰' },
+                { id: 'coins_500', name: '500 Moedas', price: 'R$ 19,99', coins: 500, icon: '💰' },
+                { id: 'coins_1000', name: '1000 Moedas', price: 'R$ 34,99', coins: 1000, icon: '💰' },
+                { id: 'coins_5000', name: '5000 Moedas', price: 'R$ 149,99', coins: 5000, icon: '💰' }
+            ],
+            boards: [
+                { id: 'board_classic', name: 'Tabuleiro Clássico', price: 0, icon: '🎯', owned: true },
+                { id: 'board_wood', name: 'Tabuleiro Madeira', price: 500, icon: '🪵' },
+                { id: 'board_marble', name: 'Tabuleiro Mármore', price: 1000, icon: '🏛️' },
+                { id: 'board_neon', name: 'Tabuleiro Neon', price: 2000, icon: '🌟' }
+            ],
+            pieces: [
+                { id: 'pieces_classic', name: 'Peças Clássicas', price: 0, icon: '⭕', owned: true },
+                { id: 'pieces_gold', name: 'Peças Douradas', price: 800, icon: '🥇' },
+                { id: 'pieces_crystal', name: 'Peças Cristal', price: 1500, icon: '💎' },
+                { id: 'pieces_emoji', name: 'Peças Emoji', price: 1200, icon: '😎' }
+            ],
+            effects: [
+                { id: 'effect_none', name: 'Sem Efeito', price: 0, icon: '❌', owned: true },
+                { id: 'effect_fire', name: 'Efeito Fogo', price: 600, icon: '🔥' },
+                { id: 'effect_ice', name: 'Efeito Gelo', price: 600, icon: '❄️' },
+                { id: 'effect_rainbow', name: 'Efeito Arco-íris', price: 1000, icon: '🌈' }
+            ]
+        };
+
+        // Cookie Functions
+        function setCookie(name, value, days) {
+            let expires = "";
+            if (days) {
+                const date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = `${name}=${value || ""}${expires}; path=/; domain=.cambrero.com; SameSite=Lax`;
+        }
+
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i].trim();
+                if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+
+        function deleteCookie(name) {
+            setCookie(name, '', -1);
+        }
+
+        // Utility Functions
+        function generateGameCode() {
+            return Math.random().toString(36).substr(2, 8).toUpperCase();
+        }
+
+        function generatePlayerId() {
+            return 'player_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notificationText');
+            notificationText.textContent = message;
+            notification.className = `notification ${type} show`;
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Modal Functions
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        window.closeModal = closeModal;
+
+        // Navigation Functions
+        function showMainMenu() {
+            document.querySelectorAll('.main-menu, .game-container, .profile-page, .shop-page').forEach(el => {
+                el.classList.add('hidden');
+            });
+            document.getElementById('mainMenu').classList.remove('hidden');
+            closeAllModals();
+        }
+
+        function showGame() {
+            document.querySelectorAll('.main-menu, .game-container, .profile-page, .shop-page').forEach(el => {
+                el.classList.add('hidden');
+            });
+            document.getElementById('gameContainer').classList.remove('hidden');
+            renderBoard();
+        }
+
+        function showProfile() {
+            document.querySelectorAll('.main-menu, .game-container, .profile-page, .shop-page').forEach(el => {
+                el.classList.add('hidden');
+            });
+            document.getElementById('profilePage').classList.remove('hidden');
+            loadProfileData();
+        }
+
+        function showShop() {
+            document.querySelectorAll('.main-menu, .game-container, .profile-page, .shop-page').forEach(el => {
+                el.classList.add('hidden');
+            });
+            document.getElementById('shopPage').classList.remove('hidden');
+            loadShopItems('coins');
+        }
+
+        function closeAllModals() {
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.classList.remove('active');
+            });
+        }
+
+        window.showMainMenu = showMainMenu;
+
+        // Auth Functions
+        async function checkLoginStatus() {
+            console.log('Verificando status de login...');
+            const userData = getCookie('google_user');
+            
+            if (userData) {
+                try {
+                    const user = JSON.parse(userData);
+                    console.log('Usuário encontrado nos cookies:', user);
+                    
+                    const now = new Date().getTime();
+                    const loginTime = user.timestamp || 0;
+                    const sevenDays = 7 * 24 * 60 * 60 * 1000;
+                    
+                    if (now - loginTime < sevenDays) {
+                        gameState.playerId = user.id || generatePlayerId();
+                        await loadOrCreatePlayerData(user);
+                        updateUIForLoggedInUser(user);
+                        showNotification(`Bem-vindo de volta, ${user.name || 'Jogador'}!`);
+                        return true;
+                    } else {
+                        showLoginButton();
+                        deleteCookie('google_user');
+                        deleteCookie('google_token');
+                    }
+                } catch (error) {
+                    console.error('Erro ao processar dados do usuário:', error);
+                    showLoginButton();
+                }
+            } else {
+                showLoginButton();
+            }
+            
+            if (!gameState.playerId) {
+                gameState.playerId = generatePlayerId();
+                showNotification('Conectado como jogador temporário!', 'warning');
+            }
+            return false;
+        }
+
+        async function loadOrCreatePlayerData(userData) {
+            try {
+                const playerDoc = await getDoc(doc(db, 'players', gameState.playerId));
+                
+                if (playerDoc.exists()) {
+                    gameState.playerData = playerDoc.data();
+                } else {
+                    // Create new player
+                    gameState.playerData = {
+                        id: gameState.playerId,
+                        name: userData.name || 'Jogador',
+                        email: userData.email || '',
+                        picture: userData.picture || '',
+                        rankPoints: 0,
+                        coins: 1000, // Starting coins
+                        totalGames: 0,
+                        wins: 0,
+                        friends: [],
+                        likes: 0,
+                        ownedItems: ['board_classic', 'pieces_classic', 'effect_none'],
+                        selectedBoard: 'board_classic',
+                        selectedPieces: 'pieces_classic',
+                        selectedEffect: 'effect_none',
+                        createdAt: new Date()
+                    };
+                    
+                    await setDoc(doc(db, 'players', gameState.playerId), gameState.playerData);
+                }
+            } catch (error) {
+                console.error('Erro ao carregar dados do jogador:', error);
+            }
+        }
+
+        function showLoginButton() {
+            document.getElementById('googleLoginBtn').style.display = 'flex';
+            document.getElementById('profileMenu').style.display = 'none';
+        }
+
+        function updateUIForLoggedInUser(userData) {
+            document.getElementById('googleLoginBtn').style.display = 'none';
+            document.getElementById('profileMenu').style.display = 'flex';
+            document.getElementById('profileName').textContent = userData.name || 'Usuário';
+            document.getElementById('profileEmail').textContent = userData.email || '';
+            document.getElementById('profilePic').src = userData.picture || `https://placehold.co/40x40/3498db/ffffff?text=${(userData.name || 'U').charAt(0).toUpperCase()}`;
+        }
+
+        // Ping System
+        function startPingTest() {
+            if (gameState.pingInterval) {
+                clearInterval(gameState.pingInterval);
+            }
+            
+            gameState.pingInterval = setInterval(() => {
+                const start = Date.now();
+                // Simulate ping by making a small request
+                fetch('/favicon.ico', { cache: 'no-cache' })
+                    .then(() => {
+                        gameState.currentPing = Date.now() - start;
+                        updatePingDisplay();
+                    })
+                    .catch(() => {
+                        gameState.currentPing = 999;
+                        updatePingDisplay();
+                    });
+            }, 2000);
+        }
+
+        function updatePingDisplay() {
+            const pingIndicators = document.querySelectorAll('.ping-indicator');
+            pingIndicators.forEach(indicator => {
+                indicator.classList.remove('ping-good', 'ping-medium', 'ping-bad');
+                
+                if (gameState.currentPing < 50) {
+                    indicator.classList.add('ping-good');
+                } else if (gameState.currentPing < 150) {
+                    indicator.classList.add('ping-medium');
+                } else {
+                    indicator.classList.add('ping-bad');
+                }
+            });
+        }
+
+        // Online Players Count
+        async function updateOnlineCount() {
+            try {
+                // Update own online status
+                if (gameState.playerId) {
+                    await updateDoc(doc(db, 'online', gameState.playerId), {
+                        lastSeen: new Date(),
+                        playerId: gameState.playerId
+                    });
+                }
+                
+                // Get online players (active in last 30 seconds)
+                const thirtySecondsAgo = new Date(Date.now() - 30000);
+                const onlineQuery = query(
+                    collection(db, 'online'),
+                    where('lastSeen', '>', thirtySecondsAgo)
+                );
+                
+                const snapshot = await getDocs(onlineQuery);
+                document.getElementById('onlineCount').textContent = snapshot.size;
+            } catch (error) {
+                console.error('Erro ao atualizar contagem online:', error);
+            }
+        }
+
+        // Theme Functions
+        function applyTheme(theme) {
+            if (theme === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+                gameState.settings.darkMode = true;
+            } else {
+                document.body.classList.remove('dark-mode');
+                document.getElementById('themeToggle').innerHTML = '<i class="fas fa-moon"></i>';
+                gameState.settings.darkMode = false;
+            }
+        }
+
+        function toggleTheme() {
+            const newTheme = document.body.classList.contains('dark-mode') ? 'light' : 'dark';
+            setCookie('theme', newTheme, 365);
+            applyTheme(newTheme);
+            saveSettings();
+        }
+
+        function saveSettings() {
+            localStorage.setItem('checkersSettings', JSON.stringify(gameState.settings));
+        }
+
+        function loadSettings() {
+            const saved = localStorage.getItem('checkersSettings');
+            if (saved) {
+                gameState.settings = { ...gameState.settings, ...JSON.parse(saved) };
+            }
+            
+            const cookieTheme = getCookie('theme');
+            if (cookieTheme) {
+                applyTheme(cookieTheme);
+            } else {
+                applyTheme(gameState.settings.darkMode ? 'dark' : 'light');
+            }
+        }
+
+        // Game Logic
+        function initBoard() {
+            gameState.board = Array(8).fill().map(() => Array(8).fill(null));
+            
+            // Peças pretas (parte superior)
+            for (let row = 0; row < 3; row++) {
+                for (let col = (row % 2 === 0 ? 1 : 0); col < 8; col += 2) {
+                    gameState.board[row][col] = { color: 'black', king: false };
+                }
+            }
+            
+            // Peças vermelhas (parte inferior)
+            for (let row = 5; row < 8; row++) {
+                for (let col = (row % 2 === 0 ? 1 : 0); col < 8; col += 2) {
+                    gameState.board[row][col] = { color: 'red', king: false };
+                }
+            }
+        }
+
+        function renderBoard() {
+            const board = document.getElementById('board');
+            board.innerHTML = '';
+            
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    const square = document.createElement('div');
+                    square.className = `square ${(row + col) % 2 === 0 ? 'light' : 'dark'}`;
+                    square.dataset.row = row;
+                    square.dataset.col = col;
+
+                    const piece = gameState.board[row][col];
+                    if (piece) {
+                        const pieceEl = document.createElement('div');
+                        pieceEl.className = `piece ${piece.color}`;
+                        if (piece.king) pieceEl.classList.add('king');
+                        
+                        if (gameState.selectedPiece && 
+                            gameState.selectedPiece.row === row && 
+                            gameState.selectedPiece.col === col) {
+                            pieceEl.classList.add('selected');
+                        }
+                        
+                        pieceEl.addEventListener('click', () => selectPiece(row, col));
+                        square.appendChild(pieceEl);
+                    } else {
+                        square.addEventListener('click', () => movePiece(row, col));
+                    }
+
+                    board.appendChild(square);
+                }
+            }
+            
+            highlightPossibleMoves();
+            if (gameState.mustCapture) {
+                highlightMustCapture();
+            }
+        }
+
+        function highlightPossibleMoves() {
+            if (!gameState.settings.showMoves || !gameState.selectedPiece) return;
+            
+            const possibleMoves = getPossibleMoves(gameState.selectedPiece.row, gameState.selectedPiece.col);
+            possibleMoves.forEach(move => {
+                const square = document.querySelector(`[data-row="${move.row}"][data-col="${move.col}"]`);
+                if (square) square.classList.add('possible-move');
+            });
+        }
+
+        function highlightMustCapture() {
+            if (!gameState.mustCapture || gameState.turn !== gameState.currentPlayer) return;
+            
+            const captures = getAllCaptures(gameState.currentPlayer);
+            captures.forEach(capture => {
+                const square = document.querySelector(`[data-row="${capture.from.row}"][data-col="${capture.from.col}"]`);
+                if (square) square.classList.add('must-capture');
+            });
+        }
+
+        function getAllCaptures(color) {
+            const captures = [];
+            
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    const piece = gameState.board[row][col];
+                    if (piece && piece.color === color) {
+                        const moves = getPossibleMoves(row, col);
+                        const captureMoves = moves.filter(m => m.type === 'capture');
+                        captureMoves.forEach(move => {
+                            captures.push({
+                                from: { row, col },
+                                to: { row: move.row, col: move.col },
+                                capture: { row: move.captureRow, col: move.captureCol }
+                            });
+                        });
+                    }
+                }
+            }
+            
+            return captures;
+        }
+
+        function getPossibleMoves(row, col) {
+            const piece = gameState.board[row][col];
+            if (!piece) return [];
+            
+            const moves = [];
+            const directions = piece.king ? 
+                [[-1, -1], [-1, 1], [1, -1], [1, 1]] : 
+                piece.color === 'red' ? [[-1, -1], [-1, 1]] : [[1, -1], [1, 1]];
+
+            // If in a capture chain, only look for more captures
+            if (gameState.captureChain.length > 0) {
+                directions.forEach(([dRow, dCol]) => {
+                    checkCapture(row, col, dRow, dCol, moves, piece);
+                });
+                return moves;
+            }
+
+            // Check if there are any captures available
+            const allCaptures = getAllCaptures(piece.color);
+            if (gameState.mustCapture && allCaptures.length > 0) {
+                // Only show capture moves
+                directions.forEach(([dRow, dCol]) => {
+                    checkCapture(row, col, dRow, dCol, moves, piece);
+                });
+            } else {
+                // Show all moves
+                directions.forEach(([dRow, dCol]) => {
+                    // Regular move
+                    const newRow = row + dRow;
+                    const newCol = col + dCol;
+                    if (isValidSquare(newRow, newCol) && !gameState.board[newRow][newCol]) {
+                        moves.push({ row: newRow, col: newCol, type: 'move' });
+                    }
+                    
+                    // Capture
+                    checkCapture(row, col, dRow, dCol, moves, piece);
+                });
+            }
+
+            return moves;
+        }
+
+        function checkCapture(row, col, dRow, dCol, moves, piece) {
+            const captureRow = row + dRow;
+            const captureCol = col + dCol;
+            const jumpRow = row + (dRow * 2);
+            const jumpCol = col + (dCol * 2);
+            
+            if (isValidSquare(jumpRow, jumpCol) && 
+                !gameState.board[jumpRow][jumpCol] &&
+                gameState.board[captureRow] && 
+                gameState.board[captureRow][captureCol] &&
+                gameState.board[captureRow][captureCol].color !== piece.color) {
+                
+                // Check if this piece was already captured in chain
+                const alreadyCaptured = gameState.captureChain.some(
+                    cap => cap.row === captureRow && cap.col === captureCol
+                );
+                
+                if (!alreadyCaptured) {
+                    moves.push({ 
+                        row: jumpRow, 
+                        col: jumpCol, 
+                        type: 'capture', 
+                        captureRow, 
+                        captureCol 
+                    });
+                }
+            }
+        }
+
+        function isValidSquare(row, col) {
+            return row >= 0 && row < 8 && col >= 0 && col < 8;
+        }
+
+        function selectPiece(row, col) {
+            const piece = gameState.board[row][col];
+            if (!piece || piece.color !== gameState.currentPlayer || gameState.turn !== gameState.currentPlayer) {
+                return;
+            }
+
+            // If in capture chain, can only select the piece that just moved
+            if (gameState.captureChain.length > 0 && 
+                (gameState.selectedPiece.row !== row || gameState.selectedPiece.col !== col)) {
+                return;
+            }
+
+            gameState.selectedPiece = { row, col };
+            renderBoard();
+            
+            if (gameState.settings.sound) {
+                playSound('select');
+            }
+        }
+
+        async function movePiece(toRow, toCol) {
+            if (!gameState.selectedPiece || gameState.turn !== gameState.currentPlayer) return;
+
+            const fromRow = gameState.selectedPiece.row;
+            const fromCol = gameState.selectedPiece.col;
+            const piece = gameState.board[fromRow][fromCol];
+            const possibleMoves = getPossibleMoves(fromRow, fromCol);
+            
+            const validMove = possibleMoves.find(move => move.row === toRow && move.col === toCol);
+            if (!validMove) return;
+
+            // Execute move
+            gameState.board[toRow][toCol] = piece;
+            gameState.board[fromRow][fromCol] = null;
+
+            // Handle capture
+            if (validMove.type === 'capture') {
+                gameState.board[validMove.captureRow][validMove.captureCol] = null;
+                gameState.captureChain.push({ row: validMove.captureRow, col: validMove.captureCol });
+                
+                if (gameState.settings.sound) playSound('capture');
+
+                // Check for more captures
+                if (gameState.multipleCapture) {
+                    gameState.selectedPiece = { row: toRow, col: toCol };
+                    const moreMoves = getPossibleMoves(toRow, toCol);
+                    const moreCaptures = moreMoves.filter(m => m.type === 'capture');
+                    
+                    if (moreCaptures.length > 0) {
+                        renderBoard();
+                        return; // Don't end turn yet
+                    }
+                }
+            } else {
+                if (gameState.settings.sound) playSound('move');
+            }
+
+            // Promote to king
+            if ((piece.color === 'red' && toRow === 0) || (piece.color === 'black' && toRow === 7)) {
+                piece.king = true;
+                if (gameState.settings.sound) playSound('king');
+                showNotification('Uma peça foi promovida a rei! 👑', 'success');
+            }
+
+            // End turn
+            gameState.selectedPiece = null;
+            gameState.captureChain = [];
+            gameState.turn = gameState.turn === 'red' ? 'black' : 'red';
+            
+            await updateGameState();
+            renderBoard();
+            checkWinner();
+        }
+
+        async function checkWinner() {
+            const redPieces = gameState.board.flat().filter(p => p && p.color === 'red').length;
+            const blackPieces = gameState.board.flat().filter(p => p && p.color === 'black').length;
+            
+            let winner = null;
+            if (redPieces === 0) {
+                winner = 'black';
+            } else if (blackPieces === 0) {
+                winner = 'red';
+            }
+            
+            if (winner) {
+                gameState.gameStatus = `${winner}-wins`;
+                await endGame(winner);
+            }
+        }
+
+        async function endGame(winner) {
+            const isWinner = winner === gameState.currentPlayer;
+            const pointsChange = gameState.ranked ? (isWinner ? 25 : -15) : (isWinner ? 10 : -5);
+            
+            // Update player stats
+            if (gameState.playerData) {
+                await updateDoc(doc(db, 'players', gameState.playerId), {
+                    totalGames: increment(1),
+                    wins: isWinner ? increment(1) : increment(0),
+                    rankPoints: increment(pointsChange),
+                    coins: increment(isWinner ? 50 : 20)
+                });
+                
+                gameState.playerData.totalGames++;
+                if (isWinner) gameState.playerData.wins++;
+                gameState.playerData.rankPoints += pointsChange;
+                gameState.playerData.coins += isWinner ? 50 : 20;
+            }
+            
+            // Show result modal
+            showMatchResult(isWinner, pointsChange);
+        }
+
+        async function showMatchResult(isWinner, pointsChange) {
+            const resultModal = document.getElementById('resultModal');
+            const resultTitle = document.getElementById('resultTitle');
+            const leftPlayer = document.getElementById('leftPlayer');
+            const rightPlayer = document.getElementById('rightPlayer');
+            
+            resultTitle.textContent = isWinner ? '🎉 Vitória!' : '😔 Derrota';
+            
+            // Get opponent data
+            let opponentData = null;
+            if (gameState.currentGameId) {
+                const gameDoc = await getDoc(doc(db, 'games', gameState.currentGameId));
+                if (gameDoc.exists()) {
+                    const gameData = gameDoc.data();
+                    const opponentId = gameState.currentPlayer === 'red' ? 
+                        gameData.players.black : gameData.players.red;
+                    
+                    if (opponentId) {
+                        const opponentDoc = await getDoc(doc(db, 'players', opponentId));
+                        if (opponentDoc.exists()) {
+                            opponentData = opponentDoc.data();
+                        }
+                    }
+                }
+            }
+            
+            // Configure player displays
+            const winnerEl = isWinner ? rightPlayer : leftPlayer;
+            const loserEl = isWinner ? leftPlayer : rightPlayer;
+            
+            winnerEl.classList.add('winner');
+            loserEl.classList.add('loser');
+            
+            // Winner info
+            winnerEl.querySelector('img').src = isWinner ? 
+                (gameState.playerData?.picture || 'https://placehold.co/80x80/3498db/ffffff?text=?') :
+                (opponentData?.picture || 'https://placehold.co/80x80/3498db/ffffff?text=?');
+            winnerEl.querySelector('.player-name').textContent = isWinner ? 
+                (gameState.playerData?.name || 'Você') :
+                (opponentData?.name || 'Oponente');
+            winnerEl.querySelector('.points-change').textContent = `+${Math.abs(pointsChange)}`;
+            winnerEl.querySelector('.points-change').className = 'points-change points-gain';
+            winnerEl.querySelector('.player-rank').textContent = getRankByPoints(
+                isWinner ? gameState.playerData?.rankPoints : opponentData?.rankPoints || 0
+            );
+            
+            // Loser info
+            loserEl.querySelector('img').src = !isWinner ? 
+                (gameState.playerData?.picture || 'https://placehold.co/80x80/3498db/ffffff?text=?') :
+                (opponentData?.picture || 'https://placehold.co/80x80/3498db/ffffff?text=?');
+            loserEl.querySelector('.player-name').textContent = !isWinner ? 
+                (gameState.playerData?.name || 'Você') :
+                (opponentData?.name || 'Oponente');
+            loserEl.querySelector('.points-change').textContent = `${pointsChange < 0 ? pointsChange : -Math.abs(pointsChange)}`;
+            loserEl.querySelector('.points-change').className = 'points-change points-loss';
+            loserEl.querySelector('.player-rank').textContent = getRankByPoints(
+                !isWinner ? gameState.playerData?.rankPoints : opponentData?.rankPoints || 0
+            );
+            
+            openModal('resultModal');
+        }
+
+        function playSound(type) {
+            const frequencies = {
+                move: 440,
+                capture: 660,
+                select: 330,
+                king: 880
+            };
+            
+            if (!gameState.settings.sound) return;
+            
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = frequencies[type] || 440;
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.1);
+            } catch (error) {
+                console.log('Audio not supported');
+            }
+        }
+
+        // Firebase Functions
+        function boardToFirestore(board) {
+            const flatBoard = {};
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    const key = `${row}_${col}`;
+                    const piece = board[row][col];
+                    if (piece) {
+                        flatBoard[key] = {
+                            color: piece.color,
+                            king: piece.king
+                        };
+                    }
+                }
+            }
+            return flatBoard;
+        }
+
+        function boardFromFirestore(flatBoard) {
+            const board = Array(8).fill().map(() => Array(8).fill(null));
+            for (const [key, piece] of Object.entries(flatBoard || {})) {
+                const [row, col] = key.split('_').map(Number);
+                if (row >= 0 && row < 8 && col >= 0 && col < 8) {
+                    board[row][col] = {
+                        color: piece.color,
+                        king: piece.king
+                    };
+                }
+            }
+            return board;
+        }
+
+        async function createGame() {
+            if (!gameState.playerId) {
+                showNotification('Faça login para criar um jogo!', 'warning');
+                return;
+            }
+            
+            try {
+                const gameCode = generateGameCode();
+                initBoard();
+                
+                const gameData = {
+                    board: boardToFirestore(gameState.board),
+                    turn: 'red',
+                    status: 'waiting',
+                    players: {
+                        red: gameState.playerId,
+                        black: null
+                    },
+                    settings: {
+                        mustCapture: gameState.mustCapture,
+                        multipleCapture: gameState.multipleCapture,
+                        gameTime: gameState.gameTime,
+                        ranked: gameState.ranked
+                    },
+                    createdAt: new Date(),
+                    lastUpdate: new Date()
+                };
+                
+                await setDoc(doc(db, 'games', gameCode), gameData);
+                
+                gameState.currentGameId = gameCode;
+                gameState.currentPlayer = 'red';
+                gameState.gameStatus = 'waiting';
+                
+                listenToGame(gameCode);
+                showGame();
+                updateOpponentInfo(null);
+                
+                showNotification(`Sala criada! Código: ${gameCode}`, 'success');
+                closeAllModals();
+            } catch (error) {
+                console.error('Erro ao criar jogo:', error);
+                showNotification('Erro ao criar sala!', 'error');
+            }
+        }
+
+        async function joinGame() {
+            const gameCode = document.getElementById('gameCodeInput').value.trim().toUpperCase();
+            if (!gameCode) {
+                showNotification('Digite um código de sala!', 'warning');
+                return;
+            }
+            
+            if (!gameState.playerId) {
+                showNotification('Faça login para entrar em um jogo!', 'warning');
+                return;
+            }
+            
+            try {
+                const gameDoc = await getDoc(doc(db, 'games', gameCode));
+                if (!gameDoc.exists()) {
+                    showNotification('Sala não encontrada!', 'error');
+                    return;
+                }
+                
+                const gameData = gameDoc.data();
+                if (gameData.players.black) {
+                    showNotification('Sala já está cheia!', 'error');
+                    return;
+                }
+                
+                // Apply game settings
+                gameState.mustCapture = gameData.settings.mustCapture;
+                gameState.multipleCapture = gameData.settings.multipleCapture;
+                gameState.gameTime = gameData.settings.gameTime;
+                gameState.ranked = gameData.settings.ranked;
+                
+                await updateDoc(doc(db, 'games', gameCode), {
+                    'players.black': gameState.playerId,
+                    status: 'playing',
+                    lastUpdate: new Date()
+                });
+                
+                gameState.currentGameId = gameCode;
+                gameState.currentPlayer = 'black';
+                gameState.gameStatus = 'playing';
+                
+                listenToGame(gameCode);
+                showGame();
+                
+                // Get opponent info
+                const opponentDoc = await getDoc(doc(db, 'players', gameData.players.red));
+                if (opponentDoc.exists()) {
+                    updateOpponentInfo(opponentDoc.data());
+                }
+                
+                showNotification('Entrou na sala!', 'success');
+                document.getElementById('gameCodeInput').value = '';
+                closeAllModals();
+            } catch (error) {
+                console.error('Erro ao entrar no jogo:', error);
+                showNotification('Erro ao entrar na sala!', 'error');
+            }
+        }
+
+        async function searchForGame() {
+            if (!gameState.playerId || !gameState.playerData) {
+                showNotification('Faça login para buscar partida!', 'warning');
+                return;
+            }
+            
+            openModal('searchModal');
+            
+            let searchAttempts = 0;
+            const maxAttempts = 30; // 30 seconds timeout
+            
+            gameState.searchInterval = setInterval(async () => {
+                searchAttempts++;
+                
+                if (searchAttempts > maxAttempts) {
+                    cancelSearch();
+                    showNotification('Nenhum oponente encontrado. Tente novamente!', 'warning');
+                    return;
+                }
+                
+                try {
+                    // Look for waiting games
+                    const waitingGames = query(
+                        collection(db, 'games'),
+                        where('status', '==', 'waiting'),
+                        where('settings.ranked', '==', true)
+                    );
+                    
+                    const snapshot = await getDocs(waitingGames);
+                    
+                    for (const gameDoc of snapshot.docs) {
+                        const gameData = gameDoc.data();
+                        
+                        // Don't join own game
+                        if (gameData.players.red === gameState.playerId) continue;
+                        
+                        // Check rank compatibility (within 500 points)
+                        const opponentDoc = await getDoc(doc(db, 'players', gameData.players.red));
+                        if (opponentDoc.exists()) {
+                            const opponentData = opponentDoc.data();
+                            const rankDiff = Math.abs(
+                                (gameState.playerData.rankPoints || 0) - 
+                                (opponentData.rankPoints || 0)
+                            );
+                            
+                            if (rankDiff <= 500) {
+                                // Join this game
+                                gameState.currentGameId = gameDoc.id;
+                                gameState.currentPlayer = 'black';
+                                gameState.ranked = true;
+                                
+                                await updateDoc(doc(db, 'games', gameDoc.id), {
+                                    'players.black': gameState.playerId,
+                                    status: 'playing',
+                                    lastUpdate: new Date()
+                                });
+                                
+                                cancelSearch();
+                                listenToGame(gameDoc.id);
+                                showGame();
+                                updateOpponentInfo(opponentData);
+                                showNotification('Partida encontrada!', 'success');
+                                return;
+                            }
+                        }
+                    }
+                    
+                    // Update search text
+                    document.getElementById('searchText').textContent = 
+                        `Procurando oponente... (${searchAttempts}s)`;
+                    
+                } catch (error) {
+                    console.error('Erro na busca:', error);
+                }
+            }, 1000);
+        }
+
+        function cancelSearch() {
+            if (gameState.searchInterval) {
+                clearInterval(gameState.searchInterval);
+                gameState.searchInterval = null;
+            }
+            closeModal('searchModal');
+        }
+
+        window.cancelSearch = cancelSearch;
+
+        function listenToGame(gameCode) {
+            onSnapshot(doc(db, 'games', gameCode), async (doc) => {
+                if (doc.exists()) {
+                    const data = doc.data();
+                    gameState.board = boardFromFirestore(data.board);
+                    gameState.turn = data.turn;
+                    gameState.gameStatus = data.status;
+                    
+                    // Check if opponent joined
+                    if (data.status === 'playing' && gameState.currentPlayer === 'red' && data.players.black) {
+                        const opponentDoc = await getDoc(doc(db, 'players', data.players.black));
+                        if (opponentDoc.exists()) {
+                            updateOpponentInfo(opponentDoc.data());
+                        }
+                    }
+                    
+                    // Check if opponent left
+                    if (data.status === 'abandoned') {
+                        showNotification('Oponente saiu da partida. Você venceu!', 'success');
+                        await endGame(gameState.currentPlayer);
+                    }
+                    
+                    renderBoard();
+                }
+            });
+        }
+
+        async function updateGameState() {
+            if (!gameState.currentGameId) return;
+            
+            try {
+                await updateDoc(doc(db, 'games', gameState.currentGameId), {
+                    board: boardToFirestore(gameState.board),
+                    turn: gameState.turn,
+                    status: gameState.gameStatus,
+                    lastUpdate: new Date()
+                });
+            } catch (error) {
+                console.error('Erro ao atualizar jogo:', error);
+            }
+        }
+
+        async function leaveGame() {
+            if (!gameState.currentGameId) return;
+            
+            try {
+                // Mark game as abandoned
+                await updateDoc(doc(db, 'games', gameState.currentGameId), {
+                    status: 'abandoned',
+                    lastUpdate: new Date()
+                });
+                
+                gameState.currentGameId = null;
+                gameState.currentPlayer = null;
+                gameState.gameStatus = 'waiting';
+                gameState.selectedPiece = null;
+                gameState.captureChain = [];
+                
+                showMainMenu();
+                showNotification('Saiu da partida!', 'success');
+            } catch (error) {
+                console.error('Erro ao sair do jogo:', error);
+            }
+        }
+
+        // UI Functions
+        function updateOpponentInfo(opponentData) {
+            if (opponentData) {
+                document.getElementById('opponentAvatar').src = 
+                    opponentData.picture || `https://placehold.co/50x50/3498db/ffffff?text=${opponentData.name?.charAt(0) || '?'}`;
+                document.getElementById('opponentName').textContent = opponentData.name || 'Oponente';
+                document.getElementById('opponentRank').textContent = 
+                    `Rank: ${getRankByPoints(opponentData.rankPoints || 0)}`;
+            } else {
+                document.getElementById('opponentAvatar').src = 'https://placehold.co/50x50/3498db/ffffff?text=?';
+                document.getElementById('opponentName').textContent = 'Aguardando oponente...';
+                document.getElementById('opponentRank').textContent = 'Rank: -';
+            }
+        }
+
+        async function loadProfileData() {
+            if (!gameState.playerData) return;
+            
+            document.getElementById('profilePageAvatar').src = 
+                gameState.playerData.picture || `https://placehold.co/120x120/3498db/ffffff?text=${gameState.playerData.name?.charAt(0) || 'U'}`;
+            document.getElementById('profilePageName').textContent = gameState.playerData.name || 'Jogador';
+            document.getElementById('profileRank').textContent = getRankByPoints(gameState.playerData.rankPoints || 0);
+            document.getElementById('totalGames').textContent = gameState.playerData.totalGames || 0;
+            document.getElementById('totalWins').textContent = gameState.playerData.wins || 0;
+            document.getElementById('totalFriends').textContent = gameState.playerData.friends?.length || 0;
+            document.getElementById('totalLikes').textContent = gameState.playerData.likes || 0;
+        }
+
+        function loadShopItems(category) {
+            const shopItemsEl = document.getElementById('shopItems');
+            shopItemsEl.innerHTML = '';
+            
+            // Update active tab
+            document.querySelectorAll('.shop-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.tab === category);
+            });
+            
+            const items = shopItems[category] || [];
+            
+            items.forEach(item => {
+                const itemEl = document.createElement('div');
+                itemEl.className = 'shop-item';
+                
+                const owned = gameState.playerData?.ownedItems?.includes(item.id);
+                
+                itemEl.innerHTML = `
+                    <div class="item-icon">${item.icon}</div>
+                    <div class="item-name">${item.name}</div>
+                    <div class="item-price">${
+                        category === 'coins' ? item.price : 
+                        (owned ? 'Já possui' : `${item.price} moedas`)
+                    }</div>
+                    <button class="buy-btn" ${owned && category !== 'coins' ? 'disabled' : ''} 
+                        onclick="buyItem('${category}', '${item.id}')">
+                        ${category === 'coins' ? 'Comprar' : (owned ? 'Equipado' : 'Comprar')}
+                    </button>
+                `;
+                
+                shopItemsEl.appendChild(itemEl);
+            });
+            
+            // Update balance display
+            document.getElementById('userBalance').textContent = gameState.playerData?.coins || 0;
+        }
+
+        async function buyItem(category, itemId) {
+            if (!gameState.playerData) {
+                showNotification('Faça login para comprar!', 'warning');
+                return;
+            }
+            
+            const item = shopItems[category].find(i => i.id === itemId);
+            if (!item) return;
+            
+            if (category === 'coins') {
+                // Integrate with MercadoPago
+                showNotification('Integração com MercadoPago em breve!', 'warning');
+                // TODO: Implement MercadoPago integration
+                return;
+            }
+            
+            // Check if already owned
+            if (gameState.playerData.ownedItems?.includes(itemId)) {
+                showNotification('Você já possui este item!', 'warning');
+                return;
+            }
+            
+            // Check if has enough coins
+            if (gameState.playerData.coins < item.price) {
+                showNotification('Moedas insuficientes!', 'error');
+                return;
+            }
+            
+            try {
+                // Update player data
+                await updateDoc(doc(db, 'players', gameState.playerId), {
+                    coins: increment(-item.price),
+                    ownedItems: arrayUnion(itemId)
+                });
+                
+                gameState.playerData.coins -= item.price;
+                gameState.playerData.ownedItems.push(itemId);
+                
+                showNotification(`${item.name} comprado com sucesso!`, 'success');
+                loadShopItems(category);
+            } catch (error) {
+                console.error('Erro ao comprar item:', error);
+                showNotification('Erro ao processar compra!', 'error');
+            }
+        }
+
+        window.buyItem = buyItem;
+
+        async function sendFriendRequest(targetPlayerId) {
+            if (!gameState.playerData) return;
+            
+            try {
+                await updateDoc(doc(db, 'players', targetPlayerId), {
+                    friendRequests: arrayUnion(gameState.playerId)
+                });
+                
+                showNotification('Pedido de amizade enviado!', 'success');
+            } catch (error) {
+                console.error('Erro ao enviar pedido:', error);
+                showNotification('Erro ao enviar pedido!', 'error');
+            }
+        }
+
+        async function sendRematchRequest() {
+            if (!gameState.currentGameId) return;
+            
+            // Create new game with same settings but swapped colors
+            const oldGameDoc = await getDoc(doc(db, 'games', gameState.currentGameId));
+            if (!oldGameDoc.exists()) return;
+            
+            const oldGame = oldGameDoc.data();
+            const newGameCode = generateGameCode();
+            
+            initBoard();
+            
+            const newGameData = {
+                board: boardToFirestore(gameState.board),
+                turn: 'red',
+                status: 'playing',
+                players: {
+                    red: oldGame.players.black,
+                    black: oldGame.players.red
+                },
+                settings: oldGame.settings,
+                createdAt: new Date(),
+                lastUpdate: new Date(),
+                rematchFrom: gameState.currentGameId
+            };
+            
+            await setDoc(doc(db, 'games', newGameCode), newGameData);
+            
+            gameState.currentGameId = newGameCode;
+            gameState.currentPlayer = gameState.currentPlayer === 'red' ? 'black' : 'red';
+            gameState.gameStatus = 'playing';
+            gameState.turn = 'red';
+            gameState.selectedPiece = null;
+            gameState.captureChain = [];
+            
+            listenToGame(newGameCode);
+            closeModal('resultModal');
+            renderBoard();
+            
+            showNotification('Revanche iniciada!', 'success');
+        }
+
+        // Event Listeners
+        document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+        
+        // Menu cards
+        document.getElementById('playCard').addEventListener('click', searchForGame);
+        document.getElementById('createJoinCard').addEventListener('click', () => openModal('createJoinModal'));
+        document.getElementById('shopCard').addEventListener('click', showShop);
+        document.getElementById('profileCard').addEventListener('click', showProfile);
+        
+        // Profile menu
+        document.getElementById('profileBtn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.getElementById('profileDropdown').classList.toggle('active');
+        });
+        
+        document.getElementById('viewProfile').addEventListener('click', (e) => {
+            e.preventDefault();
+            showProfile();
+            document.getElementById('profileDropdown').classList.remove('active');
+        });
+        
+        document.getElementById('viewAccount').addEventListener('click', (e) => {
+            e.preventDefault();
+            window.location.href = 'https://login.cambrero.com/account';
+        });
+        
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            deleteCookie('google_user');
+            deleteCookie('google_token');
+            showLoginButton();
+            gameState.playerId = null;
+            gameState.playerData = null;
+            showNotification('Logout realizado com sucesso!');
+            showMainMenu();
+        });
+        
+        document.addEventListener('click', () => {
+            document.getElementById('profileDropdown').classList.remove('active');
+        });
+        
+        // Create/Join modal
+        document.getElementById('showCreateOptions').addEventListener('click', () => {
+            closeModal('createJoinModal');
+            openModal('roomSettingsModal');
+        });
+        
+        document.getElementById('joinGameBtn').addEventListener('click', joinGame);
+        
+        document.getElementById('gameCodeInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                joinGame();
+            }
+        });
+        
+        // Room settings
+        document.querySelectorAll('.time-option').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.time-option').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                gameState.gameTime = parseInt(btn.dataset.time) * 60; // Convert to seconds
+            });
+        });
+        
+        document.getElementById('mandatoryCaptureToggle').addEventListener('click', function() {
+            this.classList.toggle('active');
+            gameState.mustCapture = this.classList.contains('active');
+        });
+        
+        document.getElementById('multipleCaptureToggle').addEventListener('click', function() {
+            this.classList.toggle('active');
+            gameState.multipleCapture = this.classList.contains('active');
+        });
+        
+        document.getElementById('rankedModeToggle').addEventListener('click', function() {
+            this.classList.toggle('active');
+            gameState.ranked = this.classList.contains('active');
+        });
+        
+        document.getElementById('createGameBtn').addEventListener('click', () => {
+            closeModal('roomSettingsModal');
+            createGame();
+        });
+        
+        // Shop tabs
+        document.querySelectorAll('.shop-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                loadShopItems(tab.dataset.tab);
+            });
+        });
+        
+        // Match result
+        document.getElementById('rematchBtn').addEventListener('click', sendRematchRequest);
+        
+        document.getElementById('addFriendBtn').addEventListener('click', async () => {
+            if (!gameState.currentGameId) return;
+            
+            const gameDoc = await getDoc(doc(db, 'games', gameState.currentGameId));
+            if (gameDoc.exists()) {
+                const gameData = gameDoc.data();
+                const opponentId = gameState.currentPlayer === 'red' ? 
+                    gameData.players.black : gameData.players.red;
+                
+                if (opponentId) {
+                    await sendFriendRequest(opponentId);
+                }
+            }
+        });
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeAllModals();
+            }
+        });
+        
+        // Window events
+        window.addEventListener('beforeunload', async () => {
+            if (gameState.currentGameId && gameState.gameStatus === 'playing') {
+                await leaveGame();
+            }
+        });
+        
+        // Initialization
+        async function init() {
+            console.log('Inicializando aplicação...');
+            
+            // Load settings
+            loadSettings();
+            
+            // Check login status
+            await checkLoginStatus();
+            
+            // Start ping test
+            startPingTest();
+            
+            // Update online count
+            updateOnlineCount();
+            gameState.onlineInterval = setInterval(updateOnlineCount, 10000);
+            
+            // Initialize board display
+            const board = document.getElementById('board');
+            for (let i = 0; i < 64; i++) {
+                const square = document.createElement('div');
+                square.className = `square ${(Math.floor(i / 8) + (i % 8)) % 2 === 0 ? 'light' : 'dark'}`;
+                board.appendChild(square);
+            }
+            
+            showNotification('Sistema carregado com sucesso! 🎯', 'success');
+        }
+        
+        // Start app
+        init();
+    </script>
+</body>
+</html>

@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nemsei V3</title>
+    <link rel="icon" href="https://cambrero.com/images/icon-nemsei.png" type="image/png">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header fixo -->
+    <div class="header">
+        <button class="menu-button" onclick="toggleSidebar()">
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </button>
+        
+        <div class="profile-button" onclick="showProfile()" id="profileBtn" style="display: none;">
+            <img id="profileImg" src="" alt="Perfil" style="display: none;">
+            <div id="profilePlaceholder" style="display: flex; align-items: center; justify-content: center; font-size: 18px; color: #718096;">👤</div>
+        </div>
+    </div>
+
+    <!-- Overlay do menu -->
+    <div class="sidebar-overlay" onclick="closeSidebar()"></div>
+
+    <!-- Menu lateral -->
+    <div class="sidebar" id="sidebar">
+        <button class="sidebar-item" onclick="goBack()">
+            <i>←</i> Voltar
+        </button>
+        <button class="sidebar-item" onclick="showProfile()">
+            <i>👤</i> Perfil
+        </button>
+        <button class="sidebar-item" onclick="showSettings()">
+            <i>⚙️</i> Configurações
+        </button>
+        <button class="sidebar-item" onclick="showHelp()">
+            <i>❓</i> Ajuda
+        </button>
+        <button class="sidebar-item" onclick="logout()" id="logoutBtn" style="display: none;">
+            <i>🚪</i> Sair
+        </button>
+    </div>
+
+    <!-- Tela de Login -->
+    <div id="loginScreen" class="screen">
+        <h1 class="game-title">Nemsei</h1>
+        <div class="online-counter" id="onlineCounter">- jogadores online</div>
+        
+        <div class="login-container">
+            <h2 style="margin-bottom: 20px; color: #2d3748;">Entrar no jogo</h2>
+            
+            <button id="googleLoginBtn" class="google-btn">
+                <svg class="google-icon" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                Continuar com Google
+            </button>
+            
+            <div id="authMessage"></div>
+        </div>
+    </div>
+
+    <!-- Menu Principal -->
+    <div id="mainMenu" class="screen hidden">
+        <h1 class="game-title">Numsei</h1>
+        <div class="online-counter" id="onlineCounterMain">- jogadores online</div>
+        
+        <div class="main-menu">
+            <div class="user-info">
+                <div>
+                    <h3 id="welcomeUser">Bem-vindo!</h3>
+                    <div>
+                        <span id="userRank">Bronze I</span> • 
+                        <span id="userTrophies">0 🏆</span>
+                    </div>
+                </div>
+                <div id="queueStatus" style="font-size: 14px; color: #718096;">
+                    Na fila: <span id="queueCount">0</span> jogadores
+                </div>
+            </div>
+
+            <!-- Modo Competitivo -->
+            <div class="mode-section competitive-mode">
+                <h3 style="color: #ff6b6b;">🏆 Modo Competitivo</h3>
+                <p style="margin-bottom: 20px; color: #718096; font-size: 14px;">
+                    Partidas ranqueadas que afetam seu ranking e troféus. Apenas jogadores reais.
+                </p>
+                
+                <div class="mode-selection">
+                    <button class="mode-btn" onclick="startMatchmaking('1v1', 'competitive')">
+                        <div class="mode-type-badge competitive-badge">Rank</div>
+                        <div style="font-size: 24px; margin-bottom: 8px;">⚔️</div>
+                        <div style="font-weight: 600;">1v1 Duelo</div>
+                        <div style="font-size: 14px; color: #718096;">Batalha individual</div>
+                    </button>
+                    <button class="mode-btn" onclick="startMatchmaking('2v2', 'competitive')">
+                        <div class="mode-type-badge competitive-badge">Rank</div>
+                        <div style="font-size: 24px; margin-bottom: 8px;">🤝</div>
+                        <div style="font-weight: 600;">2v2 Dupla</div>
+                        <div style="font-size: 14px; color: #718096;">Trabalho em equipe</div>
+                    </button>
+                    <button class="mode-btn" onclick="startMatchmaking('3v3', 'competitive')">
+                        <div class="mode-type-badge competitive-badge">Rank</div>
+                        <div style="font-size: 24px; margin-bottom: 8px;">🔥</div>
+                        <div style="font-weight: 600;">3v3 Trio</div>
+                        <div style="font-size: 14px; color: #718096;">Caos total</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modo Casual -->
+            <div class="mode-section casual-mode">
+                <h3 style="color: #51cf66;">🎮 Modo Casual</h3>
+                <p style="margin-bottom: 20px; color: #718096; font-size: 14px;">
+                    Partidas rápidas e divertidas. Não afeta ranking. Bots após 30s se necessário.
+                </p>
+                
+                <div class="mode-selection">
+                    <button class="mode-btn" onclick="startMatchmaking('1v1', 'casual')">
+                        <div class="mode-type-badge casual-badge">Casual</div>
+                        <div style="font-size: 24px; margin-bottom: 8px;">🎯</div>
+                        <div style="font-weight: 600;">1v1 Rápido</div>
+                        <div style="font-size: 14px; color: #718096;">Partida relax</div>
+                    </button>
+                    <button class="mode-btn" onclick="startMatchmaking('2v2', 'casual')">
+                        <div class="mode-type-badge casual-badge">Casual</div>
+                        <div style="font-size: 24px; margin-bottom: 8px;">👥</div>
+                        <div style="font-weight: 600;">2v2 Rápido</div>
+                        <div style="font-size: 14px; color: #718096;">Diversão em dupla</div>
+                    </button>
+                    <button class="mode-btn" onclick="startMatchmaking('3v3', 'casual')">
+                        <div class="mode-type-badge casual-badge">Casual</div>
+                        <div style="font-size: 24px; margin-bottom: 8px;">🎊</div>
+                        <div style="font-weight: 600;">3v3 Rápido</div>
+                        <div style="font-size: 14px; color: #718096;">Festa total</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tela de Matchmaking -->
+    <div id="matchmakingScreen" class="screen hidden">
+        <div class="matchmaking-info">
+            <h2 id="matchmakingTitle">🔍 Procurando Partida...</h2>
+            <div class="loading-spinner"></div>
+            
+            <div class="queue-info">
+                <div class="queue-stat">
+                    <div style="font-size: 12px; color: #718096;">Modo</div>
+                    <div style="font-weight: 600;" id="currentMode">1v1</div>
+                </div>
+                <div class="queue-stat">
+                    <div style="font-size: 12px; color: #718096;">Tipo</div>
+                    <div style="font-weight: 600;" id="currentType">Competitivo</div>
+                </div>
+                <div class="queue-stat">
+                    <div style="font-size: 12px; color: #718096;">Tempo</div>
+                    <div style="font-weight: 600;" id="queueTime">0s</div>
+                </div>
+                <div class="queue-stat">
+                    <div style="font-size: 12px; color: #718096;">Ping</div>
+                    <div style="font-weight: 600;" id="estimatedPing">-</div>
+                </div>
+            </div>
+
+            <div>
+                <h3 style="margin-bottom: 15px;">Jogadores Encontrados:</h3>
+                <div class="players-found" id="playersFound">
+                    <!-- Slots serão inseridos aqui -->
+                </div>
+            </div>
+
+            <div id="matchmakingStatus" style="margin: 20px 0; font-size: 14px; color: #718096;">
+                Procurando jogadores online...
+            </div>
+
+            <button class="btn btn-secondary" onclick="cancelMatchmaking()" style="margin-top: 20px;">
+                Cancelar Busca
+            </button>
+        </div>
+    </div>
+
+    <!-- Container do Jogo -->
+    <div id="gameContainer">
+        <!-- UI Superior Esquerda -->
+        <div class="game-ui ui-top-left">
+            <div class="ui-panel">
+                <div>❤️ <span id="healthText">100</span></div>
+                <div>🔮 <span id="manaText">100</span></div>
+                <div>🏆 <span id="gameScore">0</span></div>
+            </div>
+        </div>
+
+        <!-- UI Superior Direita -->
+        <div class="game-ui ui-top-right">
+            <div class="ui-panel">
+                <div>🔵 Azul: <span id="blueScore">0</span></div>
+                <div>🔴 Vermelho: <span id="redScore">0</span></div>
+                <div id="gameTimer">10:00</div>
+            </div>
+        </div>
+
+        <!-- Canvas do Jogo -->
+        <canvas id="gameCanvas" width="1000" height="600"></canvas>
+
+        <!-- Controles -->
+        <div class="game-ui ui-bottom">
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button class="control-btn" onclick="buildAction()">🔨 Construir</button>
+                <button class="control-btn" onclick="summonServo()">👷 Servo</button>
+                <button class="control-btn" onclick="summonSoldier()">⚔️ Soldado</button>
+                <button class="control-btn" onclick="useSpecial()">✨ Especial</button>
+                <button class="control-btn" onclick="returnToMenu()">🏠 Menu</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import Firebase com configurações corretas
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+        import { 
+            getAuth, 
+            signInWithPopup, 
+            GoogleAuthProvider, 
+            signOut, 
+            onAuthStateChanged
+        } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+        import { 
+            getFirestore, 
+            doc, 
+            setDoc, 
+            getDoc, 
+            updateDoc, 
+            deleteDoc,
+            collection, 
+            addDoc,
+            query, 
+            where, 
+            orderBy,
+            limit,
+            onSnapshot, 
+            serverTimestamp,
+            getDocs
+        } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCFv6rHPSRLHvZ1OmZqroeSU3A3_VYZDV4",
+            authDomain: "nemsei-c5e83.firebaseapp.com",
+            projectId: "nemsei-c5e83",
+            storageBucket: "nemsei-c5e83.firebasestorage.app",
+            messagingSenderId: "866918578524",
+            appId: "1:866918578524:web:8fbd112e59e50a7bb6e999",
+            measurementId: "G-84P45Q6TQ4"
+        };
+
+        // Inicializar Firebase
+        console.log('🔥 Inicializando Firebase...');
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Estado do jogo
+        let gameState = {
+            user: null,
+            currentMatch: null,
+            gameMode: null,
+            gameType: null,
+            queueStartTime: null,
+            queueId: null,
+            onlinePlayersCount: 0,
+            queueCount: 0,
+            matchmakingListener: null,
+            initialized: false
+        };
+
+        // Sistema de notificações
+        function showNotification(message, type = 'info', duration = 4000) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, duration);
+        }
+
+        // Função para mostrar mensagens
+        function showMessage(message, type = 'info') {
+            console.log(`[${type.toUpperCase()}] ${message}`);
+            
+            const messageDiv = document.getElementById('authMessage');
+            if (!messageDiv) return;
+            
+            const messageClass = type === 'error' ? 'error' : 
+                                type === 'success' ? 'success' : 
+                                type === 'warning' ? 'warning' : 'info';
+            
+            const messageElement = document.createElement('div');
+            messageElement.className = `message ${messageClass}`;
+            messageElement.textContent = message;
+            
+            messageDiv.innerHTML = '';
+            messageDiv.appendChild(messageElement);
+            
+            setTimeout(() => {
+                if (messageDiv.contains(messageElement)) {
+                    messageDiv.removeChild(messageElement);
+                }
+            }, 5000);
+        }
+
+        // Configurar provedor do Google
+        const provider = new GoogleAuthProvider();
+        provider.addScope('profile');
+        provider.addScope('email');
+        provider.setCustomParameters({
+            'prompt': 'select_account'
+        });
+
+        // Login com Google
+        async function loginWithGoogle() {
+            try {
+                console.log('🔐 Iniciando login com Google...');
+                showMessage('Conectando com Google...', 'info');
+                
+                const result = await signInWithPopup(auth, provider);
+                const user = result.user;
+                
+                console.log('✅ Login bem-sucedido:', user.displayName);
+                
+                // Verificar se é novo usuário e criar documento
+                const userDocRef = doc(db, 'users', user.uid);
+                const userDoc = await getDoc(userDocRef);
+                
+                if (!userDoc.exists()) {
+                    console.log('👤 Criando novo usuário no banco...');
+                    await setDoc(userDocRef, {
+                        uid: user.uid,
+                        displayName: user.displayName,
+                        email: user.email,
+                        photoURL: user.photoURL,
+                        createdAt: serverTimestamp(),
+                        rank: 'Bronze I',
+                        trophies: 0,
+                        wins: 0,
+                        losses: 0,
+                        totalGames: 0,
+                        isOnline: true,
+                        lastActive: serverTimestamp(),
+                        region: 'BR'
+                    });
+                } else {
+                    // Atualizar status online
+                    await updateDoc(userDocRef, {
+                        isOnline: true,
+                        lastActive: serverTimestamp()
+                    });
+                }
+                
+                showMessage('Login realizado com sucesso!', 'success');
+                
+            } catch (error) {
+                console.error('❌ Erro no login:', error);
+                
+                let errorMessage = 'Erro desconhecido no login';
+                
+                switch (error.code) {
+                    case 'auth/popup-closed-by-user':
+                        errorMessage = 'Login cancelado pelo usuário';
+                        break;
+                    case 'auth/popup-blocked':
+                        errorMessage = 'Popup bloqueado pelo navegador. Permita popups para este site.';
+                        break;
+                    case 'auth/cancelled-popup-request':
+                        errorMessage = 'Múltiplas tentativas de login detectadas';
+                        break;
+                    case 'auth/network-request-failed':
+                        errorMessage = 'Erro de rede. Verifique sua conexão.';
+                        break;
+                    case 'auth/internal-error':
+                        errorMessage = 'Erro interno. Tente novamente.';
+                        break;
+                    default:
+                        errorMessage = error.message || 'Erro no login';
+                        break;
+                }
+                
+                showMessage(errorMessage, 'error');
+            }
+        }
+
+        // Configurar event listener do botão de login
+        document.getElementById('googleLoginBtn').addEventListener('click', loginWithGoogle);
+
+        // Monitor de estado de autenticação
+        onAuthStateChanged(auth, async (user) => {
+            console.log('🔄 Estado de autenticação mudou:', user ? user.displayName : 'nenhum usuário');
+            
+            if (user) {
+                gameState.user = user;
+                await updateUserProfile(user);
+                await setUserOnline(true);
+                showMainMenu();
+            } else {
+                if (gameState.user) {
+                    await setUserOnline(false);
+                    await cleanupQueue();
+                }
+                gameState.user = null;
+                showLoginScreen();
+            }
+        });
+
+        // Atualizar perfil do usuário
+        async function updateUserProfile(user) {
+            try {
+                const userDocRef = doc(db, 'users', user.uid);
+                const userDoc = await getDoc(userDocRef);
+                
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    gameState.user = { ...user, ...userData };
+                    
+                    // Atualizar UI
+                    document.getElementById('welcomeUser').textContent = `Bem-vindo, ${user.displayName}!`;
+                    document.getElementById('userRank').textContent = userData.rank || 'Bronze I';
+                    document.getElementById('userTrophies').textContent = `${userData.trophies || 0} 🏆`;
+                    
+                    // Atualizar foto do perfil
+                    const profileImg = document.getElementById('profileImg');
+                    const profilePlaceholder = document.getElementById('profilePlaceholder');
+                    
+                    if (user.photoURL) {
+                        profileImg.src = user.photoURL;
+                        profileImg.style.display = 'block';
+                        profilePlaceholder.style.display = 'none';
+                    } else {
+                        profileImg.style.display = 'none';
+                        profilePlaceholder.style.display = 'flex';
+                    }
+                    
+                    document.getElementById('profileBtn').style.display = 'block';
+                    document.getElementById('logoutBtn').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('❌ Erro ao carregar perfil:', error);
+            }
+        }
+
+        // Definir status online/offline
+        async function setUserOnline(isOnline) {
+            if (gameState.user) {
+                try {
+                    const userDocRef = doc(db, 'users', gameState.user.uid);
+                    await updateDoc(userDocRef, {
+                        isOnline: isOnline,
+                        lastActive: serverTimestamp()
+                    });
+                } catch (error) {
+                    console.error('❌ Erro ao atualizar status:', error);
+                }
+            }
+        }
+
+        // Sistema de matchmaking melhorado
+        let matchmakingTimeout = null;
+        let queueTimer = null;
+        let botsTimeout = null;
+
+        async function startMatchmaking(mode, type) {
+            if (!gameState.user) {
+                showNotification('Você precisa estar logado para jogar!', 'error');
+                return;
+            }
+
+            console.log(`🎯 Iniciando matchmaking: ${mode} ${type}`);
+            
+            gameState.gameMode = mode;
+            gameState.gameType = type;
+            gameState.queueStartTime = Date.now();
+            
+            showMatchmakingScreen();
+            updateMatchmakingUI();
+            
+            try {
+                // Limpar qualquer entrada anterior na fila
+                await cleanupQueue();
+                
+                // Adicionar à fila de matchmaking
+                const queueRef = doc(collection(db, 'matchmaking_queue'));
+                const queueData = {
+                    userId: gameState.user.uid,
+                    displayName: gameState.user.displayName,
+                    rank: gameState.user.rank || 'Bronze I',
+                    trophies: gameState.user.trophies || 0,
+                    mode: mode,
+                    type: type,
+                    timestamp: serverTimestamp(),
+                    status: 'waiting',
+                    region: 'BR'
+                };
+                
+                await setDoc(queueRef, queueData);
+                gameState.queueId = queueRef.id;
+                
+                console.log(`✅ Adicionado à fila com ID: ${queueRef.id}`);
+                
+                // Configurar timeouts baseados no tipo
+                if (type === 'casual') {
+                    // Casual: bots após 30 segundos
+                    botsTimeout = setTimeout(() => {
+                        console.log('⏰ Timeout casual - iniciando com bots');
+                        updateMatchmakingStatus('Nenhum jogador encontrado. Iniciando com bots...');
+                        setTimeout(() => startGameWithBots(), 2000);
+                    }, 30000);
+                } else {
+                    // Competitivo: apenas mensagem de espera, sem bots
+                    setTimeout(() => {
+                        if (!document.getElementById('matchmakingScreen').classList.contains('hidden')) {
+                            updateMatchmakingStatus('Procure ser paciente. Modo competitivo não usa bots.');
+                        }
+                    }, 30000);
+                    
+                    // Timeout muito longo para competitivo (10 minutos)
+                    matchmakingTimeout = setTimeout(() => {
+                        console.log('⏰ Timeout competitivo - cancelando');
+                        cancelMatchmaking('Não foi possível encontrar jogadores. Tente novamente mais tarde.');
+                    }, 600000); // 10 minutos
+                }
+                
+                // Começar a procurar por partidas
+                await findMatch();
+                
+            } catch (error) {
+                console.error('❌ Erro ao iniciar matchmaking:', error);
+                showNotification('Erro ao procurar partida: ' + error.message, 'error');
+                showMainMenu();
+            }
+        }
+
+        async function findMatch() {
+            try {
+                const maxPlayers = parseInt(gameState.gameMode.charAt(0)) * 2;
+                
+                console.log(`🔍 Procurando ${maxPlayers} jogadores para ${gameState.gameMode} ${gameState.gameType}`);
+                
+                // Query para encontrar jogadores compatíveis
+                const matchQuery = query(
+                    collection(db, 'matchmaking_queue'),
+                    where('mode', '==', gameState.gameMode),
+                    where('type', '==', gameState.gameType),
+                    where('status', '==', 'waiting'),
+                    orderBy('timestamp'),
+                    limit(maxPlayers)
+                );
+                
+                // Escutar mudanças na fila
+                gameState.matchmakingListener = onSnapshot(matchQuery, async (snapshot) => {
+                    const players = [];
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        players.push({
+                            id: doc.id,
+                            ...data
+                        });
+                    });
+                    
+                    console.log(`👥 Jogadores na fila: ${players.length}/${maxPlayers}`);
+                    updatePlayersFound(players, maxPlayers);
+                    
+                    if (players.length >= maxPlayers) {
+                        console.log('🎉 Jogadores suficientes encontrados!');
+                        
+                        // Parar de escutar a fila
+                        if (gameState.matchmakingListener) {
+                            gameState.matchmakingListener();
+                            gameState.matchmakingListener = null;
+                        }
+                        
+                        // Cancelar timeouts
+                        if (botsTimeout) {
+                            clearTimeout(botsTimeout);
+                            botsTimeout = null;
+                        }
+                        if (matchmakingTimeout) {
+                            clearTimeout(matchmakingTimeout);
+                            matchmakingTimeout = null;
+                        }
+                        
+                        updateMatchmakingStatus('Todos os jogadores encontrados! Iniciando partida...');
+                        
+                        // Aguardar um pouco e iniciar jogo
+                        setTimeout(() => {
+                            startGame();
+                        }, 3000);
+                    }
+                }, (error) => {
+                    console.error('❌ Erro ao escutar fila:', error);
+                    cancelMatchmaking('Erro na busca por jogadores');
+                });
+                
+            } catch (error) {
+                console.error('❌ Erro ao procurar partida:', error);
+                cancelMatchmaking('Erro ao procurar partida');
+            }
+        }
+
+        function updateMatchmakingUI() {
+            document.getElementById('currentMode').textContent = gameState.gameMode;
+            document.getElementById('currentType').textContent = 
+                gameState.gameType === 'competitive' ? 'Competitivo' : 'Casual';
+            
+            // Criar slots de jogadores
+            const maxPlayers = parseInt(gameState.gameMode.charAt(0)) * 2;
+            const playersFoundDiv = document.getElementById('playersFound');
+            playersFoundDiv.innerHTML = '';
+            
+            for (let i = 0; i < maxPlayers; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'player-slot';
+                slot.id = `player-slot-${i}`;
+                slot.textContent = '?';
+                playersFoundDiv.appendChild(slot);
+            }
+            
+            // Atualizar status inicial
+            updateMatchmakingStatus(
+                gameState.gameType === 'competitive' 
+                    ? 'Procurando jogadores online (apenas jogadores reais)...'
+                    : 'Procurando jogadores online (bots após 30s)...'
+            );
+            
+            // Timer da fila
+            startQueueTimer();
+        }
+
+        function updateMatchmakingStatus(message) {
+            const statusElement = document.getElementById('matchmakingStatus');
+            if (statusElement) {
+                statusElement.textContent = message;
+            }
+        }
+
+        function startQueueTimer() {
+            if (queueTimer) clearInterval(queueTimer);
+            
+            queueTimer = setInterval(() => {
+                if (gameState.queueStartTime && !document.getElementById('matchmakingScreen').classList.contains('hidden')) {
+                    const elapsed = Math.floor((Date.now() - gameState.queueStartTime) / 1000);
+                    document.getElementById('queueTime').textContent = `${elapsed}s`;
+                    document.getElementById('estimatedPing').textContent = '~50ms';
+                    
+                    // Avisos baseados no tempo para modo casual
+                    if (gameState.gameType === 'casual') {
+                        if (elapsed === 20) {
+                            updateMatchmakingStatus('Procurando jogadores... (bots em 10s)');
+                        } else if (elapsed === 25) {
+                            updateMatchmakingStatus('Procurando jogadores... (bots em 5s)');
+                        }
+                    }
+                } else {
+                    clearInterval(queueTimer);
+                    queueTimer = null;
+                }
+            }, 1000);
+        }
+
+        function updatePlayersFound(players, maxPlayers) {
+            // Limpar slots
+            for (let i = 0; i < maxPlayers; i++) {
+                const slot = document.getElementById(`player-slot-${i}`);
+                if (slot) {
+                    slot.classList.remove('filled', 'bot');
+                    slot.textContent = '?';
+                    slot.title = '';
+                }
+            }
+            
+            // Preencher com jogadores encontrados
+            players.forEach((player, index) => {
+                const slot = document.getElementById(`player-slot-${index}`);
+                if (slot) {
+                    slot.classList.add('filled');
+                    slot.textContent = player.displayName.charAt(0).toUpperCase();
+                    slot.title = `${player.displayName} (${player.rank || 'Bronze I'})`;
+                }
+            });
+            
+            updateMatchmakingStatus(`${players.length}/${maxPlayers} jogadores encontrados`);
+        }
+
+        function startGameWithBots() {
+            try {
+                console.log('🤖 Iniciando jogo com bots...');
+                
+                const maxPlayers = parseInt(gameState.gameMode.charAt(0)) * 2;
+                
+                // Cancelar listeners e timeouts
+                if (gameState.matchmakingListener) {
+                    gameState.matchmakingListener();
+                    gameState.matchmakingListener = null;
+                }
+                
+                if (botsTimeout) {
+                    clearTimeout(botsTimeout);
+                    botsTimeout = null;
+                }
+                
+                // Preencher slots com bots
+                for (let i = 1; i < maxPlayers; i++) {
+                    const slot = document.getElementById(`player-slot-${i}`);
+                    if (slot && !slot.classList.contains('filled')) {
+                        slot.classList.add('filled', 'bot');
+                        slot.textContent = '🤖';
+                        slot.title = `Bot ${i}`;
+                    }
+                }
+                
+                // Limpar fila
+                cleanupQueue();
+                
+                setTimeout(() => {
+                    startGame();
+                }, 2000);
+                
+            } catch (error) {
+                console.error('❌ Erro ao iniciar jogo com bots:', error);
+                showNotification('Erro ao iniciar jogo', 'error');
+                showMainMenu();
+            }
+        }
+
+        async function cancelMatchmaking(message = 'Busca cancelada') {
+            try {
+                console.log('❌ Cancelando matchmaking...');
+                
+                // Parar listeners
+                if (gameState.matchmakingListener) {
+                    gameState.matchmakingListener();
+                    gameState.matchmakingListener = null;
+                }
+                
+                // Cancelar timeouts
+                if (matchmakingTimeout) {
+                    clearTimeout(matchmakingTimeout);
+                    matchmakingTimeout = null;
+                }
+                
+                if (botsTimeout) {
+                    clearTimeout(botsTimeout);
+                    botsTimeout = null;
+                }
+                
+                if (queueTimer) {
+                    clearInterval(queueTimer);
+                    queueTimer = null;
+                }
+                
+                // Limpar fila
+                await cleanupQueue();
+                
+                // Resetar estado
+                gameState.queueStartTime = null;
+                gameState.gameMode = null;
+                gameState.gameType = null;
+                
+                showMainMenu();
+                if (message !== 'Busca cancelada') {
+                    showNotification(message, 'warning');
+                }
+                
+            } catch (error) {
+                console.error('❌ Erro ao cancelar matchmaking:', error);
+                showMainMenu();
+            }
+        }
+
+        async function cleanupQueue() {
+            if (gameState.queueId) {
+                try {
+                    await deleteDoc(doc(db, 'matchmaking_queue', gameState.queueId));
+                    console.log('🧹 Entrada da fila removida');
+                } catch (error) {
+                    console.error('❌ Erro ao limpar fila:', error);
+                }
+                gameState.queueId = null;
+            }
+        }
+
+        // Contador de jogadores online e na fila
+        function startOnlineCounter() {
+            try {
+                // Jogadores online
+                const usersQuery = query(collection(db, 'users'), where('isOnline', '==', true));
+                onSnapshot(usersQuery, (snapshot) => {
+                    const count = snapshot.size;
+                    gameState.onlinePlayersCount = count;
+                    
+                    const onlineCounter = document.getElementById('onlineCounter');
+                    const onlineCounterMain = document.getElementById('onlineCounterMain');
+                    
+                    if (onlineCounter) {
+                        onlineCounter.textContent = `${count} jogadores online`;
+                    }
+                    if (onlineCounterMain) {
+                        onlineCounterMain.textContent = `${count} jogadores online`;
+                    }
+                }, (error) => {
+                    console.error('❌ Erro ao escutar usuários online:', error);
+                });
+
+                // Contador da fila
+                const queueQuery = query(collection(db, 'matchmaking_queue'), where('status', '==', 'waiting'));
+                onSnapshot(queueQuery, (snapshot) => {
+                    const count = snapshot.size;
+                    gameState.queueCount = count;
+                    
+                    const queueCountElement = document.getElementById('queueCount');
+                    if (queueCountElement) {
+                        queueCountElement.textContent = count;
+                    }
+                }, (error) => {
+                    console.error('❌ Erro ao escutar fila:', error);
+                });
+                
+            } catch (error) {
+                console.error('❌ Erro ao iniciar contadores:', error);
+                // Fallback
+                document.getElementById('onlineCounter').textContent = '1 jogador online';
+                document.getElementById('onlineCounterMain').textContent = '1 jogador online';
+                document.getElementById('queueCount').textContent = '0';
+            }
+        }
+
+        // Logout
+        async function performLogout() {
+            try {
+                await setUserOnline(false);
+                await cleanupQueue();
+                await signOut(auth);
+                showMessage('Logout realizado com sucesso!', 'success');
+            } catch (error) {
+                console.error('❌ Erro ao fazer logout:', error);
+                showMessage('Erro ao fazer logout', 'error');
+            }
+        }
+
+        // Sistema de jogo simplificado
+        let gameLoop = null;
+        let gameCanvas = null;
+        let gameCtx = null;
+        let gameRunning = false;
+
+        function startGame() {
+            console.log('🚀 Iniciando jogo...');
+            
+            // Cancelar todos os timeouts e listeners do matchmaking
+            if (matchmakingTimeout) {
+                clearTimeout(matchmakingTimeout);
+                matchmakingTimeout = null;
+            }
+            
+            if (botsTimeout) {
+                clearTimeout(botsTimeout);
+                botsTimeout = null;
+            }
+            
+            if (queueTimer) {
+                clearInterval(queueTimer);
+                queueTimer = null;
+            }
+            
+            if (gameState.matchmakingListener) {
+                gameState.matchmakingListener();
+                gameState.matchmakingListener = null;
+            }
+            
+            showGameScreen();
+            initializeGame();
+        }
+
+        function initializeGame() {
+            gameCanvas = document.getElementById('gameCanvas');
+            gameCtx = gameCanvas.getContext('2d');
+            gameRunning = true;
+            
+            // Ajustar tamanho do canvas responsivamente
+            resizeCanvas();
+            
+            // Iniciar loop do jogo
+            startGameLoop();
+            
+            // Limpar entrada da fila
+            cleanupQueue();
+            
+            // Simular fim de jogo baseado no tipo
+            const gameTime = gameState.gameType === 'competitive' ? 120000 : 60000; // 2min comp, 1min casual
+            setTimeout(() => {
+                if (gameRunning) {
+                    endGame();
+                }
+            }, gameTime);
+            
+            showNotification(`Jogo ${gameState.gameType} iniciado!`, 'success');
+            console.log('✅ Jogo inicializado!');
+        }
+
+        function resizeCanvas() {
+            if (!gameCanvas) return;
+            
+            const maxWidth = Math.min(window.innerWidth - 40, 1000);
+            const maxHeight = Math.min(window.innerHeight - 200, 600);
+            
+            // Manter proporção 5:3
+            const aspectRatio = 5/3;
+            
+            if (maxWidth / aspectRatio <= maxHeight) {
+                gameCanvas.width = maxWidth;
+                gameCanvas.height = maxWidth / aspectRatio;
+            } else {
+                gameCanvas.height = maxHeight;
+                gameCanvas.width = maxHeight * aspectRatio;
+            }
+        }
+
+        function startGameLoop() {
+            let lastTime = 0;
+            const fps = 60;
+            const frameTime = 1000 / fps;
+            
+            function gameLoopFunction(currentTime) {
+                if (!gameRunning || document.getElementById('gameContainer').style.display === 'none') {
+                    return;
+                }
+                
+                if (currentTime - lastTime >= frameTime) {
+                    updateGame();
+                    renderGame();
+                    lastTime = currentTime;
+                }
+                
+                gameLoop = requestAnimationFrame(gameLoopFunction);
+            }
+            
+            gameLoop = requestAnimationFrame(gameLoopFunction);
+        }
+
+        function updateGame() {
+            // Lógica básica do jogo
+        }
+
+        function renderGame() {
+            if (!gameCtx || !gameCanvas) return;
+            
+            const width = gameCanvas.width;
+            const height = gameCanvas.height;
+            
+            // Limpar canvas com gradiente
+            const gradient = gameCtx.createRadialGradient(width/2, height/2, 0, width/2, height/2, Math.max(width, height));
+            gradient.addColorStop(0, '#1a202c');
+            gradient.addColorStop(1, '#0f1419');
+            gameCtx.fillStyle = gradient;
+            gameCtx.fillRect(0, 0, width, height);
+            
+            // Desenhar grid
+            drawGrid();
+            
+            // Desenhar elementos do jogo
+            drawGameElements();
+            
+            // Desenhar info do tipo de jogo
+            drawGameInfo();
+        }
+
+        function drawGrid() {
+            const width = gameCanvas.width;
+            const height = gameCanvas.height;
+            
+            gameCtx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+            gameCtx.lineWidth = 1;
+            
+            const gridSize = 40;
+            
+            for (let x = 0; x < width; x += gridSize) {
+                gameCtx.beginPath();
+                gameCtx.moveTo(x, 0);
+                gameCtx.lineTo(x, height);
+                gameCtx.stroke();
+            }
+            
+            for (let y = 0; y < height; y += gridSize) {
+                gameCtx.beginPath();
+                gameCtx.moveTo(0, y);
+                gameCtx.lineTo(width, y);
+                gameCtx.stroke();
+            }
+        }
+
+        function drawGameElements() {
+            const width = gameCanvas.width;
+            const height = gameCanvas.height;
+            
+            // Bases
+            drawBase(80, height/2, 'blue');
+            drawBase(width - 80, height/2, 'red');
+            
+            // Pontos de extração no centro
+            for (let i = 1; i <= 3; i++) {
+                const x = (width / 4) * i;
+                const y = height/2 + Math.sin(Date.now() / 1000 + i) * 30;
+                drawExtractionPoint(x, y);
+            }
+            
+            // Jogador
+            const playerX = 150 + Math.cos(Date.now() / 2000) * 30;
+            const playerY = height/2;
+            drawPlayer(playerX, playerY);
+        }
+
+        function drawGameInfo() {
+            if (!gameCtx) return;
+            
+            // Info do tipo de jogo
+            gameCtx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            gameCtx.fillRect(10, 10, 180, 60);
+            
+            gameCtx.fillStyle = 'white';
+            gameCtx.font = 'bold 14px Arial';
+            gameCtx.textAlign = 'left';
+            gameCtx.fillText(`Modo: ${gameState.gameMode}`, 20, 30);
+            gameCtx.fillText(`Tipo: ${gameState.gameType === 'competitive' ? 'Competitivo' : 'Casual'}`, 20, 50);
+            
+            if (gameState.gameType === 'competitive') {
+                gameCtx.fillStyle = '#ff6b6b';
+            } else {
+                gameCtx.fillStyle = '#51cf66';
+            }
+            gameCtx.fillRect(150, 15, 30, 30);
+        }
+
+        function drawBase(x, y, team) {
+            const size = 25;
+            
+            // Sombra
+            gameCtx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            gameCtx.fillRect(x - size + 2, y - size + 2, size * 2, size * 2);
+            
+            // Base
+            gameCtx.fillStyle = team === 'blue' ? '#4299e1' : '#e53e3e';
+            gameCtx.fillRect(x - size, y - size, size * 2, size * 2);
+            
+            // Borda
+            gameCtx.strokeStyle = team === 'blue' ? '#63b3ed' : '#fc8181';
+            gameCtx.lineWidth = 2;
+            gameCtx.strokeRect(x - size, y - size, size * 2, size * 2);
+            
+            // Texto
+            gameCtx.fillStyle = 'white';
+            gameCtx.font = 'bold 10px Arial';
+            gameCtx.textAlign = 'center';
+            gameCtx.fillText('BASE', x, y + size + 15);
+        }
+
+        function drawExtractionPoint(x, y) {
+            // Área de extração
+            gameCtx.fillStyle = 'rgba(72, 187, 120, 0.2)';
+            gameCtx.beginPath();
+            gameCtx.arc(x, y, 20, 0, Math.PI * 2);
+            gameCtx.fill();
+            
+            gameCtx.strokeStyle = '#48bb78';
+            gameCtx.lineWidth = 2;
+            gameCtx.stroke();
+            
+            // Ícone
+            gameCtx.fillStyle = '#68d391';
+            gameCtx.font = '16px Arial';
+            gameCtx.textAlign = 'center';
+            gameCtx.fillText('⛏️', x, y + 5);
+        }
+
+        function drawPlayer(x, y) {
+            const size = 12;
+            
+            // Sombra
+            gameCtx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            gameCtx.beginPath();
+            gameCtx.arc(x + 1, y + 1, size, 0, Math.PI * 2);
+            gameCtx.fill();
+            
+            // Jogador
+            const gradient = gameCtx.createRadialGradient(x, y, 0, x, y, size);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#4c51bf');
+            gameCtx.fillStyle = gradient;
+            gameCtx.beginPath();
+            gameCtx.arc(x, y, size, 0, Math.PI * 2);
+            gameCtx.fill();
+            
+            // Borda
+            gameCtx.strokeStyle = '#a78bfa';
+            gameCtx.lineWidth = 2;
+            gameCtx.stroke();
+            
+            // Nome
+            gameCtx.fillStyle = 'white';
+            gameCtx.font = 'bold 11px Arial';
+            gameCtx.textAlign = 'center';
+            gameCtx.strokeStyle = 'black';
+            gameCtx.lineWidth = 3;
+            gameCtx.strokeText(gameState.user?.displayName || 'Jogador', x, y - size - 8);
+            gameCtx.fillText(gameState.user?.displayName || 'Jogador', x, y - size - 8);
+        }
+
+        function endGame() {
+            gameRunning = false;
+            
+            if (gameLoop) {
+                cancelAnimationFrame(gameLoop);
+                gameLoop = null;
+            }
+            
+            const isWin = Math.random() > 0.4; // 60% chance de vitória
+            let message = '';
+            let trophyChange = 0;
+            
+            if (gameState.gameType === 'competitive') {
+                // Modo competitivo afeta ranking
+                message = isWin ? '🎉 VITÓRIA COMPETITIVA!' : '💀 DERROTA COMPETITIVA!';
+                trophyChange = isWin ? 25 : -15;
+                
+                // Atualizar estatísticas do usuário
+                if (gameState.user) {
+                    updatePlayerStats(isWin, trophyChange);
+                }
+            } else {
+                // Modo casual não afeta ranking
+                message = isWin ? '🎉 VITÓRIA CASUAL!' : '💀 DERROTA CASUAL!';
+                trophyChange = 0;
+            }
+            
+            setTimeout(() => {
+                let alertMessage = message;
+                if (gameState.gameType === 'competitive') {
+                    alertMessage += `\n\nTroféus: ${trophyChange >= 0 ? '+' : ''}${trophyChange}`;
+                    alertMessage += '\nEsta partida afetou seu ranking!';
+                } else {
+                    alertMessage += '\n\nPartida casual - ranking não afetado';
+                }
+                alertMessage += '\n\nObrigado por jogar!';
+                
+                alert(alertMessage);
+                returnToMenu();
+            }, 1000);
+        }
+
+        async function updatePlayerStats(isWin, trophyChange) {
+            try {
+                if (!gameState.user) return;
+                
+                const userRef = doc(db, 'users', gameState.user.uid);
+                const newTrophies = Math.max(0, (gameState.user.trophies || 0) + trophyChange);
+                
+                const updates = {
+                    trophies: newTrophies,
+                    totalGames: (gameState.user.totalGames || 0) + 1,
+                    lastActive: serverTimestamp()
+                };
+                
+                if (isWin) {
+                    updates.wins = (gameState.user.wins || 0) + 1;
+                } else {
+                    updates.losses = (gameState.user.losses || 0) + 1;
+                }
+                
+                // Calcular novo rank baseado nos troféus
+                updates.rank = calculateRank(newTrophies);
+                
+                await updateDoc(userRef, updates);
+                
+                // Atualizar dados locais
+                Object.assign(gameState.user, updates);
+                
+                console.log('📊 Estatísticas atualizadas:', updates);
+                
+            } catch (error) {
+                console.error('❌ Erro ao atualizar estatísticas:', error);
+            }
+        }
+
+        function calculateRank(trophies) {
+            if (trophies < 100) return 'Bronze I';
+            if (trophies < 200) return 'Bronze II';
+            if (trophies < 300) return 'Bronze III';
+            if (trophies < 500) return 'Prata I';
+            if (trophies < 700) return 'Prata II';
+            if (trophies < 900) return 'Prata III';
+            if (trophies < 1200) return 'Ouro I';
+            if (trophies < 1500) return 'Ouro II';
+            if (trophies < 1800) return 'Ouro III';
+            if (trophies < 2200) return 'Platina I';
+            if (trophies < 2600) return 'Platina II';
+            if (trophies < 3000) return 'Platina III';
+            if (trophies < 3500) return 'Diamante I';
+            if (trophies < 4000) return 'Diamante II';
+            if (trophies < 4500) return 'Diamante III';
+            if (trophies < 5000) return 'Mestre I';
+            if (trophies < 6000) return 'Mestre II';
+            if (trophies < 7000) return 'Mestre III';
+            return 'Lenda';
+        }
+
+        // Controles do jogo
+        function buildAction() {
+            console.log('🔨 Construir ativado');
+            if (gameRunning) showNotification('🔨 Construção ativada!', 'info', 2000);
+        }
+
+        function summonServo() {
+            console.log('👷 Servo invocado');
+            if (gameRunning) showNotification('👷 Servo invocado!', 'success', 2000);
+        }
+
+        function summonSoldier() {
+            console.log('⚔️ Soldado invocado');
+            if (gameRunning) showNotification('⚔️ Soldado invocado!', 'success', 2000);
+        }
+
+        function useSpecial() {
+            console.log('✨ Especial ativado');
+            if (gameRunning) showNotification('✨ Habilidade especial ativada!', 'success', 2000);
+        }
+
+        function returnToMenu() {
+            console.log('🏠 Voltando ao menu');
+            
+            gameRunning = false;
+            
+            if (gameLoop) {
+                cancelAnimationFrame(gameLoop);
+                gameLoop = null;
+            }
+            
+            // Resetar estado
+            gameState.currentMatch = null;
+            gameState.gameMode = null;
+            gameState.gameType = null;
+            
+            showMainMenu();
+        }
+
+        // Inicializar contadores após um breve delay
+        setTimeout(() => {
+            startOnlineCounter();
+        }, 1000);
+
+        // Limpeza automática da fila (executar a cada 2 minutos)
+        setInterval(async () => {
+            try {
+                const cutoffTime = new Date(Date.now() - 5 * 60 * 1000); // 5 minutos atrás
+                
+                const oldEntriesQuery = query(
+                    collection(db, 'matchmaking_queue'),
+                    where('timestamp', '<', cutoffTime)
+                );
+                
+                const snapshot = await getDocs(oldEntriesQuery);
+                const deletePromises = [];
+                
+                snapshot.forEach(doc => {
+                    deletePromises.push(deleteDoc(doc.ref));
+                });
+                
+                if (deletePromises.length > 0) {
+                    await Promise.all(deletePromises);
+                    console.log(`🧹 Limpou ${deletePromises.length} entradas antigas da fila automaticamente`);
+                }
+            } catch (error) {
+                console.error('❌ Erro na limpeza automática da fila:', error);
+            }
+        }, 120000); // 2 minutos
+
+        // Expor funções globalmente
+        window.gameState = gameState;
+        window.auth = auth;
+        window.db = db;
+        window.setUserOnline = setUserOnline;
+        window.performLogout = performLogout;
+        window.startMatchmaking = startMatchmaking;
+        window.cancelMatchmaking = cancelMatchmaking;
+        
+        console.log('✅ Firebase configurado e sistema de matchmaking pronto!');
+    </script>
+
+    <script>
+        // Funções de UI e navegação
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        }
+
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+        }
+
+        function goBack() {
+            window.location.href = 'https://games.cambrero.com';
+        }
+
+        function showProfile() {
+            closeSidebar();
+            if (window.gameState && window.gameState.user) {
+                const user = window.gameState.user;
+                const winRate = user.totalGames > 0 ? Math.round((user.wins / user.totalGames) * 100) : 0;
+                alert(`Perfil: ${user.displayName}\nEmail: ${user.email}\nRank: ${user.rank || 'Bronze I'}\nTroféus: ${user.trophies || 0}\nVitórias: ${user.wins || 0}\nDerrotas: ${user.losses || 0}\nTaxa de vitória: ${winRate}%`);
+            }
+        }
+
+        function showSettings() {
+            closeSidebar();
+            alert('Configurações em desenvolvimento!\n\nRecursos planejados:\n- Configurações de áudio\n- Configurações de vídeo\n- Controles personalizados\n- Configurações de chat');
+        }
+
+        function showHelp() {
+            closeSidebar();
+            alert(`Como jogar Numsei:\n\n🏆 MODO COMPETITIVO:\n- Partidas ranqueadas\n- Afeta seu ranking e troféus\n- Apenas jogadores reais\n- Pode demorar mais para encontrar partida\n\n🎮 MODO CASUAL:\n- Partidas rápidas e divertidas\n- NÃO afeta seu ranking\n- Bots adicionados após 30s se necessário\n\n⚔️ GAMEPLAY:\n- Use WASD para mover\n- Construa bases e invoque unidades\n- Colete recursos nos pontos de extração\n- Destrua as bases inimigas para vencer!`);
+        }
+
+        async function logout() {
+            try {
+                if (window.performLogout) {
+                    await window.performLogout();
+                }
+                closeSidebar();
+            } catch (error) {
+                console.error('Erro no logout:', error);
+            }
+        }
+
+        // Funções de tela
+        function showLoginScreen() {
+            console.log('📱 Mostrando tela de login');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('mainMenu').classList.add('hidden');
+            document.getElementById('matchmakingScreen').classList.add('hidden');
+            document.getElementById('gameContainer').style.display = 'none';
+            document.getElementById('profileBtn').style.display = 'none';
+            document.getElementById('logoutBtn').style.display = 'none';
+        }
+
+        function showMainMenu() {
+            console.log('📱 Mostrando menu principal');
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainMenu').classList.remove('hidden');
+            document.getElementById('matchmakingScreen').classList.add('hidden');
+            document.getElementById('gameContainer').style.display = 'none';
+        }
+
+        function showMatchmakingScreen() {
+            console.log('📱 Mostrando tela de matchmaking');
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainMenu').classList.add('hidden');
+            document.getElementById('matchmakingScreen').classList.remove('hidden');
+            document.getElementById('gameContainer').style.display = 'none';
+        }
+
+        function showGameScreen() {
+            console.log('📱 Mostrando tela de jogo');
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainMenu').classList.add('hidden');
+            document.getElementById('matchmakingScreen').classList.add('hidden');
+            document.getElementById('gameContainer').style.display = 'block';
+        }
+
+        // Eventos de teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (!document.getElementById('matchmakingScreen').classList.contains('hidden')) {
+                    if (window.cancelMatchmaking) {
+                        window.cancelMatchmaking();
+                    }
+                } else if (document.getElementById('gameContainer').style.display !== 'none') {
+                    if (confirm('Deseja sair do jogo?')) {
+                        returnToMenu();
+                    }
+                }
+            }
+        });
+
+        // Redimensionamento responsivo
+        window.addEventListener('resize', () => {
+            // Redimensionar canvas se necessário
+            if (window.gameCanvas && window.gameRunning) {
+                resizeCanvas();
+            }
+        });
+
+        // Limpeza ao sair
+        window.addEventListener('beforeunload', async () => {
+            if (window.gameState && window.gameState.user && window.setUserOnline) {
+                await window.setUserOnline(false);
+            }
+        });
+
+        // Inicialização
+        console.log('🎮 Numsei carregado com sucesso!');
+        
+        // Mostrar tela inicial após um breve delay
+        setTimeout(() => {
+            if (!window.gameState || !window.gameState.user) {
+                showLoginScreen();
+            }
+        }, 500);
+    </script>
+</body>
+</html>

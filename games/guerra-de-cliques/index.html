@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guerra de Cliques PRO</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+        :root { --primary-color: #00bfff; --secondary-color: #1effa3; --dark-bg: #1a1a2e; --medium-bg: #16213e; --light-text: #e0e0e0; --red-color: #e74c3c; --yellow-color: #f1c40f; --green-color: #2ecc71; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--dark-bg); color: var(--light-text); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; text-align: center; overflow: hidden; }
+        .container { background-color: var(--medium-bg); padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); width: 90%; max-width: 500px; position: relative; }
+        .top-icons { position: absolute; top: 15px; right: 15px; display: flex; gap: 10px; z-index: 100; }
+        .top-icons svg, .menu-icon { width: 28px; height: 28px; cursor: pointer; transition: transform 0.2s; }
+        .top-icons svg:hover, .menu-icon:hover { transform: scale(1.1); }
+        .menu-icon { position: absolute; top: 15px; left: 15px; z-index: 100; }
+
+        /* --- Painéis Flutuantes --- */
+        .panel { position: fixed; top: 0; background-color: var(--medium-bg); box-shadow: 0 5px 25px rgba(0,0,0,0.5); transition: transform 0.3s ease-in-out; z-index: 200; display: flex; flex-direction: column; padding: 20px; border-radius: 10px; }
+        #menu-panel { left: 0; top: 60px; transform: translateX(-100%); border-radius: 0 10px 10px 0; }
+        #menu-panel.open { transform: translateX(0); }
+        #chat-panel, #settings-panel { right: 0; width: 300px; max-width: 80%; height: 100%; top: 0; transform: translateX(100%); }
+        #chat-panel.open, #settings-panel.open { transform: translateX(0); }
+        .panel h3 { margin-top: 0; color: var(--primary-color); }
+        .panel-content { flex-grow: 1; overflow-y: auto; word-wrap: break-word; }
+
+        /* --- Componentes --- */
+        button { background-color: var(--primary-color); color: var(--medium-bg); border: none; padding: 15px 30px; border-radius: 10px; font-size: 1.2em; font-weight: 600; cursor: pointer; transition: all 0.3s ease; margin-top: 10px; }
+        button:hover:not(:disabled) { background-color: var(--secondary-color); transform: translateY(-3px); box-shadow: 0 5px 15px rgba(30, 255, 163, 0.3); }
+        button:disabled { background-color: #5a5a7e; cursor: not-allowed; transform: none; box-shadow: none; }
+        input[type="text"] { padding: 15px; border-radius: 10px; border: 2px solid #5a5a7e; background-color: var(--dark-bg); color: var(--light-text); font-size: 1.2em; text-align: center; margin: 10px 0; width: calc(100% - 34px); }
+        .screen { display: none; }
+        .screen.active { display: block; }
+        #online-counter { color: var(--secondary-color); font-weight: 600; margin-top: 20px; }
+        
+        /* --- Jogo --- */
+        #room-id-display { background-color: var(--dark-bg); padding: 10px; border-radius: 5px; font-weight: 600; font-size: 1.5em; letter-spacing: 4px; margin: 20px auto; user-select: all; cursor: pointer; }
+        #game-status { font-size: 2.5em; font-weight: 700; margin: 20px 0; height: 60px; color: var(--secondary-color); }
+        #click-button { width: 200px; height: 200px; border-radius: 50%; font-size: 1.8em; box-shadow: 0 0 20px rgba(0, 191, 255, 0.5); animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        #player-list, #results-list { list-style: none; padding: 0; }
+        #player-list li, #results-list li { background-color: var(--dark-bg); padding: 10px 15px; margin-bottom: 5px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; font-size: 1.1em; }
+        .winner { color: #ffd700; font-weight: bold; }
+        .kick-btn { background: var(--red-color); color: white; border: none; padding: 3px 8px; font-size: 0.8em; border-radius: 5px; cursor: pointer; }
+
+        /* --- Ping Indicator --- */
+        .ping-indicator { display: flex; align-items: flex-end; gap: 2px; height: 16px; }
+        .ping-indicator span { display: block; width: 4px; background-color: #ccc; border-radius: 2px; }
+        .ping-indicator .bar1 { height: 33%; }
+        .ping-indicator .bar2 { height: 66%; }
+        .ping-indicator .bar3 { height: 100%; }
+        .ping-good .bar1, .ping-good .bar2, .ping-good .bar3 { background-color: var(--green-color); }
+        .ping-medium .bar1, .ping-medium .bar2 { background-color: var(--yellow-color); }
+        .ping-bad .bar1 { background-color: var(--red-color); }
+
+        /* --- Chat & Console --- */
+        #chat-messages, #server-console-log { height: 100%; padding-right: 10px; }
+        #chat-messages p, #server-console-log p { margin: 0 0 10px; padding-bottom: 5px; border-bottom: 1px solid #333; }
+        #chat-messages p strong { color: var(--primary-color); }
+        #chat-input-wrapper { display: flex; margin-top: 10px; }
+        #chat-input { width: 100%; margin: 0; border-radius: 10px 0 0 10px; }
+        #send-chat-btn { margin: 0; border-radius: 0 10px 10px 0; padding: 15px; }
+        .log-entry { font-size: 0.9em; font-family: monospace; }
+        .log-entry.error { color: var(--red-color); }
+        .log-entry.info { color: var(--secondary-color); }
+
+    </style>
+</head>
+<body>
+    
+    <div class="menu-icon">
+        <svg id="menu-btn" fill="#fff" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"></path></svg>
+    </div>
+    <div id="game-icons" class="top-icons" style="display: none;">
+        <svg id="chat-btn" fill="#fff" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"></path></svg>
+        <svg id="settings-btn" fill="#fff" viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61.22l2 3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"></path></svg>
+    </div>
+
+    <div id="menu-panel" class="panel">
+        <h3>Menu</h3>
+        <button id="menu-inicio-btn">Início (Lobby)</button>
+        <a href="https://games.cambrero.com" target="_blank" rel="noopener noreferrer"><button>Home</button></a>
+    </div>
+
+    <div id="chat-panel" class="panel">
+        <h3>Chat da Sala</h3>
+        <div id="chat-messages" class="panel-content"></div>
+        <div id="chat-input-wrapper">
+            <input type="text" id="chat-input" placeholder="Digite sua mensagem...">
+            <button id="send-chat-btn">Enviar</button>
+        </div>
+    </div>
+
+    <div id="settings-panel" class="panel">
+        <h3>Configurações</h3>
+        <div class="panel-content">
+            <button id="leave-room-btn">Sair da Sala</button>
+            <div id="admin-options" style="display: none;">
+                <hr>
+                <h4>Opções do Admin</h4>
+                <button id="close-room-btn" style="background-color: var(--red-color);">Fechar Sala</button>
+                <h5>Console do Servidor</h5>
+                <div id="server-console-log" style="height: 200px; background: #000; border-radius: 5px; padding: 10px; text-align: left; overflow-y: scroll;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="error-message" style="background-color: #f1c40f;">Aguardando conexão...</div>
+
+        <div id="lobby-screen" class="screen active">
+            <h1>Guerra de Cliques PRO</h1>
+            <p>Defina seu nome e entre no jogo.</p>
+            <input type="text" id="nickname-input" placeholder="Seu Nome">
+            <div id="online-counter">Jogadores Online: 0</div>
+            <button id="create-room-btn" disabled>Criar Sala</button>
+            <hr style="margin: 20px 0; border-color: #5a5a7e;">
+            <input type="text" id="room-input" placeholder="CÓDIGO DA SALA">
+            <button id="join-room-btn" disabled>Entrar na Sala</button>
+        </div>
+
+        <div id="game-screen" class="screen">
+            <h2>Sala de Jogo</h2>
+            <p>Código: <strong id="room-id-display" title="Clique para copiar"></strong></p>
+            <div id="game-status">Aguardando...</div>
+            <button id="click-button" disabled>Clique aqui!</button>
+            <div id="scoreboard">
+                <h3>Jogadores</h3>
+                <ul id="player-list"></ul>
+            </div>
+            <button id="start-game-btn">Começar Jogo</button>
+        </div>
+        
+        <div id="results-screen" class="screen">
+            <h2>Fim de Jogo!</h2>
+            <ul id="results-list"></ul>
+            <button id="play-again-btn">Jogar Novamente</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+        import { getDatabase, ref, set, get, onValue, update, runTransaction, serverTimestamp, onDisconnect } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-database.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC7L2mSvzgcrnqSnvJb_tcvYaRQudRAW0w",
+            authDomain: "guerra-de-cliques.firebaseapp.com",
+            projectId: "guerra-de-cliques",
+            storageBucket: "guerra-de-cliques.firebasestorage.app",
+            messagingSenderId: "804961998434",
+            appId: "1:804961998434:web:a572780285fe0f3101633b",
+            measurementId: "G-97GH7PLB0V",
+            databaseURL: "https://guerra-de-cliques-default-rtdb.firebaseio.com",
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app, firebaseConfig.databaseURL);
+
+        // --- Variáveis Globais e de UI ---
+        const lobbyScreen = document.getElementById('lobby-screen'), gameScreen = document.getElementById('game-screen'), resultsScreen = document.getElementById('results-screen');
+        const menuBtn = document.getElementById('menu-btn'), chatBtn = document.getElementById('chat-btn'), settingsBtn = document.getElementById('settings-btn');
+        const menuPanel = document.getElementById('menu-panel'), chatPanel = document.getElementById('chat-panel'), settingsPanel = document.getElementById('settings-panel');
+        const nicknameInput = document.getElementById('nickname-input'), onlineCounter = document.getElementById('online-counter');
+        const createRoomBtn = document.getElementById('create-room-btn'), joinRoomBtn = document.getElementById('join-room-btn'), roomInput = document.getElementById('room-input');
+        const playerList = document.getElementById('player-list'), roomIdDisplay = document.getElementById('room-id-display');
+        const adminOptions = document.getElementById('admin-options'), serverConsoleLog = document.getElementById('server-console-log');
+        const leaveRoomBtn = document.getElementById('leave-room-btn'), closeRoomBtn = document.getElementById('close-room-btn');
+        const chatMessages = document.getElementById('chat-messages'), chatInput = document.getElementById('chat-input'), sendChatBtn = document.getElementById('send-chat-btn');
+
+        let currentGameId = null, currentPlayerId = null, myNickname = "Anônimo";
+        let listeners = {};
+
+        // --- Lógica de Inicialização e Autenticação ---
+        function setupPresence(user) {
+            const userStatusRef = ref(database, `status/${user.uid}`);
+            const isOnline = { state: 'online', last_changed: serverTimestamp() };
+            const isOffline = { state: 'offline', last_changed: serverTimestamp() };
+            
+            onValue(ref(database, '.info/connected'), (snapshot) => {
+                if (snapshot.val() === false) return;
+                onDisconnect(userStatusRef).set(isOffline).then(() => set(userStatusRef, isOnline));
+            });
+        }
+        
+        onValue(ref(database, 'status'), (snapshot) => {
+            const onlineUsers = Object.values(snapshot.val() || {}).filter(u => u.state === 'online').length;
+            onlineCounter.textContent = `Jogadores Online: ${onlineUsers}`;
+        });
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentPlayerId = user.uid;
+                setupPresence(user);
+                document.getElementById('error-message').style.display = 'none';
+                createRoomBtn.disabled = false;
+                joinRoomBtn.disabled = false;
+            }
+        });
+        
+        myNickname = localStorage.getItem('nickname') || `Jogador${Math.floor(Math.random() * 1000)}`;
+        nicknameInput.value = myNickname;
+        nicknameInput.onchange = () => { myNickname = nicknameInput.value; localStorage.setItem('nickname', myNickname); };
+
+        signInAnonymously(auth).catch(err => displayError("Falha na autenticação."));
+        
+        // --- Funções de Saída da Sala ---
+        async function leaveRoom() {
+            if (!currentGameId) return;
+            const gameId = currentGameId;
+            const playerRef = ref(database, `games/${gameId}/players/${currentPlayerId}`);
+
+            Object.values(listeners).forEach(l => {
+                if(typeof l === 'function') l(); 
+                else clearInterval(l); 
+            });
+            listeners = {};
+            
+            currentGameId = null; 
+            showScreen('lobby-screen');
+            document.getElementById('game-icons').style.display = 'none';
+            closeAllPanels();
+
+            await set(playerRef, null);
+        }
+        
+        async function closeRoom() {
+            if (!currentGameId) return;
+            const gameId = currentGameId;
+            
+            Object.values(listeners).forEach(l => {
+                if(typeof l === 'function') l();
+                else clearInterval(l);
+            });
+            listeners = {};
+
+            currentGameId = null;
+            showScreen('lobby-screen');
+            document.getElementById('game-icons').style.display = 'none';
+            closeAllPanels();
+
+            await ref(database, `games/${gameId}`).remove();
+        }
+
+        // --- Lógica dos Painéis e Menus ---
+        function closeAllPanels() {
+            menuPanel.classList.remove('open');
+            chatPanel.classList.remove('open');
+            settingsPanel.classList.remove('open');
+        }
+        function togglePanel(panel) { panel.classList.toggle('open'); }
+        menuBtn.onclick = () => togglePanel(menuPanel);
+        chatBtn.onclick = () => togglePanel(chatPanel);
+        settingsBtn.onclick = () => togglePanel(settingsPanel);
+        document.getElementById('menu-inicio-btn').onclick = leaveRoom;
+        leaveRoomBtn.onclick = leaveRoom;
+        closeRoomBtn.onclick = closeRoom;
+        roomIdDisplay.onclick = () => navigator.clipboard.writeText(currentGameId).then(() => alert('Código da sala copiado!'));
+        
+        // **NOVO** Adiciona listener para fechar painéis ao clicar fora
+        document.addEventListener('click', function(event) {
+            if (document.querySelectorAll('.panel.open').length === 0) return;
+            const isClickInsidePanel = event.target.closest('.panel');
+            const isClickOnIcon = event.target.closest('.top-icons') || event.target.closest('.menu-icon');
+            if (!isClickInsidePanel && !isClickOnIcon) {
+                closeAllPanels();
+            }
+        });
+
+        // --- Lógica de Jogo ---
+        function joinRoom(roomId) {
+            currentGameId = roomId;
+            logEvent(roomId, `${myNickname} entrou na sala.`);
+            const myPlayerRef = ref(database, `games/${roomId}/players/${currentPlayerId}`);
+            set(myPlayerRef, { nickname: myNickname, score: 0, lastSeen: serverTimestamp() });
+            
+            showScreen('game-screen');
+            document.getElementById('game-icons').style.display = 'flex';
+            
+            attachListener('game', ref(database, 'games/' + roomId), handleGameUpdate);
+            attachListener('chat', ref(database, `games/${roomId}/chat`), handleChatUpdate);
+            attachListener('log', ref(database, `games/${roomId}/log`), handleLogUpdate);
+            
+            listeners.pingInterval = setInterval(() => {
+                update(myPlayerRef, { lastSeen: serverTimestamp() });
+            }, 5000);
+        }
+
+        async function createRoom() {
+            createRoomBtn.disabled = true;
+            const roomId = generateId();
+            const gameRef = ref(database, 'games/' + roomId);
+            await set(gameRef, {
+                hostId: currentPlayerId,
+                state: 'waiting',
+                createdAt: serverTimestamp()
+            });
+            logEvent(roomId, `Sala ${roomId} criada por ${myNickname}.`);
+            joinRoom(roomId);
+            createRoomBtn.disabled = false;
+        }
+
+        function handleGameUpdate(snapshot) {
+            if (!snapshot.exists()) {
+                if (currentGameId) {
+                    displayError("A sala foi fechada pelo anfitrião.");
+                    leaveRoom(); 
+                }
+                return; 
+            }
+            const gameData = snapshot.val();
+            const players = Object.entries(gameData.players || {});
+            const isAdmin = gameData.hostId === currentPlayerId;
+
+            adminOptions.style.display = isAdmin ? 'block' : 'none';
+            playerList.innerHTML = '';
+            players.forEach(([id, data]) => {
+                const li = document.createElement('li');
+                const pingHTML = getPingIndicatorHTML(data.lastSeen);
+                const adminKickBtn = isAdmin && id !== currentPlayerId ? `<button class="kick-btn" data-kick-id="${id}">Expulsar</button>` : '';
+                li.innerHTML = `<span>${data.nickname} ${pingHTML}</span> <div><strong>${data.score}</strong> ${adminKickBtn}</div>`;
+                playerList.appendChild(li);
+            });
+            
+            document.querySelectorAll('.kick-btn').forEach(btn => btn.onclick = (e) => {
+                const idToKick = e.target.dataset.kickId;
+                const kickedPlayerNick = gameData.players[idToKick]?.nickname || 'um jogador';
+                logEvent(currentGameId, `${kickedPlayerNick} foi expulso.`);
+                ref(database, `games/${currentGameId}/players/${idToKick}`).remove();
+            });
+            
+            document.getElementById('start-game-btn').style.display = (isAdmin && gameData.state === 'waiting') ? 'block' : 'none';
+            document.getElementById('play-again-btn').style.display = (isAdmin && gameData.state === 'finished') ? 'block' : 'none';
+            const clickBtn = document.getElementById('click-button');
+            const gameStatusEl = document.getElementById('game-status');
+            
+            switch(gameData.state) {
+                case 'waiting': showScreen('game-screen'); gameStatusEl.textContent = 'Aguardando...'; clickBtn.disabled = true; break;
+                case 'countdown': showScreen('game-screen'); gameStatusEl.textContent = gameData.countdown; clickBtn.disabled = true; break;
+                case 'playing': showScreen('game-screen'); gameStatusEl.textContent = `Tempo: ${gameData.timer}`; clickBtn.disabled = false; break;
+                case 'finished': 
+                    clickBtn.disabled = true; 
+                    showScreen('results-screen');
+                    displayResults(gameData.players);
+                    if(isAdmin) {
+                        const winner = Object.entries(gameData.players || {}).sort((a, b) => b[1].score - a[1].score)[0];
+                        if(winner) logEvent(currentGameId, `${winner[1].nickname} venceu a rodada!`);
+                    }
+                    break;
+            }
+        }
+
+        // --- Chat & Log ---
+        function handleChatUpdate(snapshot) {
+            chatMessages.innerHTML = '';
+            snapshot.forEach(child => {
+                const msg = child.val();
+                chatMessages.innerHTML += `<p><strong>${msg.nickname}:</strong> ${msg.text}</p>`;
+            });
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function handleLogUpdate(snapshot) {
+            serverConsoleLog.innerHTML = '';
+            snapshot.forEach(child => {
+                const log = child.val();
+                const date = new Date(log.timestamp).toLocaleTimeString();
+                serverConsoleLog.innerHTML += `<p class="log-entry ${log.type || 'info'}">[${date}] ${log.text}</p>`;
+            });
+            serverConsoleLog.scrollTop = serverConsoleLog.scrollHeight;
+        }
+        
+        async function logEvent(roomId, text, type = 'info') {
+            if(!roomId) return;
+            const newLogRef = ref(database, `games/${roomId}/log/${Date.now()}`);
+            await set(newLogRef, { text, type, timestamp: serverTimestamp() });
+        }
+        
+        async function sendChatMessage() {
+            if (!chatInput.value.trim() || !currentGameId) return;
+            const newMsgRef = ref(database, `games/${currentGameId}/chat/${Date.now()}`);
+            await set(newMsgRef, { nickname: myNickname, text: chatInput.value });
+            chatInput.value = '';
+        }
+
+        // --- Funções Auxiliares ---
+        function attachListener(name, dbRef, callback) {
+            if(listeners[name]) listeners[name]();
+            listeners[name] = onValue(dbRef, callback, (error) => {
+                console.error(`Listener "${name}" failed:`, error);
+                displayError(`Erro de conexão com a sala. Tente recarregar.`);
+            });
+        }
+        function displayError(msg) { document.getElementById('error-message').textContent = msg; document.getElementById('error-message').style.display = 'block'; }
+        function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+        function generateId(len=5) { return [...Array(len)].map(() => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random()*36)]).join(''); }
+        function getPingIndicatorHTML(lastSeen) {
+            const diff = Date.now() - lastSeen;
+            let pingClass = 'ping-bad';
+            if(diff < 5000) pingClass = 'ping-good';
+            else if (diff < 10000) pingClass = 'ping-medium';
+            return `<div class="ping-indicator ${pingClass}"><span class="bar1"></span><span class="bar2"></span><span class="bar3"></span></div>`;
+        }
+        function displayResults(players) {
+            const list = document.getElementById('results-list');
+            list.innerHTML = '';
+            const sorted = Object.entries(players || {}).sort((a,b) => b[1].score - a[1].score);
+            sorted.forEach(([id, data], i) => {
+                const li = document.createElement('li');
+                const isYou = (id === currentPlayerId) ? ' (Você)' : '';
+                li.innerHTML = `<span>${i+1}º - ${data.nickname}${isYou}</span> <strong>${data.score} cliques</strong>`;
+                if(i===0) li.classList.add('winner');
+                list.appendChild(li);
+            });
+        }
+        
+        // --- Event Listeners de UI ---
+        createRoomBtn.onclick = createRoom;
+        joinRoomBtn.onclick = () => { if(roomInput.value) joinRoom(roomInput.value.toUpperCase()); };
+        sendChatBtn.onclick = sendChatMessage;
+        chatInput.onkeydown = (e) => { if(e.key === 'Enter') sendChatMessage(); };
+        
+        document.getElementById('start-game-btn').onclick = () => {
+             const gameRef = ref(database, 'games/' + currentGameId);
+             logEvent(currentGameId, "A partida começou!");
+             update(gameRef, { state: 'countdown', countdown: 3 });
+             let count = 3;
+             const cInterval = setInterval(() => {
+                count--;
+                if(count > 0) update(gameRef, { countdown: count });
+                else {
+                    clearInterval(cInterval);
+                    update(gameRef, { state: 'playing', timer: 10 });
+                    let timer = 10;
+                    const tInterval = setInterval(() => {
+                        timer--;
+                        if(timer >= 0) update(gameRef, { timer });
+                        else { clearInterval(tInterval); update(gameRef, { state: 'finished' }); }
+                    }, 1000);
+                }
+             }, 1000);
+        };
+        document.getElementById('play-again-btn').onclick = () => {
+            const gameRef = ref(database, 'games/' + currentGameId);
+            const updates = { state: 'waiting' };
+            get(ref(database, `games/${currentGameId}/players`)).then(snap => {
+                snap.forEach(player => { updates[`/players/${player.key}/score`] = 0; });
+                update(gameRef, updates);
+                logEvent(currentGameId, "Nova rodada iniciada.");
+            });
+        };
+        document.getElementById('click-button').onclick = () => {
+            const scoreRef = ref(database, `games/${currentGameId}/players/${currentPlayerId}/score`);
+            runTransaction(scoreRef, score => (score || 0) + 1);
+        };
+
+    </script>
+</body>
+</html>

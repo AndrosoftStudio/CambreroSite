@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Damas Pro</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f0f0f0; margin: 0; padding: 0; }
+        header { background-color: #333; color: white; padding: 10px; text-align: center; }
+        nav { display: flex; justify-content: space-around; background-color: #444; padding: 10px; }
+        nav button { background-color: #555; color: white; border: none; padding: 10px 20px; cursor: pointer; }
+        nav button:hover { background-color: #666; }
+        .section { display: none; padding: 20px; }
+        #menu { display: block; }
+        #online-status { background-color: green; color: white; padding: 5px; text-align: center; }
+        #ping-indicator { display: inline-block; margin-left: 10px; }
+        .ping-bar { display: inline-block; width: 10px; height: 20px; background-color: black; margin: 0 2px; }
+        #board { display: grid; grid-template-columns: repeat(8, 50px); grid-template-rows: repeat(8, 50px); margin: 20px auto; }
+        .square { width: 50px; height: 50px; background-color: #ccc; }
+        .square.black { background-color: #333; }
+        .piece { width: 40px; height: 40px; border-radius: 50%; margin: 5px; cursor: pointer; }
+        .piece.red { background-color: red; }
+        .piece.black { background-color: black; }
+        .piece.king { border: 2px solid gold; }
+        #shop-items { display: flex; flex-wrap: wrap; }
+        .item { border: 1px solid #ccc; padding: 10px; margin: 10px; }
+        #profile-info { text-align: center; }
+        #end-game { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 1px solid black; display: none; }
+        #config-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 1px solid black; display: none; }
+        #search-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 1px solid black; display: none; }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"></script>
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
+</head>
+<body>
+    <header>
+        <h1>🎯 Damas Pro</h1>
+        <div id="online-status">0 online <span id="ping-indicator"></span></div>
+    </header>
+    <nav>
+        <button id="btn-jogar">Jogar</button>
+        <button id="btn-criar-entrar">Criar/Entrar</button>
+        <button id="btn-loja">Loja</button>
+        <button id="btn-perfil">Perfil</button>
+    </nav>
+    <section id="menu" class="section">
+        <p>Escolha uma opção no menu acima.</p>
+    </section>
+    <section id="criar-entrar" class="section">
+        <button id="btn-criar-sala">Criar Nova Sala</button>
+        <button id="btn-entrar-sala">Entrar na Sala</button>
+    </section>
+    <section id="config-sala" class="section">
+        <h2>Configurações da Sala</h2>
+        <label>Tempo de Partida: <select id="tempo-partida">
+            <option value="none">Sem limite</option>
+            <option value="5">5 min</option>
+            <option value="10">10 min</option>
+            <option value="15">15 min</option>
+        </select></label>
+        <label><input type="checkbox" id="captura-obrigatoria" checked> Captura obrigatória</label>
+        <label><input type="checkbox" id="capturas-multiplas" checked> Capturas múltiplas</label>
+        <label><input type="checkbox" id="modo-ranqueado"> Modo ranqueado</label>
+        <button id="btn-confirmar-config">Confirmar</button>
+    </section>
+    <section id="jogo" class="section">
+        <div id="oponente-info">Oponente: <img src="" alt="Foto" width="50"> Nome - Ping: <span></span></div>
+        <div id="board"></div>
+    </section>
+    <section id="loja" class="section">
+        <h2>🛍️ Loja</h2>
+        <p>Moedas: <span id="moedas">0</span></p>
+        <div id="shop-items"></div>
+        <button id="btn-comprar-moedas">Comprar Moedas</button>
+    </section>
+    <section id="perfil" class="section">
+        <h2>Perfil</h2>
+        <div id="profile-info"></div>
+        <button id="btn-ver-conta">Ver Conta</button>
+    </section>
+    <section id="conta" class="section">
+        <h2>Conta</h2>
+        <p>User ID: 1976790370</p>
+        <p>Número da Aplicação: 7150901972143174</p>
+        <p>Integração com: CheckoutTransparente</p>
+        <p>Modelo de Integração: Marketplace</p>
+    </section>
+    <div id="end-game">
+        <h2>Fim de Jogo!</h2>
+        <div id="perdedor"></div>
+        <div>VS</div>
+        <div id="vencedor"></div>
+        <button id="btn-revanche">Revanche</button>
+        <button id="btn-add-amigo">Add Amigo</button>
+        <button id="btn-menu">Menu</button>
+    </div>
+    <div id="config-modal">
+        <h2>Configurações</h2>
+        <!-- Configs aqui -->
+        <button id="btn-salvar-config">Salvar</button>
+    </div>
+    <div id="search-modal">
+        <h2>Buscando Partida...</h2>
+        <p>Procurando oponente...</p>
+        <button id="btn-cancelar-busca">Cancelar</button>
+    </div>
+
+    <script>
+        // Firebase Config - Substitua com seus dados reais
+        const firebaseConfig = {
+            apiKey: "SUA_API_KEY",
+            authDomain: "damasgkpro.firebaseapp.com",
+            projectId: "damasgkpro",
+            storageBucket: "damasgkpro.appspot.com",
+            messagingSenderId: "SEU_SENDER_ID",
+            appId: "SEU_APP_ID",
+            databaseURL: "https://damasgkpro-default-rtdb.firebaseio.com"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const rtdb = firebase.database();
+        const auth = firebase.auth();
+
+        // Mercado Pago
+        const mp = new MercadoPago('SUA_PUBLIC_KEY', { locale: 'pt-BR' });
+
+        // Variáveis globais
+        let currentUser = null;
+        let gameId = null;
+        let board = [];
+        let selectedPiece = null;
+        let isMyTurn = false;
+        let multipleCapture = false;
+        let config = { capturaObrigatoria: true, capturasMultiplas: true, tempo: null, ranqueado: false };
+        let rating = 1200; // ELO inicial
+        let onlineCount = 0;
+        let ping = 0;
+        let pingBars = document.createElement('span');
+        document.getElementById('ping-indicator').appendChild(pingBars);
+
+        // Funções de Autenticação
+        auth.onAuthStateChanged(user => {
+            currentUser = user;
+            if (user) {
+                loadProfile();
+                setPresence();
+                updateOnlineCount();
+                testPing();
+                setInterval(testPing, 2000);
+            } else {
+                // Login anônimo ou Google
+                auth.signInAnonymously();
+            }
+        });
+
+        // Presença e Online Count
+        function setPresence() {
+            const connectedRef = rtdb.ref('.info/connected');
+            const userRef = rtdb.ref('online/' + currentUser.uid);
+            connectedRef.on('value', snap => {
+                if (snap.val()) {
+                    userRef.set(true);
+                    userRef.onDisconnect().remove();
+                }
+            });
+        }
+
+        function updateOnlineCount() {
+            rtdb.ref('online').on('value', snap => {
+                onlineCount = snap.numChildren();
+                document.getElementById('online-status').innerText = `${onlineCount} online`;
+            });
+        }
+
+        // Teste de Ping
+        function testPing() {
+            const start = Date.now();
+            const testRef = rtdb.ref('pingTest');
+            testRef.set(Date.now()).then(() => {
+                testRef.once('value', snap => {
+                    ping = Date.now() - start;
+                    updatePingBars();
+                });
+            });
+        }
+
+        function updatePingBars() {
+            let color = 'green';
+            let bars = 3;
+            if (ping > 200) { color = 'red'; bars = 1; }
+            else if (ping > 100) { color = 'yellow'; bars = 2; }
+            pingBars.innerHTML = '';
+            for (let i = 0; i < 3; i++) {
+                const bar = document.createElement('div');
+                bar.classList.add('ping-bar');
+                bar.style.backgroundColor = i < bars ? color : 'black';
+                pingBars.appendChild(bar);
+            }
+        }
+
+        // Inicializar Tabuleiro
+        function initBoard() {
+            board = Array(8).fill().map(() => Array(8).fill(null));
+            for (let row = 0; row < 3; row++) {
+                for (let col = (row % 2); col < 8; col += 2) {
+                    board[row][col] = { color: 'black', king: false };
+                }
+            }
+            for (let row = 5; row < 8; row++) {
+                for (let col = (row % 2); col < 8; col += 2) {
+                    board[row][col] = { color: 'red', king: false };
+                }
+            }
+            renderBoard();
+        }
+
+        function renderBoard() {
+            const boardDiv = document.getElementById('board');
+            boardDiv.innerHTML = '';
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    const square = document.createElement('div');
+                    square.classList.add('square', (row + col) % 2 === 0 ? 'white' : 'black');
+                    square.dataset.row = row;
+                    square.dataset.col = col;
+                    if (board[row][col]) {
+                        const piece = document.createElement('div');
+                        piece.classList.add('piece', board[row][col].color);
+                        if (board[row][col].king) piece.classList.add('king');
+                        piece.onclick = () => selectPiece(row, col);
+                        square.appendChild(piece);
+                    } else {
+                        square.onclick = () => movePiece(row, col);
+                    }
+                    boardDiv.appendChild(square);
+                }
+            }
+        }
+
+        // Selecionar e Mover Peça
+        function selectPiece(row, col) {
+            if (!isMyTurn || board[row][col].color !== myColor) return;
+            selectedPiece = { row, col };
+            // Mostrar movimentos possíveis se config mostrarMovimentos
+        }
+
+        function movePiece(toRow, toCol) {
+            if (!selectedPiece) return;
+            const fromRow = selectedPiece.row;
+            const fromCol = selectedPiece.col;
+            const piece = board[fromRow][fromCol];
+            // Verificar se movimento válido
+            if (isValidMove(fromRow, fromCol, toRow, toCol)) {
+                // Executar movimento
+                board[toRow][toCol] = piece;
+                board[fromRow][fromCol] = null;
+                // Captura
+                if (Math.abs(toRow - fromRow) === 2) {
+                    const capRow = (toRow + fromRow) / 2;
+                    const capCol = (toCol + fromCol) / 2;
+                    board[capRow][capCol] = null;
+                    if (config.capturasMultiplas && canCaptureAgain(toRow, toCol)) {
+                        multipleCapture = true;
+                        selectedPiece = { row: toRow, col: toCol };
+                        return; // Continua turno
+                    }
+                }
+                // Promoção a dama
+                if ((piece.color === 'red' && toRow === 0) || (piece.color === 'black' && toRow === 7)) {
+                    piece.king = true;
+                }
+                multipleCapture = false;
+                selectedPiece = null;
+                isMyTurn = false;
+                saveGameState();
+                checkWin();
+            }
+        }
+
+        function isValidMove(fromRow, fromCol, toRow, toCol) {
+            // Lógica de movimento: diagonal, vazio, etc.
+            // Para pedra: forward only
+            // Para dama: any distance
+            // Captura obrigatória se config
+            if (config.capturaObrigatoria) {
+                // Checar se há capturas possíveis, forçar se sim
+                const captures = getAllCaptures(myColor);
+                if (captures.length > 0 && !isCaptureMove(fromRow, fromCol, toRow, toCol)) return false;
+            }
+            // Distância
+            const rowDiff = Math.abs(toRow - fromRow);
+            const colDiff = Math.abs(toCol - fromCol);
+            if (rowDiff !== colDiff) return false; // Não diagonal
+            const piece = board[fromRow][fromCol];
+            if (!piece.king) {
+                // Pedra: move 1, capture 2
+                if (rowDiff > 2) return false;
+                const dir = piece.color === 'red' ? -1 : 1;
+                if (rowDiff === 1 && (toRow - fromRow) !== dir) return false; // Forward only for move
+            } else {
+                // Dama: any, check path clear
+                if (!isPathClear(fromRow, fromCol, toRow, toCol)) return false;
+            }
+            if (board[toRow][toCol]) return false; // Ocupado
+            if (rowDiff === 2) {
+                // Capture
+                const midRow = (fromRow + toRow) / 2;
+                const midCol = (fromCol + toCol) / 2;
+                if (!board[midRow][midCol] || board[midRow][midCol].color === piece.color) return false;
+            } else if (rowDiff > 2) {
+                // Dama move long, no capture
+            } else if (rowDiff !== 1) return false;
+            return true;
+        }
+
+        function isCaptureMove(fromRow, fromCol, toRow, toCol) {
+            return Math.abs(fromRow - toRow) === 2 && Math.abs(fromCol - toCol) === 2;
+        }
+
+        function canCaptureAgain(row, col) {
+            // Checar se pode capturar de nova posição
+            const directions = [[-2, -2], [-2, 2], [2, -2], [2, 2]];
+            for (let dir of directions) {
+                const toRow = row + dir[0];
+                const toCol = col + dir[1];
+                if (toRow >= 0 && toRow < 8 && toCol >= 0 && toCol < 8 && isValidMove(row, col, toRow, toCol)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function getAllCaptures(color) {
+            // Retornar todas capturas possíveis para forçar lei da maioria se aplicável
+            // Mas para simplicidade, checar se há qualquer
+            return [];
+        }
+
+        function isPathClear(fromRow, fromCol, toRow, toCol) {
+            // Para damas long moves
+            const rowStep = toRow > fromRow ? 1 : -1;
+            const colStep = toCol > fromCol ? 1 : -1;
+            let r = fromRow + rowStep;
+            let c = fromCol + colStep;
+            while (r !== toRow) {
+                if (board[r][c]) return false;
+                r += rowStep;
+                c += colStep;
+            }
+            return true;
+        }
+
+        // Salvar Estado do Jogo
+        function saveGameState() {
+            db.collection('games').doc(gameId).update({ board: JSON.stringify(board), turn: otherColor });
+        }
+
+        // Checar Vitória
+        function checkWin() {
+            // Contar peças, se 0 perde
+            // Ou sem movimentos
+            const redPieces = board.flat().filter(p => p && p.color === 'red').length;
+            const blackPieces = board.flat().filter(p => p && p.color === 'black').length;
+            if (redPieces === 0 || blackPieces === 0) {
+                showEndGame();
+            }
+        }
+
+        // Fim de Jogo
+        function showEndGame(winner = 'Você ganhou!', points = 0) {
+            document.getElementById('end-game').style.display = 'block';
+            // Preencher perdedor e vencedor com fotos, nomes, ranks, pings, points
+            // Botões revanche, add amigo, menu
+        }
+
+        // Sistema de ELO
+        function calculateELO(myRating, opponentRating, win) {
+            const k = 32;
+            const expected = 1 / (1 + Math.pow(10, (opponentRating - myRating) / 400));
+            return Math.round(myRating + k * (win - expected));
+        }
+
+        // Matchmaking
+        document.getElementById('btn-jogar').onclick = () => {
+            document.getElementById('search-modal').style.display = 'block';
+            // Adicionar à queue no Firebase com rating
+            rtdb.ref('queue/' + currentUser.uid).set({ rating });
+            findMatch();
+        };
+
+        function findMatch() {
+            rtdb.ref('queue').once('value', snap => {
+                // Encontrar mais próximo rating
+                // Criar game, remover da queue
+            });
+        }
+
+        // Loja com Mercado Pago
+        document.getElementById('btn-comprar-moedas').onclick = () => {
+            // Criar preference
+            fetch('seu-backend/create_preference', {
+                method: 'POST',
+                body: JSON.stringify({ title: '100 Moedas', quantity: 1, price: 10 })
+            }).then(res => res.json()).then(data => {
+                mp.checkout({
+                    preference: { id: data.id },
+                    autoOpen: true
+                });
+            });
+        };
+
+        // Após pagamento, atualizar moedas no DB
+
+        // Carregar Itens Loja
+        function loadShop() {
+            // Tabuleiros, peças, efeitos
+            const items = [
+                { name: 'Tabuleiro Madeira', price: 50 },
+                { name: 'Peças Ouro', price: 100 }
+            ];
+            const shopDiv = document.getElementById('shop-items');
+            items.forEach(item => {
+                const div = document.createElement('div');
+                div.classList.add('item');
+                div.innerHTML = `<p>${item.name} - ${item.price} moedas</p><button>Comprar</button>`;
+                div.querySelector('button').onclick = () => buyItem(item);
+                shopDiv.appendChild(div);
+            });
+        }
+
+        function buyItem(item) {
+            // Deduzir moedas, adicionar item ao user
+        }
+
+        // Perfil
+        function loadProfile() {
+            db.collection('users').doc(currentUser.uid).get().then(doc => {
+                const data = doc.data();
+                rating = data.rating || 1200;
+                document.getElementById('profile-info').innerHTML = `
+                    <img src="${data.photo || ''}" alt="Foto" width="100">
+                    <p>Amigos: ${data.friends || 0}</p>
+                    <p>Likes: ${data.likes || 0}</p>
+                `;
+            });
+        }
+
+        // Navegação
+        document.getElementById('btn-criar-entrar').onclick = () => showSection('criar-entrar');
+        document.getElementById('btn-loja').onclick = () => { showSection('loja'); loadShop(); };
+        document.getElementById('btn-perfil').onclick = () => showSection('perfil');
+        document.getElementById('btn-ver-conta').onclick = () => showSection('conta');
+        // Outros botões...
+
+        function showSection(id) {
+            document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+            document.getElementById(id).style.display = 'block';
+        }
+
+        // Criar Sala com Config
+        document.getElementById('btn-criar-sala').onclick = () => {
+            document.getElementById('config-modal').style.display = 'block';
+        };
+        document.getElementById('btn-confirmar-config').onclick = () => {
+            // Ler configs
+            createGame();
+        };
+
+        function createGame() {
+            const game = { board: JSON.stringify(board), turn: 'red', players: { red: currentUser.uid } };
+            db.collection('games').add(game).then(ref => {
+                gameId = ref.id;
+                myColor = 'red';
+                listenGame();
+            });
+        }
+
+        // Entrar Sala
+        document.getElementById('btn-entrar-sala').onclick = () => {
+            const code = prompt('Código da Sala');
+            db.collection('games').doc(code).get().then(doc => {
+                if (doc.exists) {
+                    gameId = code;
+                    db.collection('games').doc(code).update({ players: { ...doc.data().players, black: currentUser.uid } });
+                    myColor = 'black';
+                    listenGame();
+                }
+            });
+        };
+
+        // Ouvir Jogo
+        function listenGame() {
+            db.collection('games').doc(gameId).onSnapshot(doc => {
+                const data = doc.data();
+                board = JSON.parse(data.board);
+                isMyTurn = data.turn === myColor;
+                renderBoard();
+                // Se jogador saiu, ganhar
+                if (!data.players.red || !data.players.black) {
+                    showEndGame('Oponente saiu!');
+                }
+            });
+        }
+
+        // Add Amigo
+        function addFriend(uid) {
+            // Enviar request no DB
+        }
+
+        // Inicializar
+        initBoard();
+    </script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cambrero - Jogue Tetris Elegante">
+    <title>Cambrero - Tetris Elegante</title>
+    <link rel="icon" type="image/png" href="../images/ícone.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap">
+    <link rel="stylesheet" href="tetris.css">
+</head>
+<body>
+    <!-- Navegação -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-mountain"></i> Cambrero
+        </div>
+        <div class="nav-toggle" id="navToggle">
+            <i class="fas fa-bars"></i>
+        </div>
+        <div class="nav-menu" id="navMenu">
+            <a href="../account/login.html"><i class="fas fa-user"></i> Entrar</a>
+            <a href="#"><i class="fas fa-cog"></i> Configurações</a>
+            <a href="#"><i class="fas fa-hand-holding-heart"></i> Doações</a>
+            <a href="#"><i class="fas fa-photo-video"></i> Mídias</a>
+        </div>
+    </nav>
+    <div class="nav-overlay" id="navOverlay"></div>
+
+    <!-- Cabeçalho (aparece ao rolar para cima) -->
+    <header class="game-header" id="gameHeader">
+        <h1><i class="fas fa-gamepad"></i> Tetris Elegante</h1>
+    </header>
+
+    <!-- Seção do Jogo -->
+    <section class="game-section">
+        <div class="game-container">
+            <div class="grid" id="grid"></div>
+            <div id="score">Pontuação: 0</div>
+            <div class="button-container">
+                <button id="start-button">Iniciar</button>
+                <button id="pause-button" style="display: none;">Pausar</button>
+                <button id="restart-button" style="display: none;">Reiniciar</button>
+            </div>
+            <div class="controls" id="controls">
+                <button class="control-btn" onclick="moveLeft()">←</button>
+                <button class="control-btn" onclick="moveRight()">→</button>
+                <button class="control-btn" onclick="rotate()">↻</button>
+                <button class="control-btn" onclick="moveDown()">↓</button>
+            </div>
+            <button class="menu-btn" id="gameMenuToggle"><i class="fas fa-bars"></i></button>
+            <div class="game-menu" id="gameMenu">
+                <div class="menu-header">
+                    <h3>Menu</h3>
+                    <button class="close-btn" id="closeGameMenu">×</button>
+                </div>
+                <div class="menu-content">
+                    <button id="back-button" onclick="window.location.href='../jogos.html'"><i class="fas fa-arrow-left"></i> Voltar</button>
+                    <button id="theme-toggle"><i class="fas fa-moon"></i> Modo Escuro</button>
+                    <label class="toggle-btn">
+                        <input type="checkbox" id="controlsToggle">
+                        <span>Botões</span>
+                    </label>
+                    <div class="stats-panel" id="stats-panel">
+                        <h4>Estatísticas</h4>
+                        <p>Recorde de Pontuação: <span id="high-score">0</span></p>
+                        <p>Total de Linhas: <span id="total-lines">0</span></p>
+                        <p>Jogos Jogados: <span id="games-played">0</span></p>
+                        <p>Tempo Máximo: <span id="max-time">0s</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tela de Game Over -->
+    <div class="game-over" id="gameOver" style="display: none;">
+        <div class="game-over-content">
+            <h2>Game Over</h2>
+            <p>Pontuação: <span id="finalScore">0</span></p>
+            <p>Recorde: <span id="finalHighScore">0</span></p>
+            <p>Linhas Eliminadas: <span id="finalLines">0</span></p>
+            <p>Tempo de Jogo: <span id="finalGameTime">0s</span></p>
+            <button id="closeGameOver">OK</button>
+        </div>
+    </div>
+
+    <!-- Rodapé -->
+    <footer class="footer">
+        <div class="social-links">
+            <a href="https://youtube.com/@devandre2970" target="_blank"><i class="fab fa-youtube"></i></a>
+            <a href="https://www.instagram.com/navon_oficial" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.tiktok.com/@drives.games" target="_blank"><i class="fab fa-tiktok"></i></a>
+        </div>
+        <p>© 2025 Cambrero. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="tetris.js"></script>
+</body>
+</html>

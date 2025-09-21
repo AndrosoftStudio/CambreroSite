@@ -1,0 +1,560 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    color: #2d3748;
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+/* Header com menu hambúrguer e perfil */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    z-index: 1000;
+}
+
+.menu-button {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+.menu-button:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.hamburger {
+    width: 20px;
+    height: 16px;
+    position: relative;
+}
+
+.hamburger span {
+    display: block;
+    height: 2px;
+    width: 100%;
+    background: #2d3748;
+    border-radius: 1px;
+    position: absolute;
+    transition: all 0.3s;
+}
+
+.hamburger span:nth-child(1) { top: 0; }
+.hamburger span:nth-child(2) { top: 7px; }
+.hamburger span:nth-child(3) { top: 14px; }
+
+.profile-button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    background: #e2e8f0;
+    cursor: pointer;
+    overflow: hidden;
+    transition: transform 0.2s;
+}
+
+.profile-button:hover {
+    transform: scale(1.05);
+}
+
+.profile-button img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Menu lateral */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: -300px;
+    width: 300px;
+    height: 100vh;
+    background: white;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    transition: left 0.3s ease;
+    z-index: 1001;
+    padding: 80px 0 20px;
+}
+
+.sidebar.open {
+    left: 0;
+}
+
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s;
+}
+
+.sidebar-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.sidebar-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    color: #2d3748;
+    text-decoration: none;
+    transition: background 0.2s;
+    border: none;
+    background: none;
+    width: 100%;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.sidebar-item:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.sidebar-item i {
+    margin-right: 12px;
+    width: 20px;
+}
+
+/* Telas principais */
+.screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    padding-top: 60px;
+}
+
+.screen.hidden {
+    display: none;
+}
+
+/* Tela de Login */
+.game-title {
+    font-size: 4rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 10px;
+    text-align: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.online-counter {
+    font-size: 1.2rem;
+    color: #718096;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.login-container {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+}
+
+.google-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px 24px;
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #2d3748;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.google-btn:hover {
+    border-color: #cbd5e0;
+    background: #f7fafc;
+}
+
+.google-icon {
+    width: 20px;
+    height: 20px;
+}
+
+/* Menu Principal */
+.main-menu {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    max-width: 900px;
+    width: 90%;
+    text-align: center;
+}
+
+.user-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #f7fafc;
+    border-radius: 8px;
+}
+
+.mode-section {
+    margin-bottom: 40px;
+}
+
+.mode-section h3 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: #2d3748;
+}
+
+.mode-selection {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.mode-btn {
+    padding: 20px;
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    position: relative;
+}
+
+.mode-btn:hover {
+    border-color: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+}
+
+.competitive-mode .mode-btn {
+    border-color: #ff6b6b;
+}
+
+.competitive-mode .mode-btn:hover {
+    border-color: #ff5252;
+    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.2);
+}
+
+.casual-mode .mode-btn {
+    border-color: #51cf66;
+}
+
+.casual-mode .mode-btn:hover {
+    border-color: #40c057;
+    box-shadow: 0 5px 15px rgba(81, 207, 102, 0.2);
+}
+
+.mode-type-badge {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.competitive-badge {
+    background: #ff6b6b;
+    color: white;
+}
+
+.casual-badge {
+    background: #51cf66;
+    color: white;
+}
+
+/* Tela de Matchmaking */
+.matchmaking-info {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    width: 90%;
+    text-align: center;
+}
+
+.loading-spinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid #e2e8f0;
+    border-top: 4px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.queue-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.queue-stat {
+    padding: 15px;
+    background: #f7fafc;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.players-found {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+}
+
+.player-slot {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    border: 2px solid transparent;
+}
+
+.player-slot.filled {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+    animation: playerJoin 0.5s ease-out;
+}
+
+.player-slot.bot {
+    background: #ffa726;
+    border-color: #ff9800;
+}
+
+@keyframes playerJoin {
+    0% { transform: scale(0); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+/* Botões */
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #667eea;
+    color: white;
+}
+
+.btn:hover:not(:disabled) {
+    background: #5a67d8;
+    transform: translateY(-1px);
+}
+
+.btn:disabled {
+    background: #cbd5e0;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-secondary {
+    background: #e2e8f0;
+    color: #2d3748;
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: #cbd5e0;
+}
+
+/* Mensagens */
+.message {
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin: 10px 0;
+    font-size: 14px;
+}
+
+.message.error {
+    background: #fed7d7;
+    color: #c53030;
+    border: 1px solid #feb2b2;
+}
+
+.message.success {
+    background: #c6f6d5;
+    color: #2f855a;
+    border: 1px solid #9ae6b4;
+}
+
+.message.info {
+    background: #bee3f8;
+    color: #2c5282;
+    border: 1px solid #90cdf4;
+}
+
+.message.warning {
+    background: #fef5e7;
+    color: #b7791f;
+    border: 1px solid #f0d9b5;
+}
+
+/* Game Container */
+#gameContainer {
+    display: none;
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    background: #2d3748;
+    padding-top: 60px;
+}
+
+#gameCanvas {
+    border: 2px solid #4a5568;
+    background: #1a202c;
+    display: block;
+    margin: 20px auto;
+    border-radius: 8px;
+}
+
+.game-ui {
+    position: absolute;
+    z-index: 200;
+}
+
+.ui-top-left { top: 80px; left: 20px; }
+.ui-top-right { top: 80px; right: 20px; }
+.ui-bottom { bottom: 20px; left: 50%; transform: translateX(-50%); }
+
+.ui-panel {
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    color: white;
+}
+
+.control-btn {
+    padding: 8px 16px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    margin: 2px;
+    transition: background 0.2s;
+}
+
+.control-btn:hover:not(:disabled) {
+    background: #5a67d8;
+}
+
+.control-btn:disabled {
+    background: #4a5568;
+    cursor: not-allowed;
+}
+
+/* Notificações */
+.notification {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+    z-index: 9999;
+    animation: slideInRight 0.3s ease-out;
+}
+
+.notification.success { border-left-color: #51cf66; }
+.notification.error { border-left-color: #ff6b6b; }
+.notification.warning { border-left-color: #ffa726; }
+
+@keyframes slideInRight {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .game-title {
+        font-size: 2.5rem;
+    }
+    
+    .mode-selection {
+        grid-template-columns: 1fr;
+    }
+    
+    .sidebar {
+        width: 280px;
+        left: -280px;
+    }
+
+    .user-info {
+        flex-direction: column;
+        gap: 10px;
+    }
+}

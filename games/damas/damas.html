@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cambrero - Damas">
+    <title>Cambrero - Damas</title>
+    <link rel="icon" type="image/png" href="../../images/ícone.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navegação -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-mountain"></i> Cambrero
+        </div>
+        <div class="nav-toggle" id="navToggle">
+            <i class="fas fa-bars"></i>
+        </div>
+        <div class="nav-menu" id="navMenu">
+            <a href="../../account/login.html"><i class="fas fa-user"></i> Entrar</a>
+            <a href="#"><i class="fas fa-cog"></i> Configurações</a>
+            <a href="#"><i class="fas fa-hand-holding-heart"></i> Doações</a>
+            <a href="#"><i class="fas fa-photo-video"></i> Mídias</a>
+        </div>
+    </nav>
+    <div class="nav-overlay" id="navOverlay"></div>
+
+    <!-- Cabeçalho -->
+    <header class="header">
+        <a href="../jogos.html" class="back-button">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </a>
+        <h1>Damas</h1>
+    </header>
+
+    <!-- Container Principal -->
+    <div class="main-container">
+        <div class="game-container">
+            <div class="turn-indicator ia-turn" id="iaTurn"></div>
+            <div class="captured captured-ia" id="captured-ia"></div>
+            <div class="board-wrapper">
+                <div class="board" id="board"></div>
+                <button class="restart-game" id="restartGame">Reiniciar Partida</button>
+            </div>
+            <div class="captured captured-player" id="captured-player"></div>
+            <div class="turn-indicator player-turn" id="playerTurn"></div>
+        </div>
+    </div>
+
+    <!-- Modal de Game Over -->
+    <div class="game-over" id="gameOver" style="display: none;">
+        <div class="game-over-content">
+            <h2 id="gameOverTitle">Fim de Jogo</h2>
+            <p id="gameOverMessage"></p>
+            <button id="closeGameOver">OK</button>
+        </div>
+    </div>
+
+    <!-- Botão de Menu -->
+    <button class="menu-btn" id="gameMenuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Menu do Jogo -->
+    <div class="game-menu" id="gameMenu">
+        <div class="menu-header">
+            <h3>Menu</h3>
+            <button class="close-btn" id="closeGameMenu">×</button>
+        </div>
+        <div class="menu-content">
+            <button id="modeToggle">Mudar Modo (Jogador vs IA)</button>
+            <button id="showHistory">Histórico de Partidas</button>
+        </div>
+    </div>
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <!-- Aba de Histórico -->
+    <div class="history-tab" id="historyTab">
+        <div class="menu-header">
+            <h3>Histórico de Partidas</h3>
+            <button class="close-btn" id="closeHistoryTab">×</button>
+        </div>
+        <div class="menu-content">
+            <div class="history-list" id="historyList"></div>
+            <button class="clear-history" onclick="clearHistory()">Limpar Histórico</button>
+        </div>
+    </div>
+    <div class="history-overlay" id="historyOverlay"></div>
+
+    <!-- Botão de Modo Escuro -->
+    <button class="theme-toggle" id="themeToggle">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- Rodapé -->
+    <footer class="footer">
+        <div class="social-links">
+            <a href="https://youtube.com/@devandre2970" target="_blank"><i class="fab fa-youtube"></i></a>
+            <a href="https://www.instagram.com/navon_oficial" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.tiktok.com/@drives.games" target="_blank"><i class="fab fa-tiktok"></i></a>
+        </div>
+        <p>© 2025 Cambrero. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="sounds.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>

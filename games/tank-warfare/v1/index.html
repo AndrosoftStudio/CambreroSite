@@ -1,0 +1,3148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Tank Warfare - Batalha de Tanques Online</title>
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    
+    <!-- Mercado Pago SDK -->
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
+
+    <style>
+        /* ========== RESET E BASE ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* ========== TELA DE LOGIN ========== */
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        .login-container {
+            background: white;
+            padding: 48px;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .login-logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 24px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: white;
+        }
+
+        .login-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .login-subtitle {
+            color: #666;
+            margin-bottom: 32px;
+            font-size: 16px;
+        }
+
+        .google-login-btn {
+            background: white;
+            border: 2px solid #e0e0e0;
+            padding: 12px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .google-login-btn:hover {
+            background: #f8f8f8;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        /* ========== HEADER PRINCIPAL ========== */
+        .main-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            z-index: 1000;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .menu-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+        }
+
+        .menu-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .online-players {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #f5f5f5;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .online-dot {
+            width: 8px;
+            height: 8px;
+            background: #4CAF50;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .ping-indicator {
+            display: flex;
+            gap: 2px;
+            align-items: flex-end;
+        }
+
+        .ping-bar {
+            width: 4px;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .ping-bar:nth-child(1) { height: 8px; }
+        .ping-bar:nth-child(2) { height: 12px; }
+        .ping-bar:nth-child(3) { height: 16px; }
+
+        .ping-good .ping-bar { background: #4CAF50; }
+        .ping-medium .ping-bar { background: #FFC107; }
+        .ping-bad .ping-bar { background: #F44336; }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .currency-display {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #f5f5f5;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .profile-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .profile-btn:hover {
+            border-color: #667eea;
+            transform: scale(1.1);
+        }
+
+        .profile-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* ========== MENU LATERAL ========== */
+        .side-menu {
+            position: fixed;
+            left: -300px;
+            top: 64px;
+            width: 300px;
+            height: calc(100vh - 64px);
+            background: white;
+            box-shadow: 2px 0 20px rgba(0,0,0,0.1);
+            transition: left 0.3s ease;
+            z-index: 999;
+            overflow-y: auto;
+        }
+
+        .side-menu.active {
+            left: 0;
+        }
+
+        .menu-section {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .menu-section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #999;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 4px;
+        }
+
+        .menu-item:hover {
+            background: #f5f5f5;
+            transform: translateX(4px);
+        }
+
+        .menu-item.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .menu-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ========== CONTAINER PRINCIPAL ========== */
+        .main-container {
+            margin-top: 64px;
+            padding: 24px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+            display: none;
+        }
+
+        .main-container.active {
+            display: block;
+        }
+
+        /* ========== TELA DO MENU PRINCIPAL ========== */
+        .home-screen {
+            display: none;
+        }
+
+        .home-screen.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .game-modes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .mode-card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mode-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .mode-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        .mode-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .mode-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            margin-bottom: 16px;
+        }
+
+        .mode-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .mode-description {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .mode-players {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #999;
+        }
+
+        /* ========== MODAL DE SELEÇÃO DE PARTIDA ========== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: modalSlideUp 0.3s ease;
+        }
+
+        @keyframes modalSlideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: #f5f5f5;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: #e0e0e0;
+            transform: rotate(90deg);
+        }
+
+        .team-size-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .team-option {
+            padding: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .team-option:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .team-option.selected {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-color: transparent;
+        }
+
+        .play-button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .play-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .play-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ========== TELA DE JOGO ========== */
+        .game-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #1a1a1a;
+        }
+
+        .game-screen.active {
+            display: block;
+        }
+
+        #gameCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+        }
+
+        .game-ui {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+        }
+
+        .game-ui > * {
+            pointer-events: auto;
+        }
+
+        /* HUD Superior */
+        .game-hud-top {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .game-timer {
+            background: rgba(0,0,0,0.7);
+            padding: 12px 24px;
+            border-radius: 30px;
+            color: white;
+            font-size: 20px;
+            font-weight: 700;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .game-score {
+            background: rgba(0,0,0,0.7);
+            padding: 12px 24px;
+            border-radius: 30px;
+            color: white;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .team-score {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .team-score.blue { color: #2196F3; }
+        .team-score.red { color: #F44336; }
+
+        /* HUD Inferior */
+        .game-hud-bottom {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            align-items: flex-end;
+        }
+
+        .player-stats {
+            background: rgba(0,0,0,0.7);
+            padding: 16px;
+            border-radius: 16px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .stat-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            width: 60px;
+        }
+
+        .stat-progress {
+            width: 150px;
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .stat-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .health-fill { background: linear-gradient(90deg, #4CAF50, #8BC34A); }
+        .ammo-fill { background: linear-gradient(90deg, #FFC107, #FF9800); }
+        .fuel-fill { background: linear-gradient(90deg, #2196F3, #03A9F4); }
+
+        .powerup-display {
+            background: rgba(0,0,0,0.7);
+            padding: 16px;
+            border-radius: 16px;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .powerup-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 8px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .powerup-timer {
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        /* Controles Mobile */
+        .mobile-controls {
+            display: none;
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            pointer-events: none;
+        }
+
+        .mobile-controls.active {
+            display: block;
+        }
+
+        .joystick {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            width: 120px;
+            height: 120px;
+            pointer-events: auto;
+        }
+
+        .joystick-base {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.4);
+            border-radius: 50%;
+        }
+
+        .joystick-stick {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            background: rgba(255,255,255,0.8);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: none;
+        }
+
+        .fire-button {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 80px;
+            height: 80px;
+            background: rgba(244, 67, 54, 0.8);
+            border: 2px solid white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            pointer-events: auto;
+            user-select: none;
+            cursor: pointer;
+        }
+
+        .fire-button:active {
+            transform: scale(0.9);
+            background: rgba(244, 67, 54, 1);
+        }
+
+        /* ========== TELA DE RANKING ========== */
+        .ranking-screen {
+            display: none;
+        }
+
+        .ranking-screen.active {
+            display: block;
+        }
+
+        .ranking-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .ranking-title {
+            font-size: 36px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 16px;
+        }
+
+        .ranking-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .ranking-tab {
+            padding: 12px 24px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .ranking-tab:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .ranking-tab.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-color: transparent;
+        }
+
+        .ranking-tiers {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .tier-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .tier-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        .tier-badge {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 16px;
+            position: relative;
+        }
+
+        .tier-badge img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .tier-stars {
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 2px;
+        }
+
+        .tier-star {
+            width: 12px;
+            height: 12px;
+            background: gold;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+        }
+
+        .tier-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .tier-players {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .leaderboard {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .leaderboard-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .leaderboard-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px;
+            background: #f5f5f5;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .leaderboard-item:hover {
+            background: #e0e0e0;
+            transform: translateX(4px);
+        }
+
+        .leaderboard-rank {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .leaderboard-rank.gold { background: linear-gradient(135deg, #FFD700, #FFA000); }
+        .leaderboard-rank.silver { background: linear-gradient(135deg, #C0C0C0, #808080); }
+        .leaderboard-rank.bronze { background: linear-gradient(135deg, #CD7F32, #8B4513); }
+
+        .leaderboard-player {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .leaderboard-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .leaderboard-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .leaderboard-name {
+            font-weight: 600;
+        }
+
+        .leaderboard-stats {
+            display: flex;
+            gap: 16px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* ========== PERFIL ========== */
+        .profile-screen {
+            display: none;
+        }
+
+        .profile-screen.active {
+            display: block;
+        }
+
+        .profile-header {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .profile-info {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            margin-bottom: 32px;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 4px solid #e0e0e0;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-details {
+            flex: 1;
+        }
+
+        .profile-name {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .profile-rank {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .rank-badge {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .profile-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+        }
+
+        .profile-stat {
+            text-align: center;
+            padding: 12px;
+            background: #f5f5f5;
+            border-radius: 12px;
+        }
+
+        .profile-stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .profile-stat-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+
+        .stats-charts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .stat-chart-card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Gráfico de Pizza/Velocímetro */
+        .win-rate-chart {
+            position: relative;
+            width: 200px;
+            height: 200px;
+        }
+
+        .win-rate-svg {
+            transform: rotate(-90deg);
+        }
+
+        .win-rate-percentage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 36px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        /* ========== LOJA ========== */
+        .shop-screen {
+            display: none;
+        }
+
+        .shop-screen.active {
+            display: block;
+        }
+
+        .shop-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .shop-title {
+            font-size: 36px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 16px;
+        }
+
+        .shop-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .shop-tab {
+            padding: 12px 24px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .shop-tab:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .shop-tab.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-color: transparent;
+        }
+
+        .shop-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .shop-item {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .shop-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        .shop-item-image {
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
+            border-radius: 12px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+
+        .shop-item-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .shop-item-description {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .shop-item-price {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .price-tag {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 20px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .buy-button {
+            padding: 8px 20px;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .buy-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+        }
+
+        .buy-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* ========== CONFIGURAÇÕES ========== */
+        .settings-screen {
+            display: none;
+        }
+
+        .settings-screen.active {
+            display: block;
+        }
+
+        .settings-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .settings-title {
+            font-size: 36px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 32px;
+            text-align: center;
+        }
+
+        .settings-section {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .settings-section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-label {
+            font-weight: 600;
+        }
+
+        .setting-description {
+            font-size: 14px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .setting-control {
+            min-width: 200px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 56px;
+            height: 28px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #ccc;
+            transition: 0.3s;
+            border-radius: 28px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(28px);
+        }
+
+        .select-dropdown {
+            padding: 8px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .select-dropdown:hover {
+            border-color: #667eea;
+        }
+
+        .select-dropdown:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .slider-control {
+            width: 200px;
+        }
+
+        .slider-input {
+            width: 100%;
+            -webkit-appearance: none;
+            height: 6px;
+            border-radius: 3px;
+            background: #e0e0e0;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .slider-input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            cursor: pointer;
+        }
+
+        .slider-input::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            cursor: pointer;
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            .main-header {
+                padding: 0 16px;
+            }
+
+            .game-modes {
+                grid-template-columns: 1fr;
+            }
+
+            .ranking-tiers {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stats-charts {
+                grid-template-columns: 1fr;
+            }
+
+            .shop-items {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+
+            .profile-info {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .mobile-controls {
+                display: block;
+            }
+        }
+
+        /* ========== NOTIFICAÇÕES ========== */
+        .notification {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: white;
+            padding: 16px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 3000;
+            max-width: 350px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .notification.success .notification-icon {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .notification.error .notification-icon {
+            background: #F44336;
+            color: white;
+        }
+
+        .notification.warning .notification-icon {
+            background: #FFC107;
+            color: white;
+        }
+
+        .notification.info .notification-icon {
+            background: #2196F3;
+            color: white;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .notification-message {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* ========== LOADING ========== */
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loading-content {
+            text-align: center;
+            color: white;
+        }
+
+        .loading-text {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        /* ========== ORIENTATION WARNING ========== */
+        .orientation-warning {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 10001;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        @media (max-width: 768px) and (orientation: portrait) {
+            .orientation-warning {
+                display: flex;
+            }
+        }
+
+        .orientation-content {
+            background: white;
+            padding: 32px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+        }
+
+        .orientation-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .orientation-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .orientation-message {
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 24px;
+        }
+
+        .fullscreen-button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 0 8px;
+        }
+
+        .fullscreen-button:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <!-- Tela de Login -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-container">
+            <div class="login-logo">🎮</div>
+            <h1 class="login-title">Tank Warfare</h1>
+            <p class="login-subtitle" data-i18n="login.subtitle">Entre na batalha agora!</p>
+            <button class="google-login-btn" onclick="GameAuth.signInWithGoogle()">
+                <svg width="20" height="20" viewBox="0 0 48 48">
+                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                </svg>
+                <span data-i18n="login.google">Entrar com Google</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Header Principal -->
+    <header class="main-header" id="mainHeader" style="display: none;">
+        <div class="header-left">
+            <button class="menu-btn" onclick="UI.toggleMenu()">☰</button>
+            <div class="online-players">
+                <div class="online-dot"></div>
+                <span id="onlineCount">0</span>
+                <span data-i18n="header.online">online</span>
+            </div>
+            <div class="ping-indicator ping-good" id="pingIndicator">
+                <div class="ping-bar"></div>
+                <div class="ping-bar"></div>
+                <div class="ping-bar"></div>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="currency-display">
+                💰 <span id="playerCoins">0</span>
+            </div>
+            <div class="currency-display">
+                💎 <span id="playerGems">0</span>
+            </div>
+            <button class="profile-btn" id="profileBtn" onclick="UI.toggleProfileMenu()">
+                <img src="https://via.placeholder.com/40" alt="Profile" id="profileImage">
+            </button>
+        </div>
+    </header>
+
+    <!-- Menu Lateral -->
+    <nav class="side-menu" id="sideMenu">
+        <div class="menu-section">
+            <div class="menu-section-title" data-i18n="menu.game">JOGO</div>
+            <div class="menu-item active" onclick="UI.switchScreen('home')">
+                <div class="menu-icon">🏠</div>
+                <span data-i18n="menu.home">Início</span>
+            </div>
+            <div class="menu-item" onclick="UI.switchScreen('profile')">
+                <div class="menu-icon">👤</div>
+                <span data-i18n="menu.profile">Perfil</span>
+            </div>
+            <div class="menu-item" onclick="UI.switchScreen('ranking')">
+                <div class="menu-icon">🏆</div>
+                <span data-i18n="menu.ranking">Ranking</span>
+            </div>
+            <div class="menu-item" onclick="UI.switchScreen('shop')">
+                <div class="menu-icon">🛒</div>
+                <span data-i18n="menu.shop">Loja</span>
+            </div>
+        </div>
+        <div class="menu-section">
+            <div class="menu-section-title" data-i18n="menu.social">SOCIAL</div>
+            <div class="menu-item" onclick="UI.switchScreen('friends')">
+                <div class="menu-icon">👥</div>
+                <span data-i18n="menu.friends">Amigos</span>
+            </div>
+            <div class="menu-item" onclick="UI.switchScreen('club')">
+                <div class="menu-icon">🛡️</div>
+                <span data-i18n="menu.club">Clube</span>
+            </div>
+        </div>
+        <div class="menu-section">
+            <div class="menu-section-title" data-i18n="menu.options">OPÇÕES</div>
+            <div class="menu-item" onclick="UI.switchScreen('settings')">
+                <div class="menu-icon">⚙️</div>
+                <span data-i18n="menu.settings">Configurações</span>
+            </div>
+            <div class="menu-item" onclick="GameAuth.signOut()">
+                <div class="menu-icon">🚪</div>
+                <span data-i18n="menu.logout">Sair</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Container Principal -->
+    <div class="main-container" id="mainContainer">
+        <!-- Tela Inicial -->
+        <div class="home-screen active" id="homeScreen">
+            <div class="game-modes">
+                <div class="mode-card" onclick="Matchmaking.openModal('solo')">
+                    <div class="mode-icon">👤</div>
+                    <h3 class="mode-title" data-i18n="modes.solo.title">Solo</h3>
+                    <p class="mode-description" data-i18n="modes.solo.description">
+                        Entre em batalha contra múltiplos oponentes. Destrua tanques inimigos e ganhe pontos!
+                    </p>
+                    <div class="mode-players">
+                        <span>⚔️</span>
+                        <span data-i18n="modes.solo.players">2-10 jogadores</span>
+                    </div>
+                </div>
+
+                <div class="mode-card" onclick="Matchmaking.openModal('casual')">
+                    <div class="mode-icon">🎮</div>
+                    <h3 class="mode-title" data-i18n="modes.casual.title">Casual</h3>
+                    <p class="mode-description" data-i18n="modes.casual.description">
+                        Batalhas descontraídas em equipe. Não afeta seu ranking!
+                    </p>
+                    <div class="mode-players">
+                        <span>👥</span>
+                        <span data-i18n="modes.casual.players">1v1 até 5v5</span>
+                    </div>
+                </div>
+
+                <div class="mode-card" onclick="Matchmaking.openModal('competitive')">
+                    <div class="mode-icon">🏆</div>
+                    <h3 class="mode-title" data-i18n="modes.competitive.title">Competitivo</h3>
+                    <p class="mode-description" data-i18n="modes.competitive.description">
+                        Prove seu valor! Batalhas ranqueadas com jogadores do mesmo nível.
+                    </p>
+                    <div class="mode-players">
+                        <span>🔥</span>
+                        <span data-i18n="modes.competitive.players">1v1 até 5v5</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tela de Ranking -->
+        <div class="ranking-screen" id="rankingScreen">
+            <div class="ranking-header">
+                <h1 class="ranking-title" data-i18n="ranking.title">Ranking Global</h1>
+            </div>
+            
+            <div class="ranking-tabs">
+                <button class="ranking-tab active" onclick="Ranking.switchTab('solo')">Solo</button>
+                <button class="ranking-tab" onclick="Ranking.switchTab('teams')">Equipes</button>
+            </div>
+
+            <div class="ranking-tiers" id="rankingTiers">
+                <!-- Ranks serão gerados dinamicamente -->
+            </div>
+
+            <div class="leaderboard">
+                <h2 class="leaderboard-title" data-i18n="ranking.top">Top 10 Jogadores</h2>
+                <div class="leaderboard-list" id="leaderboardList">
+                    <!-- Lista será gerada dinamicamente -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Tela de Perfil -->
+        <div class="profile-screen" id="profileScreen">
+            <div class="profile-header">
+                <div class="profile-info">
+                    <div class="profile-avatar">
+                        <img src="https://via.placeholder.com/120" alt="Avatar" id="profilePageAvatar">
+                    </div>
+                    <div class="profile-details">
+                        <h2 class="profile-name" id="profilePageName">Jogador</h2>
+                        <div class="profile-rank">
+                            <span class="rank-badge" id="profilePageRank">Bronze I</span>
+                        </div>
+                        <div class="profile-stats-grid">
+                            <div class="profile-stat">
+                                <div class="profile-stat-value" id="totalMatches">0</div>
+                                <div class="profile-stat-label" data-i18n="profile.matches">Partidas</div>
+                            </div>
+                            <div class="profile-stat">
+                                <div class="profile-stat-value" id="totalWins">0</div>
+                                <div class="profile-stat-label" data-i18n="profile.wins">Vitórias</div>
+                            </div>
+                            <div class="profile-stat">
+                                <div class="profile-stat-value" id="totalKills">0</div>
+                                <div class="profile-stat-label" data-i18n="profile.kills">Abates</div>
+                            </div>
+                            <div class="profile-stat">
+                                <div class="profile-stat-value" id="winRate">0%</div>
+                                <div class="profile-stat-label" data-i18n="profile.winrate">Taxa de Vitória</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-charts">
+                <div class="stat-chart-card">
+                    <h3 class="chart-title" data-i18n="profile.performance">Desempenho</h3>
+                    <div class="chart-container">
+                        <div class="win-rate-chart">
+                            <svg class="win-rate-svg" width="200" height="200">
+                                <circle cx="100" cy="100" r="80" fill="none" stroke="#e0e0e0" stroke-width="20"/>
+                                <circle cx="100" cy="100" r="80" fill="none" stroke="url(#gradient)" stroke-width="20" 
+                                        stroke-dasharray="502" stroke-dashoffset="251" stroke-linecap="round"/>
+                                <defs>
+                                    <linearGradient id="gradient">
+                                        <stop offset="0%" stop-color="#667eea"/>
+                                        <stop offset="100%" stop-color="#764ba2"/>
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            <div class="win-rate-percentage" id="winRateChart">50%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tela de Loja -->
+        <div class="shop-screen" id="shopScreen">
+            <div class="shop-header">
+                <h1 class="shop-title" data-i18n="shop.title">Loja</h1>
+            </div>
+
+            <div class="shop-tabs">
+                <button class="shop-tab active" onclick="Shop.switchTab('tanks')">Tanques</button>
+                <button class="shop-tab" onclick="Shop.switchTab('skins')">Skins</button>
+                <button class="shop-tab" onclick="Shop.switchTab('powerups')">Power-ups</button>
+                <button class="shop-tab" onclick="Shop.switchTab('currency')">Moedas</button>
+            </div>
+
+            <div class="shop-items" id="shopItems">
+                <!-- Items serão gerados dinamicamente -->
+            </div>
+        </div>
+
+        <!-- Tela de Configurações -->
+        <div class="settings-screen" id="settingsScreen">
+            <div class="settings-container">
+                <h1 class="settings-title" data-i18n="settings.title">Configurações</h1>
+
+                <div class="settings-section">
+                    <h2 class="settings-section-title" data-i18n="settings.game">Jogo</h2>
+                    
+                    <div class="setting-item">
+                        <div>
+                            <div class="setting-label" data-i18n="settings.sound">Som</div>
+                            <div class="setting-description" data-i18n="settings.sound.desc">Ativar ou desativar efeitos sonoros</div>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="soundToggle" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div>
+                            <div class="setting-label" data-i18n="settings.music">Música</div>
+                            <div class="setting-description" data-i18n="settings.music.desc">Ativar ou desativar música de fundo</div>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="musicToggle" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div>
+                            <div class="setting-label" data-i18n="settings.graphics">Qualidade Gráfica</div>
+                            <div class="setting-description" data-i18n="settings.graphics.desc">Ajustar qualidade dos gráficos</div>
+                        </div>
+                        <div class="setting-control">
+                            <select class="select-dropdown" id="graphicsQuality">
+                                <option value="low">Baixa</option>
+                                <option value="medium" selected>Média</option>
+                                <option value="high">Alta</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h2 class="settings-section-title" data-i18n="settings.language">Idioma</h2>
+                    
+                    <div class="setting-item">
+                        <div>
+                            <div class="setting-label" data-i18n="settings.language.select">Selecionar Idioma</div>
+                            <div class="setting-description" data-i18n="settings.language.desc">Escolha o idioma do jogo</div>
+                        </div>
+                        <div class="setting-control">
+                            <select class="select-dropdown" id="languageSelect" onchange="i18n.setLanguage(this.value)">
+                                <option value="pt-BR">🇧🇷 Português (Brasil)</option>
+                                <option value="en">🇺🇸 English</option>
+                                <option value="es">🇪🇸 Español</option>
+                                <option value="fr">🇫🇷 Français</option>
+                                <option value="de">🇩🇪 Deutsch</option>
+                                <option value="it">🇮🇹 Italiano</option>
+                                <option value="ja">🇯🇵 日本語</option>
+                                <option value="zh">🇨🇳 中文</option>
+                                <option value="ko">🇰🇷 한국어</option>
+                                <option value="ru">🇷🇺 Русский</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h2 class="settings-section-title" data-i18n="settings.controls">Controles</h2>
+                    
+                    <div class="setting-item">
+                        <div>
+                            <div class="setting-label" data-i18n="settings.sensitivity">Sensibilidade</div>
+                            <div class="setting-description" data-i18n="settings.sensitivity.desc">Ajustar sensibilidade dos controles</div>
+                        </div>
+                        <div class="setting-control">
+                            <div class="slider-control">
+                                <input type="range" class="slider-input" id="sensitivitySlider" min="1" max="10" value="5">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Matchmaking -->
+    <div class="modal-overlay" id="matchmakingModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Selecionar Modo</h2>
+                <button class="modal-close" onclick="Matchmaking.closeModal()">✕</button>
+            </div>
+            
+            <div id="modalContent">
+                <!-- Conteúdo dinâmico baseado no modo selecionado -->
+            </div>
+            
+            <button class="play-button" id="playButton" onclick="Matchmaking.startSearch()">
+                <span data-i18n="play">JOGAR</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Tela de Jogo -->
+    <div class="game-screen" id="gameScreen">
+        <canvas id="gameCanvas"></canvas>
+        
+        <div class="game-ui">
+            <!-- HUD Superior -->
+            <div class="game-hud-top">
+                <div class="game-timer" id="gameTimer">5:00</div>
+                <div class="game-score">
+                    <div class="team-score blue">
+                        <span>Time Azul:</span>
+                        <span id="blueScore">0</span>
+                    </div>
+                    <div class="team-score red">
+                        <span>Time Vermelho:</span>
+                        <span id="redScore">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HUD Inferior -->
+            <div class="game-hud-bottom">
+                <div class="player-stats">
+                    <div class="stat-bar">
+                        <span class="stat-label">VIDA</span>
+                        <div class="stat-progress">
+                            <div class="stat-fill health-fill" id="healthBar" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    <div class="stat-bar">
+                        <span class="stat-label">MUNIÇÃO</span>
+                        <div class="stat-progress">
+                            <div class="stat-fill ammo-fill" id="ammoBar" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    <div class="stat-bar">
+                        <span class="stat-label">COMBUSTÍVEL</span>
+                        <div class="stat-progress">
+                            <div class="stat-fill fuel-fill" id="fuelBar" style="width: 100%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="powerup-display" id="powerupDisplay" style="display: none;">
+                    <div class="powerup-icon" id="powerupIcon">🛡️</div>
+                    <div class="powerup-timer" id="powerupTimer">10s</div>
+                </div>
+            </div>
+
+            <!-- Controles Mobile -->
+            <div class="mobile-controls" id="mobileControls">
+                <div class="joystick" id="joystick">
+                    <div class="joystick-base"></div>
+                    <div class="joystick-stick" id="joystickStick"></div>
+                </div>
+                <button class="fire-button" id="fireButton">🔥</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div class="loading-text" id="loadingText">Carregando...</div>
+        </div>
+    </div>
+
+    <!-- Notificações -->
+    <div class="notification" id="notification">
+        <div class="notification-icon" id="notificationIcon">✓</div>
+        <div class="notification-content">
+            <div class="notification-title" id="notificationTitle">Sucesso!</div>
+            <div class="notification-message" id="notificationMessage">Ação realizada com sucesso.</div>
+        </div>
+    </div>
+
+    <!-- Aviso de Orientação -->
+    <div class="orientation-warning">
+        <div class="orientation-content">
+            <div class="orientation-icon">📱</div>
+            <h2 class="orientation-title" data-i18n="orientation.title">Gire seu dispositivo</h2>
+            <p class="orientation-message" data-i18n="orientation.message">
+                Para uma melhor experiência, recomendamos usar o dispositivo no modo paisagem.
+            </p>
+            <button class="fullscreen-button" onclick="UI.requestFullscreen()">
+                Tela Cheia
+            </button>
+            <button class="fullscreen-button" onclick="this.parentElement.parentElement.style.display='none'">
+                Continuar Assim
+            </button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // ========== CONFIGURAÇÃO DO FIREBASE ==========
+        const firebaseConfig = {
+            apiKey: "AIzaSyAVHznNje2-StnWRFvoakV_F9nMuYG4ODI",
+            authDomain: "tank-warfare-10a05.firebaseapp.com",
+            databaseURL: "https://tank-warfare-10a05-default-rtdb.firebaseio.com",
+            projectId: "tank-warfare-10a05",
+            storageBucket: "tank-warfare-10a05.firebasestorage.app",
+            messagingSenderId: "797243766343",
+            appId: "1:797243766343:web:850ffb416ab755c1f62362",
+            measurementId: "G-G9D4B7ZC6S"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+        const storage = firebase.storage();
+
+        // ========== SISTEMA DE AUTENTICAÇÃO ==========
+        const GameAuth = {
+            currentUser: null,
+
+            init() {
+                auth.onAuthStateChanged((user) => {
+                    if (user) {
+                        this.currentUser = user;
+                        this.onSignIn(user);
+                    } else {
+                        this.currentUser = null;
+                        this.onSignOut();
+                    }
+                });
+            },
+
+            async signInWithGoogle() {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                try {
+                    const result = await auth.signInWithPopup(provider);
+                    console.log('Login successful:', result.user);
+                } catch (error) {
+                    console.error('Login error:', error);
+                    UI.showNotification('error', 'Erro no Login', error.message);
+                }
+            },
+
+            async signOut() {
+                try {
+                    await auth.signOut();
+                    console.log('Logout successful');
+                } catch (error) {
+                    console.error('Logout error:', error);
+                }
+            },
+
+            onSignIn(user) {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('mainHeader').style.display = 'flex';
+                document.getElementById('mainContainer').classList.add('active');
+                
+                // Atualizar UI com dados do usuário
+                document.getElementById('profileImage').src = user.photoURL || 'https://via.placeholder.com/40';
+                document.getElementById('profilePageAvatar').src = user.photoURL || 'https://via.placeholder.com/120';
+                document.getElementById('profilePageName').textContent = user.displayName || 'Jogador';
+                
+                // Carregar dados do jogador
+                PlayerData.loadPlayerData(user.uid);
+                
+                // Iniciar monitoramento de jogadores online
+                OnlineMonitor.start();
+            },
+
+            onSignOut() {
+                document.getElementById('loginScreen').style.display = 'flex';
+                document.getElementById('mainHeader').style.display = 'none';
+                document.getElementById('mainContainer').classList.remove('active');
+                
+                // Parar monitoramento
+                OnlineMonitor.stop();
+            }
+        };
+
+        // ========== SISTEMA DE DADOS DO JOGADOR ==========
+        const PlayerData = {
+            data: {
+                coins: 1000,
+                gems: 50,
+                rank: 'bronze_1',
+                stats: {
+                    matches: 0,
+                    wins: 0,
+                    kills: 0,
+                    deaths: 0,
+                    distance: 0,
+                    shots: 0,
+                    hits: 0
+                },
+                tanks: ['basic'],
+                skins: ['default'],
+                friends: [],
+                club: null
+            },
+
+            async loadPlayerData(uid) {
+                try {
+                    const snapshot = await database.ref(`players/${uid}`).once('value');
+                    if (snapshot.exists()) {
+                        this.data = { ...this.data, ...snapshot.val() };
+                    } else {
+                        // Criar dados iniciais para novo jogador
+                        await this.savePlayerData(uid);
+                    }
+                    this.updateUI();
+                } catch (error) {
+                    console.error('Error loading player data:', error);
+                }
+            },
+
+            async savePlayerData(uid) {
+                try {
+                    await database.ref(`players/${uid}`).set(this.data);
+                } catch (error) {
+                    console.error('Error saving player data:', error);
+                }
+            },
+
+            updateUI() {
+                document.getElementById('playerCoins').textContent = this.data.coins;
+                document.getElementById('playerGems').textContent = this.data.gems;
+                document.getElementById('totalMatches').textContent = this.data.stats.matches;
+                document.getElementById('totalWins').textContent = this.data.stats.wins;
+                document.getElementById('totalKills').textContent = this.data.stats.kills;
+                
+                const winRate = this.data.stats.matches > 0 
+                    ? Math.round((this.data.stats.wins / this.data.stats.matches) * 100) 
+                    : 0;
+                document.getElementById('winRate').textContent = winRate + '%';
+                document.getElementById('winRateChart').textContent = winRate + '%';
+                
+                // Atualizar gráfico de taxa de vitória
+                const circle = document.querySelector('.win-rate-svg circle:last-child');
+                const circumference = 2 * Math.PI * 80;
+                const offset = circumference - (winRate / 100 * circumference);
+                circle.style.strokeDashoffset = offset;
+            }
+        };
+
+        // ========== MONITOR DE JOGADORES ONLINE ==========
+        const OnlineMonitor = {
+            intervalId: null,
+
+            start() {
+                this.updateOnlineCount();
+                this.intervalId = setInterval(() => this.updateOnlineCount(), 5000);
+                this.updatePing();
+                setInterval(() => this.updatePing(), 2000);
+            },
+
+            stop() {
+                if (this.intervalId) {
+                    clearInterval(this.intervalId);
+                }
+            },
+
+            async updateOnlineCount() {
+                try {
+                    const snapshot = await database.ref('online').once('value');
+                    const count = snapshot.numChildren() || Math.floor(Math.random() * 1000) + 100;
+                    document.getElementById('onlineCount').textContent = count;
+                } catch (error) {
+                    console.error('Error updating online count:', error);
+                }
+            },
+
+            updatePing() {
+                const ping = Math.floor(Math.random() * 150) + 10;
+                const indicator = document.getElementById('pingIndicator');
+                
+                indicator.classList.remove('ping-good', 'ping-medium', 'ping-bad');
+                
+                if (ping < 50) {
+                    indicator.classList.add('ping-good');
+                } else if (ping < 100) {
+                    indicator.classList.add('ping-medium');
+                } else {
+                    indicator.classList.add('ping-bad');
+                }
+            }
+        };
+
+        // ========== SISTEMA DE UI ==========
+        const UI = {
+            currentScreen: 'home',
+
+            toggleMenu() {
+                document.getElementById('sideMenu').classList.toggle('active');
+            },
+
+            toggleProfileMenu() {
+                // Implementar dropdown do perfil
+            },
+
+            switchScreen(screen) {
+                // Esconder todas as telas
+                document.querySelectorAll('.home-screen, .ranking-screen, .profile-screen, .shop-screen, .settings-screen')
+                    .forEach(el => el.classList.remove('active'));
+                
+                // Mostrar tela selecionada
+                const screenElement = document.getElementById(screen + 'Screen');
+                if (screenElement) {
+                    screenElement.classList.add('active');
+                }
+                
+                // Atualizar menu ativo
+                document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+                event.currentTarget.classList.add('active');
+                
+                this.currentScreen = screen;
+                this.toggleMenu();
+            },
+
+            showNotification(type, title, message) {
+                const notification = document.getElementById('notification');
+                const icon = document.getElementById('notificationIcon');
+                
+                notification.className = `notification ${type} show`;
+                document.getElementById('notificationTitle').textContent = title;
+                document.getElementById('notificationMessage').textContent = message;
+                
+                // Ícones por tipo
+                const icons = {
+                    success: '✓',
+                    error: '✕',
+                    warning: '⚠',
+                    info: 'ℹ'
+                };
+                icon.textContent = icons[type] || '✓';
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            },
+
+            showLoading(text = 'Carregando...') {
+                document.getElementById('loadingText').textContent = text;
+                document.getElementById('loadingOverlay').classList.add('active');
+            },
+
+            hideLoading() {
+                document.getElementById('loadingOverlay').classList.remove('active');
+            },
+
+            requestFullscreen() {
+                const elem = document.documentElement;
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen();
+                } else if (elem.webkitRequestFullscreen) {
+                    elem.webkitRequestFullscreen();
+                } else if (elem.msRequestFullscreen) {
+                    elem.msRequestFullscreen();
+                }
+            }
+        };
+
+        // ========== SISTEMA DE MATCHMAKING ==========
+        const Matchmaking = {
+            currentMode: null,
+            selectedTeamSize: '1v1',
+
+            openModal(mode) {
+                this.currentMode = mode;
+                const modal = document.getElementById('matchmakingModal');
+                const content = document.getElementById('modalContent');
+                
+                if (mode === 'solo') {
+                    content.innerHTML = `
+                        <h3>Escolha o número de jogadores:</h3>
+                        <div class="team-size-options">
+                            ${[2,3,4,5,6,7,8,9,10].map(n => `
+                                <div class="team-option ${n === 4 ? 'selected' : ''}" 
+                                     onclick="Matchmaking.selectSoloSize(${n})">${n} Jogadores</div>
+                            `).join('')}
+                        </div>
+                    `;
+                } else {
+                    content.innerHTML = `
+                        <h3>Escolha o tamanho das equipes:</h3>
+                        <div class="team-size-options">
+                            ${['1v1','2v2','3v3','4v4','5v5'].map(size => `
+                                <div class="team-option ${size === '1v1' ? 'selected' : ''}" 
+                                     onclick="Matchmaking.selectTeamSize('${size}')">${size}</div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+                
+                modal.classList.add('active');
+            },
+
+            closeModal() {
+                document.getElementById('matchmakingModal').classList.remove('active');
+            },
+
+            selectSoloSize(size) {
+                document.querySelectorAll('.team-option').forEach(el => el.classList.remove('selected'));
+                event.currentTarget.classList.add('selected');
+                this.selectedTeamSize = size;
+            },
+
+            selectTeamSize(size) {
+                document.querySelectorAll('.team-option').forEach(el => el.classList.remove('selected'));
+                event.currentTarget.classList.add('selected');
+                this.selectedTeamSize = size;
+            },
+
+            async startSearch() {
+                UI.showLoading('Procurando partida...');
+                this.closeModal();
+                
+                // Simular busca de partida
+                setTimeout(() => {
+                    UI.hideLoading();
+                    Game.startMatch(this.currentMode, this.selectedTeamSize);
+                }, 2000 + Math.random() * 3000);
+            }
+        };
+
+        // ========== SISTEMA DE JOGO ==========
+        const Game = {
+            canvas: null,
+            ctx: null,
+            isRunning: false,
+            players: {},
+            projectiles: [],
+            powerups: [],
+            obstacles: [],
+
+            startMatch(mode, teamSize) {
+                document.getElementById('mainContainer').style.display = 'none';
+                document.getElementById('gameScreen').classList.add('active');
+                
+                this.canvas = document.getElementById('gameCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                
+                this.setupCanvas();
+                this.setupControls();
+                this.isRunning = true;
+                this.gameLoop();
+                
+                UI.showNotification('success', 'Partida Iniciada!', `Modo ${mode} - ${teamSize}`);
+            },
+
+            setupCanvas() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+                
+                window.addEventListener('resize', () => {
+                    this.canvas.width = window.innerWidth;
+                    this.canvas.height = window.innerHeight;
+                });
+            },
+
+            setupControls() {
+                // Detectar se é mobile
+                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                
+                if (isMobile) {
+                    document.getElementById('mobileControls').classList.add('active');
+                    this.setupMobileControls();
+                } else {
+                    this.setupKeyboardControls();
+                    this.setupMouseControls();
+                }
+                
+                // Suporte para gamepad
+                this.setupGamepadControls();
+            },
+
+            setupKeyboardControls() {
+                const keys = {};
+                
+                document.addEventListener('keydown', (e) => {
+                    keys[e.key.toLowerCase()] = true;
+                });
+                
+                document.addEventListener('keyup', (e) => {
+                    keys[e.key.toLowerCase()] = false;
+                });
+                
+                this.keys = keys;
+            },
+
+            setupMouseControls() {
+                this.canvas.addEventListener('click', (e) => {
+                    this.fire(e.clientX, e.clientY);
+                });
+            },
+
+            setupMobileControls() {
+                const joystick = document.getElementById('joystick');
+                const stick = document.getElementById('joystickStick');
+                const fireBtn = document.getElementById('fireButton');
+                
+                let joystickActive = false;
+                let joystickData = { x: 0, y: 0 };
+                
+                const handleJoystick = (e) => {
+                    if (!joystickActive) return;
+                    
+                    const touch = e.touches ? e.touches[0] : e;
+                    const rect = joystick.getBoundingClientRect();
+                    const centerX = rect.left + rect.width / 2;
+                    const centerY = rect.top + rect.height / 2;
+                    
+                    let x = touch.clientX - centerX;
+                    let y = touch.clientY - centerY;
+                    
+                    const distance = Math.sqrt(x * x + y * y);
+                    const maxDistance = rect.width / 2 - 25;
+                    
+                    if (distance > maxDistance) {
+                        x = (x / distance) * maxDistance;
+                        y = (y / distance) * maxDistance;
+                    }
+                    
+                    stick.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+                    
+                    joystickData.x = x / maxDistance;
+                    joystickData.y = y / maxDistance;
+                };
+                
+                joystick.addEventListener('touchstart', (e) => {
+                    joystickActive = true;
+                    handleJoystick(e);
+                });
+                
+                joystick.addEventListener('touchmove', handleJoystick);
+                
+                joystick.addEventListener('touchend', () => {
+                    joystickActive = false;
+                    stick.style.transform = 'translate(-50%, -50%)';
+                    joystickData = { x: 0, y: 0 };
+                });
+                
+                fireBtn.addEventListener('click', () => {
+                    this.fire();
+                });
+                
+                this.joystickData = joystickData;
+            },
+
+            setupGamepadControls() {
+                window.addEventListener('gamepadconnected', (e) => {
+                    console.log('Gamepad connected:', e.gamepad);
+                    UI.showNotification('info', 'Controle Conectado', e.gamepad.id);
+                });
+                
+                window.addEventListener('gamepaddisconnected', (e) => {
+                    console.log('Gamepad disconnected:', e.gamepad);
+                    UI.showNotification('info', 'Controle Desconectado', e.gamepad.id);
+                });
+            },
+
+            fire(targetX, targetY) {
+                // Lógica de tiro
+                console.log('Fire!', targetX, targetY);
+            },
+
+            gameLoop() {
+                if (!this.isRunning) return;
+                
+                this.update();
+                this.render();
+                
+                requestAnimationFrame(() => this.gameLoop());
+            },
+
+            update() {
+                // Atualizar lógica do jogo
+                this.handleInput();
+                this.updatePlayers();
+                this.updateProjectiles();
+                this.checkCollisions();
+            },
+
+            handleInput() {
+                // Processar input do teclado
+                if (this.keys) {
+                    if (this.keys['w']) this.movePlayer(0, -1);
+                    if (this.keys['s']) this.movePlayer(0, 1);
+                    if (this.keys['a']) this.movePlayer(-1, 0);
+                    if (this.keys['d']) this.movePlayer(1, 0);
+                }
+                
+                // Processar joystick mobile
+                if (this.joystickData) {
+                    this.movePlayer(this.joystickData.x, this.joystickData.y);
+                }
+                
+                // Processar gamepad
+                const gamepads = navigator.getGamepads();
+                for (const gamepad of gamepads) {
+                    if (gamepad) {
+                        const x = gamepad.axes[0];
+                        const y = gamepad.axes[1];
+                        if (Math.abs(x) > 0.1 || Math.abs(y) > 0.1) {
+                            this.movePlayer(x, y);
+                        }
+                        
+                        if (gamepad.buttons[0].pressed) {
+                            this.fire();
+                        }
+                    }
+                }
+            },
+
+            movePlayer(x, y) {
+                // Implementar movimento do jogador
+            },
+
+            updatePlayers() {
+                // Atualizar posições dos jogadores
+            },
+
+            updateProjectiles() {
+                // Atualizar projéteis
+            },
+
+            checkCollisions() {
+                // Verificar colisões
+            },
+
+            render() {
+                // Limpar canvas
+                this.ctx.fillStyle = '#2a2a2a';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Renderizar mapa
+                this.renderMap();
+                
+                // Renderizar jogadores
+                this.renderPlayers();
+                
+                // Renderizar projéteis
+                this.renderProjectiles();
+                
+                // Renderizar power-ups
+                this.renderPowerups();
+            },
+
+            renderMap() {
+                // Desenhar grid do mapa
+                this.ctx.strokeStyle = '#444';
+                this.ctx.lineWidth = 1;
+                
+                const gridSize = 50;
+                for (let x = 0; x < this.canvas.width; x += gridSize) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(x, 0);
+                    this.ctx.lineTo(x, this.canvas.height);
+                    this.ctx.stroke();
+                }
+                
+                for (let y = 0; y < this.canvas.height; y += gridSize) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(0, y);
+                    this.ctx.lineTo(this.canvas.width, y);
+                    this.ctx.stroke();
+                }
+            },
+
+            renderPlayers() {
+                // Renderizar tanques
+                for (const playerId in this.players) {
+                    const player = this.players[playerId];
+                    this.drawTank(player.x, player.y, player.rotation, player.color);
+                }
+            },
+
+            drawTank(x, y, rotation, color) {
+                this.ctx.save();
+                this.ctx.translate(x, y);
+                this.ctx.rotate(rotation);
+                
+                // Corpo do tanque
+                this.ctx.fillStyle = color;
+                this.ctx.fillRect(-20, -15, 40, 30);
+                
+                // Canhão
+                this.ctx.fillStyle = '#333';
+                this.ctx.fillRect(0, -3, 30, 6);
+                
+                this.ctx.restore();
+            },
+
+            renderProjectiles() {
+                this.ctx.fillStyle = '#ff0';
+                for (const projectile of this.projectiles) {
+                    this.ctx.beginPath();
+                    this.ctx.arc(projectile.x, projectile.y, 3, 0, Math.PI * 2);
+                    this.ctx.fill();
+                }
+            },
+
+            renderPowerups() {
+                for (const powerup of this.powerups) {
+                    this.ctx.fillStyle = powerup.color;
+                    this.ctx.fillRect(powerup.x - 10, powerup.y - 10, 20, 20);
+                }
+            },
+
+            endMatch() {
+                this.isRunning = false;
+                document.getElementById('gameScreen').classList.remove('active');
+                document.getElementById('mainContainer').style.display = 'block';
+            }
+        };
+
+        // ========== SISTEMA DE RANKING ==========
+        const Ranking = {
+            ranks: [
+                { id: 'unranked', name: 'Sem Classificação', icon: '🎯', color: '#999' },
+                { id: 'bronze_1', name: 'Bronze I', icon: '🥉', color: '#CD7F32' },
+                { id: 'bronze_2', name: 'Bronze II', icon: '🥉', color: '#CD7F32' },
+                { id: 'bronze_3', name: 'Bronze III', icon: '🥉', color: '#CD7F32' },
+                { id: 'bronze_4', name: 'Bronze IV', icon: '🥉', color: '#CD7F32' },
+                { id: 'bronze_5', name: 'Bronze V', icon: '🥉', color: '#CD7F32' },
+                { id: 'iron_1', name: 'Ferro I', icon: '⚙️', color: '#434343' },
+                { id: 'iron_2', name: 'Ferro II', icon: '⚙️', color: '#434343' },
+                { id: 'iron_3', name: 'Ferro III', icon: '⚙️', color: '#434343' },
+                { id: 'iron_4', name: 'Ferro IV', icon: '⚙️', color: '#434343' },
+                { id: 'iron_5', name: 'Ferro V', icon: '⚙️', color: '#434343' },
+                { id: 'silver_1', name: 'Prata I', icon: '🥈', color: '#C0C0C0' },
+                { id: 'silver_2', name: 'Prata II', icon: '🥈', color: '#C0C0C0' },
+                { id: 'silver_3', name: 'Prata III', icon: '🥈', color: '#C0C0C0' },
+                { id: 'silver_4', name: 'Prata IV', icon: '🥈', color: '#C0C0C0' },
+                { id: 'silver_5', name: 'Prata V', icon: '🥈', color: '#C0C0C0' },
+                { id: 'gold_1', name: 'Ouro I', icon: '🥇', color: '#FFD700' },
+                { id: 'gold_2', name: 'Ouro II', icon: '🥇', color: '#FFD700' },
+                { id: 'gold_3', name: 'Ouro III', icon: '🥇', color: '#FFD700' },
+                { id: 'gold_4', name: 'Ouro IV', icon: '🥇', color: '#FFD700' },
+                { id: 'gold_5', name: 'Ouro V', icon: '🥇', color: '#FFD700' },
+                { id: 'platinum_1', name: 'Platina I', icon: '💎', color: '#E5E4E2' },
+                { id: 'platinum_2', name: 'Platina II', icon: '💎', color: '#E5E4E2' },
+                { id: 'platinum_3', name: 'Platina III', icon: '💎', color: '#E5E4E2' },
+                { id: 'platinum_4', name: 'Platina IV', icon: '💎', color: '#E5E4E2' },
+                { id: 'platinum_5', name: 'Platina V', icon: '💎', color: '#E5E4E2' },
+                { id: 'diamond_1', name: 'Diamante I', icon: '💠', color: '#B9F2FF' },
+                { id: 'diamond_2', name: 'Diamante II', icon: '💠', color: '#B9F2FF' },
+                { id: 'diamond_3', name: 'Diamante III', icon: '💠', color: '#B9F2FF' },
+                { id: 'diamond_4', name: 'Diamante IV', icon: '💠', color: '#B9F2FF' },
+                { id: 'diamond_5', name: 'Diamante V', icon: '💠', color: '#B9F2FF' },
+                { id: 'lonsdaleite_1', name: 'Lonsdaleíta I', icon: '⬡', color: '#4B0082' },
+                { id: 'lonsdaleite_2', name: 'Lonsdaleíta II', icon: '⬡', color: '#4B0082' },
+                { id: 'lonsdaleite_3', name: 'Lonsdaleíta III', icon: '⬡', color: '#4B0082' },
+                { id: 'lonsdaleite_4', name: 'Lonsdaleíta IV', icon: '⬡', color: '#4B0082' },
+                { id: 'lonsdaleite_5', name: 'Lonsdaleíta V', icon: '⬡', color: '#4B0082' },
+                { id: 'nbw_1', name: 'NBW I', icon: '⚡', color: '#FF1493' },
+                { id: 'nbw_2', name: 'NBW II', icon: '⚡', color: '#FF1493' },
+                { id: 'nbw_3', name: 'NBW III', icon: '⚡', color: '#FF1493' },
+                { id: 'nbw_4', name: 'NBW IV', icon: '⚡', color: '#FF1493' },
+                { id: 'nbw_5', name: 'NBW V', icon: '⚡', color: '#FF1493' },
+                { id: 'titan_1', name: 'Titã I', icon: '🔱', color: '#FF4500' },
+                { id: 'titan_2', name: 'Titã II', icon: '🔱', color: '#FF4500' },
+                { id: 'titan_3', name: 'Titã III', icon: '🔱', color: '#FF4500' },
+                { id: 'titan_4', name: 'Titã IV', icon: '🔱', color: '#FF4500' },
+                { id: 'titan_5', name: 'Titã V', icon: '🔱', color: '#FF4500' },
+                { id: 'champion_1', name: 'Campeão I', icon: '👑', color: '#9400D3' },
+                { id: 'champion_2', name: 'Campeão II', icon: '👑', color: '#9400D3' },
+                { id: 'champion_3', name: 'Campeão III', icon: '👑', color: '#9400D3' },
+                { id: 'magnus', name: 'Magnus Champion', icon: '🏆', color: '#FFD700' }
+            ],
+
+            switchTab(tab) {
+                document.querySelectorAll('.ranking-tab').forEach(el => el.classList.remove('active'));
+                event.currentTarget.classList.add('active');
+                this.loadRankingData(tab);
+            },
+
+            loadRankingData(type) {
+                this.displayRanks();
+                this.loadLeaderboard(type);
+            },
+
+            displayRanks() {
+                const container = document.getElementById('rankingTiers');
+                container.innerHTML = '';
+                
+                const mainRanks = ['bronze', 'iron', 'silver', 'gold', 'platinum', 'diamond'];
+                
+                mainRanks.forEach(rankType => {
+                    const rank = this.ranks.find(r => r.id.startsWith(rankType));
+                    if (rank) {
+                        const card = document.createElement('div');
+                        card.className = 'tier-card';
+                        card.innerHTML = `
+                            <div class="tier-badge">
+                                <div style="font-size: 48px;">${rank.icon}</div>
+                                <div class="tier-stars">
+                                    ${[1,2,3,4,5].map(i => `<div class="tier-star"></div>`).join('')}
+                                </div>
+                            </div>
+                            <div class="tier-name" style="color: ${rank.color}">${rank.name.split(' ')[0]}</div>
+                            <div class="tier-players">${Math.floor(Math.random() * 5000)} jogadores</div>
+                        `;
+                        container.appendChild(card);
+                    }
+                });
+            },
+
+            async loadLeaderboard(type) {
+                const list = document.getElementById('leaderboardList');
+                list.innerHTML = '';
+                
+                // Simular top 10 jogadores
+                const topPlayers = [
+                    { name: 'TankMaster', rank: 'magnus', wins: 2543, kd: 3.8 },
+                    { name: 'Destroyer99', rank: 'champion_3', wins: 2102, kd: 3.2 },
+                    { name: 'ProPlayer', rank: 'champion_2', wins: 1876, kd: 2.9 },
+                    { name: 'WarriorX', rank: 'champion_1', wins: 1654, kd: 2.7 },
+                    { name: 'TankLord', rank: 'titan_5', wins: 1432, kd: 2.5 },
+                    { name: 'BattleAce', rank: 'titan_4', wins: 1298, kd: 2.3 },
+                    { name: 'IronFist', rank: 'titan_3', wins: 1176, kd: 2.1 },
+                    { name: 'SteelRain', rank: 'titan_2', wins: 1054, kd: 1.9 },
+                    { name: 'ThunderBolt', rank: 'titan_1', wins: 932, kd: 1.8 },
+                    { name: 'FireStorm', rank: 'nbw_5', wins: 876, kd: 1.7 }
+                ];
+                
+                topPlayers.forEach((player, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'leaderboard-item';
+                    
+                    let rankClass = '';
+                    if (index === 0) rankClass = 'gold';
+                    else if (index === 1) rankClass = 'silver';
+                    else if (index === 2) rankClass = 'bronze';
+                    
+                    item.innerHTML = `
+                        <div class="leaderboard-rank ${rankClass}">${index + 1}</div>
+                        <div class="leaderboard-player">
+                            <div class="leaderboard-avatar">
+                                <img src="https://via.placeholder.com/36" alt="${player.name}">
+                            </div>
+                            <div class="leaderboard-name">${player.name}</div>
+                        </div>
+                        <div class="leaderboard-stats">
+                            <span>🏆 ${player.wins}</span>
+                            <span>K/D: ${player.kd}</span>
+                        </div>
+                    `;
+                    
+                    list.appendChild(item);
+                });
+            }
+        };
+
+        // ========== SISTEMA DE LOJA ==========
+        const Shop = {
+            items: {
+                tanks: [
+                    { id: 'light_tank', name: 'Tanque Leve', price: 5000, currency: 'coins', description: 'Rápido e ágil', icon: '🚗' },
+                    { id: 'medium_tank', name: 'Tanque Médio', price: 10000, currency: 'coins', description: 'Equilibrado', icon: '🚙' },
+                    { id: 'heavy_tank', name: 'Tanque Pesado', price: 20000, currency: 'coins', description: 'Alta resistência', icon: '🚛' },
+                    { id: 'destroyer', name: 'Destruidor', price: 100, currency: 'gems', description: 'Dano massivo', icon: '💥' }
+                ],
+                skins: [
+                    { id: 'desert', name: 'Deserto', price: 2000, currency: 'coins', description: 'Camuflagem do deserto', icon: '🏜️' },
+                    { id: 'jungle', name: 'Selva', price: 2000, currency: 'coins', description: 'Camuflagem da selva', icon: '🌿' },
+                    { id: 'arctic', name: 'Ártico', price: 2000, currency: 'coins', description: 'Camuflagem de neve', icon: '❄️' },
+                    { id: 'gold', name: 'Dourado', price: 50, currency: 'gems', description: 'Skin exclusiva dourada', icon: '✨' }
+                ],
+                powerups: [
+                    { id: 'shield_pack', name: 'Pacote de Escudos', price: 500, currency: 'coins', description: '5x Escudos', icon: '🛡️' },
+                    { id: 'ammo_pack', name: 'Pacote de Munição', price: 300, currency: 'coins', description: '10x Munição Extra', icon: '🎯' },
+                    { id: 'fuel_pack', name: 'Pacote de Combustível', price: 400, currency: 'coins', description: '5x Combustível', icon: '⛽' },
+                    { id: 'boost_pack', name: 'Pacote de Boost', price: 25, currency: 'gems', description: '3x Super Boost', icon: '🚀' }
+                ],
+                currency: [
+                    { id: 'coins_1000', name: '1.000 Moedas', price: 4.99, currency: 'real', description: 'Pacote básico', icon: '💰' },
+                    { id: 'coins_5000', name: '5.000 Moedas', price: 19.99, currency: 'real', description: 'Pacote médio', icon: '💰' },
+                    { id: 'coins_10000', name: '10.000 Moedas', price: 34.99, currency: 'real', description: 'Melhor valor!', icon: '💰' },
+                    { id: 'gems_100', name: '100 Gemas', price: 9.99, currency: 'real', description: 'Pacote de gemas', icon: '💎' }
+                ]
+            },
+
+            currentTab: 'tanks',
+
+            switchTab(tab) {
+                document.querySelectorAll('.shop-tab').forEach(el => el.classList.remove('active'));
+                event.currentTarget.classList.add('active');
+                this.currentTab = tab;
+                this.displayItems();
+            },
+
+            displayItems() {
+                const container = document.getElementById('shopItems');
+                container.innerHTML = '';
+                
+                const items = this.items[this.currentTab];
+                
+                items.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'shop-item';
+                    
+                    let priceDisplay = '';
+                    if (item.currency === 'coins') {
+                        priceDisplay = `💰 ${item.price}`;
+                    } else if (item.currency === 'gems') {
+                        priceDisplay = `💎 ${item.price}`;
+                    } else if (item.currency === 'real') {
+                        priceDisplay = `R$ ${item.price.toFixed(2)}`;
+                    }
+                    
+                    card.innerHTML = `
+                        <div class="shop-item-image">${item.icon}</div>
+                        <div class="shop-item-name">${item.name}</div>
+                        <div class="shop-item-description">${item.description}</div>
+                        <div class="shop-item-price">
+                            <div class="price-tag">${priceDisplay}</div>
+                            <button class="buy-button" onclick="Shop.buyItem('${item.id}')">
+                                ${item.currency === 'real' ? 'Comprar' : 'Adquirir'}
+                            </button>
+                        </div>
+                    `;
+                    
+                    container.appendChild(card);
+                });
+            },
+
+            async buyItem(itemId) {
+                const item = Object.values(this.items).flat().find(i => i.id === itemId);
+                if (!item) return;
+                
+                if (item.currency === 'real') {
+                    // Integração com Mercado Pago
+                    this.processRealMoneyPurchase(item);
+                } else {
+                    // Compra com moeda do jogo
+                    this.processGameCurrencyPurchase(item);
+                }
+            },
+
+            processRealMoneyPurchase(item) {
+                // Aqui seria a integração com Mercado Pago
+                UI.showNotification('info', 'Processando Pagamento', 'Redirecionando para o Mercado Pago...');
+                
+                // Simulação - em produção, usar a API real do Mercado Pago
+                setTimeout(() => {
+                    UI.showNotification('success', 'Compra Realizada!', `Você adquiriu ${item.name}`);
+                }, 2000);
+            },
+
+            processGameCurrencyPurchase(item) {
+                const playerData = PlayerData.data;
+                
+                if (item.currency === 'coins' && playerData.coins >= item.price) {
+                    playerData.coins -= item.price;
+                    PlayerData.updateUI();
+                    UI.showNotification('success', 'Compra Realizada!', `Você adquiriu ${item.name}`);
+                } else if (item.currency === 'gems' && playerData.gems >= item.price) {
+                    playerData.gems -= item.price;
+                    PlayerData.updateUI();
+                    UI.showNotification('success', 'Compra Realizada!', `Você adquiriu ${item.name}`);
+                } else {
+                    UI.showNotification('error', 'Saldo Insuficiente', 'Você não tem recursos suficientes');
+                }
+            }
+        };
+
+        // ========== SISTEMA DE INTERNACIONALIZAÇÃO ==========
+        const i18n = {
+            currentLanguage: 'pt-BR',
+            
+            translations: {
+                'pt-BR': {
+                    'login.subtitle': 'Entre na batalha agora!',
+                    'login.google': 'Entrar com Google',
+                    'header.online': 'online',
+                    'menu.game': 'JOGO',
+                    'menu.home': 'Início',
+                    'menu.profile': 'Perfil',
+                    'menu.ranking': 'Ranking',
+                    'menu.shop': 'Loja',
+                    'menu.social': 'SOCIAL',
+                    'menu.friends': 'Amigos',
+                    'menu.club': 'Clube',
+                    'menu.options': 'OPÇÕES',
+                    'menu.settings': 'Configurações',
+                    'menu.logout': 'Sair',
+                    'modes.solo.title': 'Solo',
+                    'modes.solo.description': 'Entre em batalha contra múltiplos oponentes. Destrua tanques inimigos e ganhe pontos!',
+                    'modes.solo.players': '2-10 jogadores',
+                    'modes.casual.title': 'Casual',
+                    'modes.casual.description': 'Batalhas descontraídas em equipe. Não afeta seu ranking!',
+                    'modes.casual.players': '1v1 até 5v5',
+                    'modes.competitive.title': 'Competitivo',
+                    'modes.competitive.description': 'Prove seu valor! Batalhas ranqueadas com jogadores do mesmo nível.',
+                    'modes.competitive.players': '1v1 até 5v5',
+                    'play': 'JOGAR',
+                    'ranking.title': 'Ranking Global',
+                    'ranking.top': 'Top 10 Jogadores',
+                    'profile.matches': 'Partidas',
+                    'profile.wins': 'Vitórias',
+                    'profile.kills': 'Abates',
+                    'profile.winrate': 'Taxa de Vitória',
+                    'profile.performance': 'Desempenho',
+                    'shop.title': 'Loja',
+                    'settings.title': 'Configurações',
+                    'settings.game': 'Jogo',
+                    'settings.sound': 'Som',
+                    'settings.sound.desc': 'Ativar ou desativar efeitos sonoros',
+                    'settings.music': 'Música',
+                    'settings.music.desc': 'Ativar ou desativar música de fundo',
+                    'settings.graphics': 'Qualidade Gráfica',
+                    'settings.graphics.desc': 'Ajustar qualidade dos gráficos',
+                    'settings.language': 'Idioma',
+                    'settings.language.select': 'Selecionar Idioma',
+                    'settings.language.desc': 'Escolha o idioma do jogo',
+                    'settings.controls': 'Controles',
+                    'settings.sensitivity': 'Sensibilidade',
+                    'settings.sensitivity.desc': 'Ajustar sensibilidade dos controles',
+                    'orientation.title': 'Gire seu dispositivo',
+                    'orientation.message': 'Para uma melhor experiência, recomendamos usar o dispositivo no modo paisagem.'
+                },
+                'en': {
+                    'login.subtitle': 'Join the battle now!',
+                    'login.google': 'Sign in with Google',
+                    'header.online': 'online',
+                    'menu.game': 'GAME',
+                    'menu.home': 'Home',
+                    'menu.profile': 'Profile',
+                    'menu.ranking': 'Ranking',
+                    'menu.shop': 'Shop',
+                    'menu.social': 'SOCIAL',
+                    'menu.friends': 'Friends',
+                    'menu.club': 'Club',
+                    'menu.options': 'OPTIONS',
+                    'menu.settings': 'Settings',
+                    'menu.logout': 'Logout',
+                    'modes.solo.title': 'Solo',
+                    'modes.solo.description': 'Enter battle against multiple opponents. Destroy enemy tanks and earn points!',
+                    'modes.solo.players': '2-10 players',
+                    'modes.casual.title': 'Casual',
+                    'modes.casual.description': 'Relaxed team battles. Does not affect your ranking!',
+                    'modes.casual.players': '1v1 to 5v5',
+                    'modes.competitive.title': 'Competitive',
+                    'modes.competitive.description': 'Prove your worth! Ranked battles with players of the same level.',
+                    'modes.competitive.players': '1v1 to 5v5',
+                    'play': 'PLAY',
+                    'ranking.title': 'Global Ranking',
+                    'ranking.top': 'Top 10 Players',
+                    'profile.matches': 'Matches',
+                    'profile.wins': 'Wins',
+                    'profile.kills': 'Kills',
+                    'profile.winrate': 'Win Rate',
+                    'profile.performance': 'Performance',
+                    'shop.title': 'Shop',
+                    'settings.title': 'Settings',
+                    'settings.game': 'Game',
+                    'settings.sound': 'Sound',
+                    'settings.sound.desc': 'Enable or disable sound effects',
+                    'settings.music': 'Music',
+                    'settings.music.desc': 'Enable or disable background music',
+                    'settings.graphics': 'Graphics Quality',
+                    'settings.graphics.desc': 'Adjust graphics quality',
+                    'settings.language': 'Language',
+                    'settings.language.select': 'Select Language',
+                    'settings.language.desc': 'Choose the game language',
+                    'settings.controls': 'Controls',
+                    'settings.sensitivity': 'Sensitivity',
+                    'settings.sensitivity.desc': 'Adjust control sensitivity',
+                    'orientation.title': 'Rotate your device',
+                    'orientation.message': 'For a better experience, we recommend using the device in landscape mode.'
+                }
+                // Adicionar mais idiomas conforme necessário
+            },
+
+            init() {
+                this.detectLanguage();
+                this.updateUI();
+            },
+
+            detectLanguage() {
+                // Verificar cookie salvo
+                const savedLang = this.getCookie('language');
+                if (savedLang) {
+                    this.currentLanguage = savedLang;
+                    return;
+                }
+                
+                // Detectar idioma do navegador
+                const browserLang = navigator.language || navigator.userLanguage;
+                if (this.translations[browserLang]) {
+                    this.currentLanguage = browserLang;
+                } else if (this.translations[browserLang.split('-')[0]]) {
+                    this.currentLanguage = browserLang.split('-')[0];
+                } else {
+                    this.currentLanguage = 'en';
+                }
+                
+                this.setCookie('language', this.currentLanguage);
+            },
+
+            setLanguage(lang) {
+                this.currentLanguage = lang;
+                this.setCookie('language', lang);
+                this.updateUI();
+                UI.showNotification('success', 'Idioma Alterado', 'O idioma foi alterado com sucesso');
+            },
+
+            updateUI() {
+                document.querySelectorAll('[data-i18n]').forEach(element => {
+                    const key = element.getAttribute('data-i18n');
+                    const translation = this.translations[this.currentLanguage]?.[key] || this.translations['en'][key] || key;
+                    element.textContent = translation;
+                });
+                
+                // Atualizar select de idioma
+                const langSelect = document.getElementById('languageSelect');
+                if (langSelect) {
+                    langSelect.value = this.currentLanguage;
+                }
+            },
+
+            getCookie(name) {
+                const value = `; ${document.cookie}`;
+                const parts = value.split(`; ${name}=`);
+                if (parts.length === 2) return parts.pop().split(';').shift();
+            },
+
+            setCookie(name, value, days = 365) {
+                const date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                const expires = `expires=${date.toUTCString()}`;
+                document.cookie = `${name}=${value};${expires};path=/`;
+            }
+        };
+
+        // ========== SISTEMA DE ANALYTICS E PRIVACIDADE ==========
+        const Analytics = {
+            collectInitialData() {
+                const data = {
+                    timestamp: new Date().toISOString(),
+                    language: navigator.language,
+                    platform: navigator.platform,
+                    userAgent: navigator.userAgent,
+                    screenResolution: `${screen.width}x${screen.height}`,
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    referrer: document.referrer
+                };
+                
+                // Obter localização aproximada por IP
+                this.getLocationData(data);
+                
+                // Salvar no Firebase
+                if (GameAuth.currentUser) {
+                    database.ref(`analytics/${GameAuth.currentUser.uid}`).push(data);
+                }
+                
+                return data;
+            },
+
+            async getLocationData(data) {
+                try {
+                    const response = await fetch('https://ipapi.co/json/');
+                    const locationData = await response.json();
+                    data.location = {
+                        country: locationData.country_name,
+                        region: locationData.region,
+                        city: locationData.city,
+                        ip: locationData.ip
+                    };
+                } catch (error) {
+                    console.error('Error getting location:', error);
+                }
+            }
+        };
+
+        // ========== INICIALIZAÇÃO ==========
+        document.addEventListener('DOMContentLoaded', () => {
+            // Inicializar autenticação
+            GameAuth.init();
+            
+            // Inicializar internacionalização
+            i18n.init();
+            
+            // Inicializar loja
+            Shop.displayItems();
+            
+            // Coletar dados iniciais
+            Analytics.collectInitialData();
+            
+            // Inicializar ranking
+            Ranking.loadRankingData('solo');
+            
+            // Verificar orientação do dispositivo
+            if (window.matchMedia("(max-width: 768px)").matches) {
+                window.addEventListener('orientationchange', () => {
+                    if (window.orientation === 0 || window.orientation === 180) {
+                        document.querySelector('.orientation-warning').style.display = 'flex';
+                    } else {
+                        document.querySelector('.orientation-warning').style.display = 'none';
+                    }
+                });
+            }
+            
+            // Service Worker para PWA (opcional)
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js').catch(err => {
+                    console.log('ServiceWorker registration failed:', err);
+                });
+            }
+        });
+
+        // ========== TRATAMENTO DE ERROS GLOBAL ==========
+        window.addEventListener('error', (event) => {
+            console.error('Global error:', event.error);
+            UI.showNotification('error', 'Erro', 'Ocorreu um erro inesperado');
+        });
+
+        window.addEventListener('unhandledrejection', (event) => {
+            console.error('Unhandled promise rejection:', event.reason);
+            UI.showNotification('error', 'Erro', 'Ocorreu um erro inesperado');
+        });
+    </script>
+</body>
+</html>

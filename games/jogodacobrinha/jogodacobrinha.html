@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Serpente Cósmica - Aventura no Espaço">
+    <title>Serpente Cósmica: Aventura no Espaço</title>
+    <link rel="icon" type="image/png" href="../../images/ícone.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navegação -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-mountain"></i> Cambrero
+        </div>
+        <div class="nav-toggle" id="navToggle">
+            <i class="fas fa-bars"></i>
+        </div>
+        <div class="nav-menu" id="navMenu">
+            <a href="../../account/login.html"><i class="fas fa-user"></i> Entrar</a>
+            <a href="#"><i class="fas fa-cog"></i> Configurações</a>
+            <a href="#"><i class="fas fa-hand-holding-heart"></i> Doações</a>
+            <a href="#"><i class="fas fa-photo-video"></i> Mídias</a>
+        </div>
+        <div class="nav-overlay" id="navOverlay"></div>
+    </nav>
+
+    <!-- Botão de Menu -->
+    <button class="menu-btn" id="gameMenuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Botão de Modo Escuro -->
+    <button class="theme-toggle" id="themeToggle">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- Aba de Menu -->
+    <div class="game-menu" id="gameMenu">
+        <div class="menu-header">
+            <h3>Menu</h3>
+            <button class="close-btn" id="closeGameMenu">×</button>
+        </div>
+        <div class="menu-content">
+            <a href="../jogos.html" class="control-btn back-button"><i class="fas fa-arrow-left"></i></a>
+            <button class="control-btn" id="newGame"><i class="fas fa-redo"></i></button>
+            <button class="control-btn" id="pauseBtn"><i class="fas fa-pause"></i></button>
+            <button class="control-btn" id="toggleControlsBtn"><i class="fas fa-eye"></i></button>
+            <select id="difficultySelect">
+                <option value="easy">Fácil</option>
+                <option value="medium">Médio</option>
+                <option value="hard">Difícil</option>
+            </select>
+        </div>
+    </div>
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <!-- Tela de Instruções -->
+    <div class="instructions-screen" id="instructionsScreen">
+        <div class="instructions-content">
+            <h2>Bem-vindo à Serpente Cósmica!</h2>
+            <p>Use as setas do teclado, arraste na tela ou use os botões para mover a cobra.</p>
+            <p>Coma os asteroides (azul) para crescer e ganhar pontos!</p>
+            <p>Evite colidir com as bordas ou com você mesmo.</p>
+            <label for="speedSelect">Escolha a velocidade:</label>
+            <select id="speedSelect">
+                <option value="easy">Fácil</option>
+                <option value="medium" selected>Médio</option>
+                <option value="hard">Difícil</option>
+            </select>
+            <button id="startGameBtn">Iniciar Jogo</button>
+        </div>
+    </div>
+
+    <!-- Modal de Game Over -->
+    <div class="game-over" id="gameOver" style="display: none;">
+        <div class="game-over-content">
+            <h2>Fim de Jogo</h2>
+            <p id="gameOverMessage"></p>
+            <button id="restartGameBtn">Reiniciar</button>
+        </div>
+    </div>
+
+    <!-- Container Principal -->
+    <div class="main-container">
+        <div class="game-container">
+            <h1>
+                <i class="fas fa-gamepad"></i> Serpente Cósmica: Aventura no Espaço
+            </h1>
+
+            <div class="game-area" id="gameArea">
+                <div class="score-board">
+                    <div class="score">Pontuação: <span id="score">0</span></div>
+                    <div class="high-score">Recorde: <span id="highScore">0</span></div>
+                </div>
+                <canvas id="gameCanvas"></canvas>
+                <div class="mobile-controls">
+                    <button class="control-btn" id="upBtn"><i class="fas fa-arrow-up"></i></button>
+                    <button class="control-btn" id="leftBtn"><i class="fas fa-arrow-left"></i></button>
+                    <button class="control-btn" id="rightBtn"><i class="fas fa-arrow-right"></i></button>
+                    <button class="control-btn" id="downBtn"><i class="fas fa-arrow-down"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rodapé -->
+    <footer class="footer">
+        <div class="social-links">
+            <a href="https://youtube.com/@devandre2970" target="_blank"><i class="fab fa-youtube"></i></a>
+            <a href="https://www.instagram.com/navon_oficial" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.tiktok.com/@drives.games" target="_blank"><i class="fab fa-tiktok"></i></a>
+        </div>
+        <p>© 2025 Cambrero. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

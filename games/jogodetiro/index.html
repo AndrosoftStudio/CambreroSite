@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Jogo de Tiro Multiplayer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Roboto', sans-serif; overflow: hidden; position: fixed; width: 100%; height: 100%; }
+        .font-pixel { font-family: 'Press Start 2P', cursive; }
+        .touch-controls, .mobile-only { display: none; }
+        .is-mobile .touch-controls, .is-mobile .mobile-only { display: block; }
+        #joystick-base { position: absolute; bottom: 5vw; left: 5vw; width: 35vw; height: 35vw; max-width: 150px; max-height: 150px; background-color: rgba(255, 255, 255, 0.15); border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 0 15px rgba(0,0,0,0.5); }
+        #joystick-stick { width: 50%; height: 50%; background-color: rgba(255, 255, 255, 0.3); border-radius: 50%; cursor: grab; border: 2px solid rgba(255,255,255,0.4); }
+        #shoot-button { position: absolute; bottom: 5vw; right: 5vw; width: 30vw; height: 30vw; max-width: 120px; max-height: 120px; background-color: rgba(239, 68, 68, 0.4); border-radius: 50%; border: 4px solid rgba(255,255,255,0.3); display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; font-size: 1.2rem; -webkit-user-select: none; user-select: none; text-transform: uppercase; box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); }
+        canvas { background: #0c0a09; background-image: radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px), radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px), radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 40px), radial-gradient(rgba(255,255,255,.4), rgba(255,255,255,.1) 2px, transparent 30px); background-size: 550px 550px, 350px 350px, 250px 250px, 150px 150px; background-position: 0 0, 40px 60px, 130px 270px, 70px 100px; display: block; width: 100%; height: 100%; }
+        .modal-backdrop { background-color: rgba(0,0,0,0.7); backdrop-filter: blur(4px); }
+    </style>
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center h-screen">
+
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="text-center">
+        <h1 class="text-3xl font-pixel mb-4">Conectando...</h1>
+        <p>Aguarde enquanto preparamos o campo de batalha.</p>
+    </div>
+
+    <!-- Lobby UI -->
+    <div id="lobby" class="hidden text-center p-6 sm:p-8 bg-slate-800/80 backdrop-blur-sm rounded-lg shadow-2xl max-w-lg w-full border border-slate-700">
+        <h1 class="text-4xl sm:text-5xl font-pixel mb-6 text-yellow-400" style="text-shadow: 2px 2px #ef4444;">BATTLE ZONE</h1>
+        <p class="mb-2 text-slate-300">Seu ID de Jogador:</p>
+        <div class="flex items-center justify-center mb-6">
+            <p id="userIdDisplay" class="bg-slate-900 p-2 rounded-l font-mono text-sm select-all break-all">...</p>
+        </div>
+        <div class="space-y-4">
+            <button id="create-room-btn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg text-xl transition duration-300 transform hover:scale-105 font-pixel">Criar Sala</button>
+            <div class="flex items-center"><hr class="w-full border-slate-600"><span class="px-2 text-slate-400 font-pixel text-xs">OU</span><hr class="w-full border-slate-600"></div>
+            <div class="flex flex-col sm:flex-row gap-2">
+                <input type="text" id="room-id-input" placeholder="Cole o ID da sala aqui" class="flex-grow bg-slate-900 text-white placeholder-slate-500 border-2 border-slate-700 rounded-lg p-3 focus:border-yellow-400 focus:outline-none transition">
+                <button id="join-room-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg text-lg transition duration-300 font-pixel">Entrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game UI -->
+    <div id="game-container" class="hidden relative w-screen h-screen">
+        <canvas id="gameCanvas"></canvas>
+        <div id="hud" class="absolute top-0 left-0 w-full h-full p-4 pointer-events-none">
+            <div class="absolute top-4 left-4 flex flex-col gap-2 pointer-events-auto">
+                <button id="chat-btn" title="Chat" class="bg-slate-700/50 hover:bg-slate-600/70 p-2 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path d="M16 8c0 3.866-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7zM5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg></button>
+                <button id="exit-room-btn" title="Sair da Sala" class="bg-red-600/70 hover:bg-red-500/90 p-2 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/></svg></button>
+                <a href="https://games.cambrero.com" title="Home" class="bg-slate-700/50 hover:bg-slate-600/70 p-2 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path d="M6.5 14.5v-3.505c0-.245.25-.495.5-.495h2c.25 0 .5.25.5.5v3.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5z"/></svg></a>
+                <button id="fullscreen-btn" title="Tela Cheia" class="mobile-only bg-slate-700/50 hover:bg-slate-600/70 p-2 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707zm4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707zm0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707zm-4.344 0a.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707z"/></svg></button>
+            </div>
+            <div id="scoreboard" class="absolute top-4 right-4 bg-black/50 p-3 rounded-lg font-pixel text-sm"></div>
+            <p id="message-display" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-3xl font-pixel text-red-500" style="text-shadow: 2px 2px #000;"></p>
+        </div>
+        <div class="touch-controls">
+            <div id="joystick-base"><div id="joystick-stick"></div></div>
+            <div id="shoot-button">Atirar</div>
+        </div>
+
+        <!-- Chat Panel -->
+        <div id="chat-panel" class="hidden fixed bottom-0 right-0 z-40 w-full max-w-sm h-2/5 bg-slate-900/80 backdrop-blur-sm border-t-2 border-l-2 border-slate-700 rounded-tl-lg flex flex-col p-3">
+            <div class="flex justify-between items-center mb-2"><h3 class="font-pixel text-lg">Chat da Sala</h3><button id="close-chat-btn" class="text-2xl">&times;</button></div>
+            <div id="chat-messages" class="flex-grow overflow-y-auto mb-2 space-y-2 text-sm flex flex-col-reverse"></div>
+            <div class="flex gap-2"><input type="text" id="chat-input" class="flex-grow bg-slate-800 border border-slate-600 rounded p-2 focus:border-yellow-400 focus:outline-none" placeholder="Digite..."><button id="send-chat-btn" class="bg-blue-600 hover:bg-blue-700 font-bold px-4 rounded">Enviar</button></div>
+        </div>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div id="toast" class="hidden fixed bottom-5 left-1/2 -translate-x-1/2 bg-red-500 text-white py-2 px-5 rounded-lg shadow-lg font-bold"></div>
+
+    <script type="module">
+        // --- firebase-config.js (apenas para autenticação) ---
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyAgLcxuqLg05bn7mofBa7YQnL8CHO8fHj8",
+            authDomain: "jogo-de-tiro-149d7.firebaseapp.com",
+            projectId: "jogo-de-tiro-149d7",
+            storageBucket: "jogo-de-tiro-149d7.firebasestorage.app",
+            messagingSenderId: "1095824406328",
+            appId: "1:1095824406328:web:7d076fe4432268cd9873cd",
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // --- constants.js ---
+        const PLAYER_SIZE = 30;
+        const PLAYER_SPEED = 3;
+        const BULLET_SIZE = 8;
+        const BULLET_SPEED = 8;
+        const PLAYER_MAX_HP = 100;
+        const RESPAWN_TIME = 5000;
+
+        // --- utils.js ---
+        function isMobileDevice() { return ('ontouchstart' in window) || (navigator.maxTouchPoints > 0); }
+
+        // --- ui-manager.js ---
+        class UIManager {
+            constructor() {
+                this.loadingScreen = document.getElementById('loading-screen');
+                this.lobby = document.getElementById('lobby');
+                this.gameContainer = document.getElementById('game-container');
+                this.userIdDisplay = document.getElementById('userIdDisplay');
+                this.createRoomBtn = document.getElementById('create-room-btn');
+                this.joinRoomBtn = document.getElementById('join-room-btn');
+                this.roomIdInput = document.getElementById('room-id-input');
+                this.scoreboard = document.getElementById('scoreboard');
+                this.exitRoomBtn = document.getElementById('exit-room-btn');
+                this.fullscreenBtn = document.getElementById('fullscreen-btn');
+                this.chatBtn = document.getElementById('chat-btn');
+                this.chatPanel = document.getElementById('chat-panel');
+                this.closeChatBtn = document.getElementById('close-chat-btn');
+                this.chatMessages = document.getElementById('chat-messages');
+                this.chatInput = document.getElementById('chat-input');
+                this.sendChatBtn = document.getElementById('send-chat-btn');
+                this.toast = document.getElementById('toast');
+                this.messageDisplay = document.getElementById('message-display');
+                if (isMobileDevice()) { document.body.classList.add('is-mobile'); }
+            }
+            showLoading() { this.loadingScreen.classList.remove('hidden'); this.lobby.classList.add('hidden'); this.gameContainer.classList.add('hidden');}
+            showLobby(userId) { this.userIdDisplay.textContent = userId; this.loadingScreen.classList.add('hidden'); this.lobby.classList.remove('hidden'); this.gameContainer.classList.add('hidden'); }
+            showGame() { this.gameContainer.classList.remove('hidden'); this.lobby.classList.add('hidden');}
+            updateScoreboard(players = {}) {
+                this.scoreboard.innerHTML = '<h2>PONTUAÇÃO</h2>';
+                const sortedPlayers = Object.values(players).sort((a,b) => b.score - a.score);
+                sortedPlayers.forEach(player => {
+                    this.scoreboard.innerHTML += `<p style="color: ${player.color || '#FFF'};">${player.name}: ${player.score}</p>`;
+                });
+            }
+            displayMessage(text, duration = 2000) {
+                this.messageDisplay.textContent = text;
+                this.messageDisplay.style.display = text ? 'block' : 'none';
+                if (duration > 0) { setTimeout(() => { this.displayMessage('', 0); }, duration); }
+            }
+            showToast(message) {
+                this.toast.textContent = message;
+                this.toast.classList.remove('hidden');
+                setTimeout(() => { this.toast.classList.add('hidden'); }, 4000);
+            }
+            toggleChatPanel(show) { 
+                this.chatPanel.classList.toggle('hidden', !show); 
+                if(show) { 
+                    this.chatInput.focus(); 
+                }
+            }
+            addChatMessage(msg) {
+                const msgEl = document.createElement('div');
+                const escapedText = msg.text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                msgEl.innerHTML = `<strong style="color: ${msg.color || '#FFF'};">${msg.name}:</strong> <span>${escapedText}</span>`;
+                this.chatMessages.insertBefore(msgEl, this.chatMessages.firstChild);
+            }
+            setupEventListeners(callbacks) {
+                this.createRoomBtn.onclick = callbacks.createRoom;
+                this.joinRoomBtn.onclick = () => { const roomId = this.roomIdInput.value.trim(); if (roomId) callbacks.joinRoom(roomId); else this.showToast("Por favor, insira um ID de sala."); };
+                this.exitRoomBtn.onclick = callbacks.leaveRoom;
+                this.chatBtn.onclick = () => this.toggleChatPanel(true);
+                this.closeChatBtn.onclick = () => this.toggleChatPanel(false);
+                this.sendChatBtn.onclick = () => { const text = this.chatInput.value.trim(); if(text) callbacks.sendChat(text); this.chatInput.value = ''; };
+                this.chatInput.onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); const text = this.chatInput.value.trim(); if (text) callbacks.sendChat(text); this.chatInput.value = ''; } };
+                this.fullscreenBtn.onclick = () => { if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); } else { document.exitFullscreen(); } };
+            }
+        }
+
+        // --- input-controller.js ---
+        class InputController { 
+            constructor() {
+                this.move = { x: 0, y: 0 };
+                this.angle = 0;
+                this.shooting = false;
+                this.isMobile = isMobileDevice();
+                if (this.isMobile) { this.setupMobileControls(); } else { this.setupDesktopControls(); }
+            }
+            setupDesktopControls() {
+                this.keys = {};
+                window.addEventListener('keydown', (e) => this.keys[e.code] = true); window.addEventListener('keyup', (e) => this.keys[e.code] = false);
+                window.addEventListener('mousemove', (e) => {
+                    const canvas = document.getElementById('gameCanvas'); if (!canvas) return; const rect = canvas.getBoundingClientRect();
+                    const playerX = canvas.width / 2; const playerY = canvas.height / 2;
+                    const mouseX = e.clientX - rect.left; const mouseY = e.clientY - rect.top;
+                    this.angle = Math.atan2(mouseY - playerY, mouseX - playerX);
+                });
+                window.addEventListener('mousedown', () => this.shooting = true); window.addEventListener('mouseup', () => this.shooting = false);
+            }
+            setupMobileControls() {
+                const joystickBase = document.getElementById('joystick-base'); const joystickStick = document.getElementById('joystick-stick'); const shootButton = document.getElementById('shoot-button');
+                let joystickActive = false; let baseRect = joystickBase.getBoundingClientRect();
+                joystickBase.addEventListener('touchstart', (e) => { e.preventDefault(); joystickActive = true; baseRect = joystickBase.getBoundingClientRect(); }, { passive: false });
+                joystickBase.addEventListener('touchmove', (e) => {
+                    e.preventDefault(); if (!joystickActive) return; const touch = e.touches[0];
+                    const dx = touch.clientX - (baseRect.left + baseRect.width / 2); const dy = touch.clientY - (baseRect.top + baseRect.height / 2);
+                    const distance = Math.min((baseRect.width / 2) * 0.75, Math.hypot(dx, dy)); const angle = Math.atan2(dy, dx);
+                    this.move.x = Math.cos(angle); this.move.y = Math.sin(angle); this.angle = angle;
+                    joystickStick.style.transform = `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px)`;
+                }, { passive: false });
+                joystickBase.addEventListener('touchend', (e) => { e.preventDefault(); joystickActive = false; this.move = { x: 0, y: 0 }; joystickStick.style.transform = `translate(0px, 0px)`; }, { passive: false });
+                shootButton.addEventListener('touchstart', (e) => { e.preventDefault(); this.shooting = true; }, { passive: false }); shootButton.addEventListener('touchend', (e) => { e.preventDefault(); this.shooting = false; }, { passive: false });
+            }
+            update() {
+                if (!this.isMobile) {
+                    this.move = { x: 0, y: 0 };
+                    if (this.keys['KeyW'] || this.keys['ArrowUp']) this.move.y = -1; if (this.keys['KeyS'] || this.keys['ArrowDown']) this.move.y = 1;
+                    if (this.keys['KeyA'] || this.keys['ArrowLeft']) this.move.x = -1; if (this.keys['KeyD'] || this.keys['ArrowRight']) this.move.x = 1;
+                }
+                if (this.move.x !== 0 && this.move.y !== 0) { this.move.x *= Math.SQRT1_2; this.move.y *= Math.SQRT1_2; }
+            }
+        }
+
+        // --- game.js ---
+        class Game { 
+            constructor(canvas, uiManager, localPlayerId) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d');
+                this.uiManager = uiManager;
+                this.localPlayerId = localPlayerId;
+                this.players = {};
+                this.bullets = {};
+                this.camera = { x: 0, y: 0 };
+                this.resizeCanvas();
+                window.addEventListener('resize', () => this.resizeCanvas());
+            }
+            resizeCanvas() { this.canvas.width = window.innerWidth; this.canvas.height = window.innerHeight; }
+            syncState(gameState) { this.players = gameState.players; this.bullets = gameState.bullets; this.uiManager.updateScoreboard(this.players); }
+            draw() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                const localPlayer = this.players[this.localPlayerId];
+                if (localPlayer) { this.camera.x = localPlayer.x - this.canvas.width / 2; this.camera.y = localPlayer.y - this.canvas.height / 2; }
+                this.ctx.save();
+                this.ctx.translate(-this.camera.x, -this.camera.y);
+                for (const id in this.players) {
+                    const p = this.players[id];
+                    if (p.hp <= 0) continue;
+                    this.ctx.save();
+                    this.ctx.translate(p.x, p.y); this.ctx.rotate(p.angle);
+                    this.ctx.fillStyle = p.color || '#FFF'; this.ctx.beginPath(); this.ctx.arc(0, 0, PLAYER_SIZE / 2, 0, Math.PI * 2); this.ctx.fill();
+                    this.ctx.fillStyle = '#666'; this.ctx.fillRect(PLAYER_SIZE / 2 - 5, -5, 15, 10); this.ctx.restore();
+                    this.ctx.fillStyle = '#FFF'; this.ctx.font = '12px Roboto'; this.ctx.textAlign = 'center'; this.ctx.fillText(p.name, p.x, p.y - PLAYER_SIZE / 2 - 15);
+                    this.ctx.fillStyle = 'red'; this.ctx.fillRect(p.x - PLAYER_SIZE/2, p.y - PLAYER_SIZE/2 - 10, PLAYER_SIZE, 5);
+                    this.ctx.fillStyle = 'lime'; this.ctx.fillRect(p.x - PLAYER_SIZE/2, p.y - PLAYER_SIZE/2 - 10, PLAYER_SIZE * (p.hp/PLAYER_MAX_HP), 5);
+                }
+                this.ctx.fillStyle = '#ffc83d';
+                for (const id in this.bullets) { const b = this.bullets[id]; this.ctx.beginPath(); this.ctx.arc(b.x, b.y, BULLET_SIZE / 2, 0, Math.PI * 2); this.ctx.fill(); }
+                this.ctx.restore();
+            }
+        }
+        
+        // --- main.js (App Controller com WebSocket) ---
+        class App {
+            constructor() {
+                this.ui = new UIManager();
+                this.input = new InputController();
+                this.game = null;
+                this.ws = null;
+                this.userId = null;
+                this.playerName = null;
+                this.roomId = null;
+                this.animationFrameId = null;
+                this.isRespawning = false;
+                this.lastInputSendTime = 0;
+            }
+
+            init() {
+                this.ui.showLoading();
+                onAuthStateChanged(auth, user => {
+                    if (user) {
+                        this.userId = user.uid;
+                        this.playerName = `Player_${this.userId.substring(0, 4)}`;
+                        this.ui.showLobby(this.userId);
+                        this.ui.setupEventListeners({ createRoom: () => this.createRoom(), joinRoom: (roomId) => this.joinRoom(roomId), leaveRoom: () => this.leaveRoom(), sendChat: (text) => this.sendChat(text) });
+                    } else { signInAnonymously(auth); }
+                });
+            }
+            
+            connectToServer(onOpenCallback) {
+                if (this.ws && this.ws.readyState === WebSocket.OPEN) { onOpenCallback(); return; }
+                // IMPORTANTE: Troque 'localhost:8080' pelo endereço do seu servidor.
+                // Exemplo: 'wss://games.cambrero.com:8080' (se a porta 8080 estiver exposta)
+                // ou 'wss://games.cambrero.com/ws' (se você usar um proxy reverso)
+                const serverAddress = 'wss://games.cambrero.com:8080'; 
+                try {
+                    this.ws = new WebSocket(serverAddress); 
+                } catch(e) {
+                    this.ui.showToast("Endereço do servidor inválido.");
+                    return;
+                }
+                this.ws.onopen = () => { console.log("Conectado ao servidor WebSocket!"); onOpenCallback(); };
+                this.ws.onmessage = (event) => { const message = JSON.parse(event.data); this.handleServerMessage(message); };
+                this.ws.onclose = () => { this.ui.showToast("Desconectado do servidor."); setTimeout(() => window.location.reload(), 3000); };
+                this.ws.onerror = (error) => { console.error("Erro no WebSocket:", error); this.ui.showToast("Erro de conexão com o servidor."); };
+            }
+
+            sendMessageToServer(message) { if (this.ws && this.ws.readyState === WebSocket.OPEN) { this.ws.send(JSON.stringify(message)); } }
+
+            handleServerMessage(message) {
+                switch(message.type) {
+                    case 'gameState': if (this.game) { this.game.syncState(message.payload); const p = message.payload.players[this.userId]; if(p && p.hp <= 0) this.handleDeath(); } break;
+                    case 'roomCreated': this.roomId = message.roomId; this.startGame(); break;
+                    case 'joinedRoom': this.roomId = message.roomId; this.startGame(); break;
+                    case 'chatMessage': this.ui.addChatMessage(message.payload); break;
+                    case 'error': this.ui.showToast(message.message); if(this.ws) {this.ws.close();} break;
+                }
+            }
+            
+            createRoom() { this.connectToServer(() => this.sendMessageToServer({ type: 'createRoom', payload: { playerId: this.userId, playerName: this.playerName } })); }
+            joinRoom(roomId) { this.connectToServer(() => this.sendMessageToServer({ type: 'joinRoom', payload: { roomId: roomId, playerId: this.userId, playerName: this.playerName } })); }
+
+            startGame() {
+                this.ui.showGame(this.roomId);
+                this.game = new Game(document.getElementById('gameCanvas'), this.ui, this.userId);
+                if(this.animationFrameId) cancelAnimationFrame(this.animationFrameId);
+                this.gameLoop();
+            }
+
+            leaveRoom() { if(this.ws) this.ws.close(); else {window.location.reload();} }
+            sendChat(text) { this.sendMessageToServer({ type: 'chat', payload: { text: text } }); }
+            handleDeath() { if(this.isRespawning) return; this.isRespawning = true; this.ui.displayMessage("VOCÊ FOI DERROTADO!", RESPAWN_TIME); setTimeout(() => { this.isRespawning = false; }, RESPAWN_TIME); }
+            
+            gameLoop() { 
+                this.animationFrameId = requestAnimationFrame(() => this.gameLoop());
+                if (!this.game || !this.input) return;
+                this.input.update();
+                const now = performance.now();
+                if(now - this.lastInputSendTime > 16) { // Envia input a ~60fps
+                    this.lastInputSendTime = now;
+                    this.sendMessageToServer({ type: 'input', payload: { move: this.input.move, angle: this.input.angle, shooting: this.input.shooting } });
+                }
+                this.game.draw();
+            }
+        }
+        
+        const appController = new App();
+        appController.init();
+    </script>
+</body>
+</html>

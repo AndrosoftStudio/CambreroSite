@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bem-vindo ao Damas Brasileiras</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Estilos específicos para a página home */
+        .home-page-bg {
+            background: linear-gradient(rgba(19, 19, 20, 0.8), rgba(19, 19, 20, 0.95)), url('https://images.unsplash.com/photo-1590484041179-b246713c2a9a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzOTU5fDB8MXxzZWFyY2h8Nnx8Y2hlY2tlcnN8ZW58MHx8fHwxNzE3NzY3ODg1fDA&ixlib=rb-4.0.3&q=80&w=1080') no-repeat center center;
+            background-size: cover;
+        }
+
+        .home-container {
+            text-align: center;
+            color: var(--text-primary);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            background-color: rgba(30, 31, 32, 0.7);
+            backdrop-filter: blur(10px);
+            max-width: 600px;
+        }
+
+        .home-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .home-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .home-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .home-actions .btn {
+            width: 100%;
+            max-width: 300px; /* Limita a largura dos botões */
+        }
+
+        .home-external-link {
+            margin-top: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .home-external-link a {
+            color: var(--primary-accent);
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .home-external-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body class="auth-page-bg home-page-bg">
+    <div class="home-container">
+        <h1 class="home-title">Damas Brasileiras</h1>
+        <p class="home-subtitle">Jogue com amigos ou desafie jogadores de todo o mundo.</p>
+
+        <div class="home-actions">
+            <a href="index.html" class="btn btn-primary">
+                <span class="material-symbols-outlined">play_circle</span>
+                Jogar Agora
+            </a>
+            <a href="login.html" class="btn btn-secondary">
+                <span class="material-symbols-outlined">login</span>
+                Fazer Login ou Criar Conta
+            </a>
+        </div>
+
+        <p class="home-external-link">
+            <!-- ALTERAÇÃO: Link para cambrero.com -->
+            <a href="https://cambrero.com" target="_blank" rel="noopener noreferrer">
+                Conheça nosso patrocinador Cambrero.com
+                <span class="material-symbols-outlined">open_in_new</span>
+            </a>
+        </p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "name": "servidor-jogo-de-tiro",
+  "version": "1.0.0",
+  "description": "Servidor dedicado para o jogo de tiro",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.17.0"
+  }
+}

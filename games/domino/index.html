@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Dominó Multiplayer Avançado</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        :root {
+            --domino-hand-width: 48px;
+            --domino-hand-height: 96px;
+            --domino-board-width: 38px;
+            --domino-board-height: 76px;
+            --board-wood-border: 20px;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d1b2a;
+            color: #e0e1dd;
+            overflow: hidden;
+            margin: 0;
+            overscroll-behavior: none;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .hand-scroll-container {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .hand-scroll-container::-webkit-scrollbar {
+            display: none;
+        }
+        .domino {
+            display: flex; flex-direction: column; justify-content: space-around; align-items: center;
+            background-color: #f8f8f8; color: #1a202c;
+            border: 1px solid #ccc; border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2), inset 0 0 5px rgba(0,0,0,0.05);
+            cursor: pointer; transition: all 0.2s ease-in-out; user-select: none;
+            flex-shrink: 0;
+        }
+        .hand-domino { width: var(--domino-hand-width); height: var(--domino-hand-height); margin: 4px; }
+        .board-domino { width: var(--domino-board-width); height: var(--domino-board-height); }
+        .domino.disabled { cursor: not-allowed; opacity: 0.6; }
+        .domino:not(.disabled):hover { transform: translateY(-8px) scale(1.05); box-shadow: 0 10px 15px rgba(0,0,0,0.3); }
+        .domino-half { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
+        .domino-divider { width: 80%; height: 2px; background-color: #4a5568; }
+        .dot { width: 6px; height: 6px; background-color: #1a202c; border-radius: 50%; }
+        .pip-grid { display: grid; grid-template-areas: "a . c" "e g f" "d . b"; width: 24px; height: 24px; align-items: center; justify-items: center; }
+        .dot-a{ grid-area: a; } .dot-b{ grid-area: b; } .dot-c{ grid-area: c; }
+        .dot-d{ grid-area: d; } .dot-e{ grid-area: e; } .dot-f{ grid-area: f; } .dot-g{ grid-area: g; }
+        .drop-zone {
+            position: absolute;
+            width: 80px; height: 80px;
+            border: 2px dashed rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+            transform: translate(-50%, -50%);
+            pointer-events: auto;
+            z-index: 10;
+        }
+        @keyframes toast-in { from { transform: translateX(110%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes toast-out { from { transform: translateX(0); opacity: 1; } to { transform: translateX(110%); opacity: 0; } }
+        .toast { animation: toast-in 0.5s forwards; }
+        .toast.out { animation: toast-out 0.5s forwards; }
+        
+        @keyframes announce-in { 0% { opacity: 0; transform: scale(0.8) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+        @keyframes announce-out { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(0.9); } }
+        .announcer-in { animation: announce-in 0.4s ease-out forwards; }
+        .announcer-out { animation: announce-out 0.4s ease-in forwards; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel" data-type="module">
+        //==================================================
+        // FIREBASE SETUP
+        //==================================================
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, setDoc, onSnapshot, updateDoc, serverTimestamp, arrayUnion, writeBatch, deleteField, increment } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js";
+        
+        const userProvidedConfig = {
+            apiKey: "AIzaSyDvCPXwP8sIAXJMB2oyVthUBwuP0poM-To", // Chave de exemplo, substitua pela sua
+            authDomain: "domino-multplayer.firebaseapp.com",
+            projectId: "domino-multplayer",
+            storageBucket: "domino-multplayer.appspot.com",
+            messagingSenderId: "478195288572",
+            appId: "1:478195288572:web:0f5eb70075aab8da0aca79",
+            measurementId: "G-1R2GDPQ418",
+        };
+        
+        const firebaseConfig = typeof __firebase_config !== 'undefined' && __firebase_config
+            ? JSON.parse(__firebase_config)
+            : userProvidedConfig;
+
+        const app = initializeApp(firebaseConfig);
+        const firestoreDB = getFirestore(app);
+        const auth = getAuth(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-domino-app';
+
+        //==================================================
+        // CONSTANTS & CONFIGURATION
+        //==================================================
+        const CONSTANTS = {
+            DOMINO_BOARD_HEIGHT: 76, // Corresponds to board-domino height
+            DOMINO_BOARD_WIDTH: 38,  // Corresponds to board-domino width
+            DOMINO_HAND_HEIGHT: 96,
+            DOMINO_HAND_WIDTH: 48,
+            PIECE_SPACING: 2, // Gap between dominoes on the board
+            NOTIFICATION_TIMEOUT: 4000, // 4 seconds
+            Z_INDEX: {
+                BOARD: 10,
+                AVATARS: 20,
+                UI_BUTTONS: 20,
+                DRAGGED_PIECE: 100,
+                MODALS: 50,
+                NOTIFICATIONS: 60,
+                ANNOUNCER: 70,
+                DEV_CONSOLE: 80,
+            }
+        };
+
+        //==================================================
+        // CONTEXTS & HOOKS
+        //==================================================
+
+        /**
+         * @typedef {'info' | 'error' | 'success' | 'warning'} NotificationType
+         * @typedef {{id: number, message: string, type: NotificationType}} Notification
+         */
+        const NotificationContext = React.createContext({
+            notifications: [],
+            addNotification: (/** @type {string} */ message, /** @type {NotificationType} */ type) => {},
+        });
+
+        /**
+         * Provides a way to show toast notifications.
+         * @returns {{notifications: Notification[], addNotification: (message: string, type: NotificationType) => void}}
+         */
+        const useNotifications = () => React.useContext(NotificationContext);
+
+        const NotificationProvider = ({ children }) => {
+            const [notifications, setNotifications] = React.useState([]);
+
+            const addNotification = React.useCallback((message, type = 'info') => {
+                const id = Date.now();
+                setNotifications(prev => [...prev, { id, message, type }]);
+                setTimeout(() => {
+                    setNotifications(prev => prev.filter(n => n.id !== id));
+                }, CONSTANTS.NOTIFICATION_TIMEOUT);
+            }, []);
+
+            return (
+                <NotificationContext.Provider value={{ notifications, addNotification }}>
+                    {children}
+                </NotificationContext.Provider>
+            );
+        };
+        
+        /**
+         * @typedef {'log' | 'warn' | 'error' | 'info'} LogLevel
+         * @typedef {{timestamp: Date, message: string, level: LogLevel, context?: object}} LogEntry
+         */
+        const DevLogContext = React.createContext({
+            logs: [],
+            log: (/** @type {string} */ message, /** @type {LogLevel} */ level, /** @type {object} */ context) => {},
+        });
+        
+        /**
+         * Provides a logging mechanism for the in-game dev console.
+         * @returns {{logs: LogEntry[], log: (message: string, level?: LogLevel, context?: object) => void}}
+         */
+        const useDevLog = () => React.useContext(DevLogContext);
+
+        const DevLogProvider = ({ children }) => {
+            const [logs, setLogs] = React.useState([]);
+            const log = React.useCallback((message, level = 'log', context) => {
+                 const newLog = {
+                    timestamp: new Date(),
+                    message,
+                    level,
+                    ...(context && { context: JSON.stringify(context, null, 2) }),
+                };
+                setLogs(prev => [newLog, ...prev].slice(0, 100)); // Keep last 100 logs
+            }, []);
+
+            return (
+                <DevLogContext.Provider value={{ log, logs }}>
+                    {children}
+                </DevLogContext.Provider>
+            );
+        };
+
+
+        //==================================================
+        // GAME LOGIC
+        //==================================================
+        const GameLogic = {
+            /**
+             * Creates a standard set of 28 domino pieces.
+             * @returns {Array<{id: string, values: [number, number], isDouble: boolean}>}
+             */
+            createDominoSet: () => {
+                const pieces = [];
+                for (let i = 0; i <= 6; i++) for (let j = i; j <= 6; j++) pieces.push({ id: `${i}-${j}`, values: [i, j], isDouble: i === j });
+                return pieces;
+            },
+
+            /**
+             * Shuffles an array in place.
+             * @param {Array<any>} array The array to shuffle.
+             * @returns {Array<any>} The shuffled array.
+             */
+            shuffle: (array) => {
+                for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[array[i], array[j]] = [array[j], array[i]]; }
+                return array;
+            },
+
+            /**
+             * Deals 7 pieces to each player.
+             * @param {string[]} playerIds Array of player IDs.
+             * @returns {Object<string, Array<any>>} An object mapping player IDs to their hands.
+             */
+            dealHands: (playerIds) => {
+                const shuffledPieces = GameLogic.shuffle(GameLogic.createDominoSet());
+                const hands = {};
+                playerIds.forEach(id => { hands[id] = []; });
+                const piecesPerHand = 7;
+                for(let i = 0; i < piecesPerHand; i++) {
+                    for(const playerId of playerIds) {
+                        if(shuffledPieces.length > 0) hands[playerId].push(shuffledPieces.pop());
+                    }
+                }
+                return hands;
+            },
+            
+            /**
+             * Determines the starting player based on game rules.
+             * @param {Object} players The players object with their hands.
+             * @param {Object} rules The game rules for starting.
+             * @returns {string | null} The ID of the starting player.
+             */
+            findStartingPlayer: (players, rules) => {
+                const { startCondition, requiredDouble } = rules;
+
+                if (startCondition === 'specific-double') {
+                    for (const playerId in players) {
+                        if (players[playerId].hand.some(p => p.isDouble && p.values[0] === requiredDouble)) {
+                            return playerId;
+                        }
+                    }
+                }
+
+                if (startCondition === 'any-double' || startCondition === 'any') {
+                    let bestPieceValue = -1, startingPlayerId = null;
+                    for (const playerId in players) {
+                        for (const piece of players[playerId].hand) {
+                            if (piece.isDouble && piece.values[0] > bestPieceValue) {
+                                bestPieceValue = piece.values[0];
+                                startingPlayerId = playerId;
+                            }
+                        }
+                    }
+                    if (startingPlayerId) return startingPlayerId;
+                }
+                
+                let highestNonDouble = -1, playerWithHighestNonDouble = null;
+                 for (const playerId in players) {
+                     for (const piece of players[playerId].hand) {
+                         const pieceSum = piece.values[0] + piece.values[1];
+                         if (pieceSum > highestNonDouble) {
+                             highestNonDouble = pieceSum;
+                             playerWithHighestNonDouble = playerId;
+                         }
+                     }
+                 }
+                return playerWithHighestNonDouble || Object.keys(players)[0];
+            },
+
+            /**
+             * Checks if a move is valid.
+             * @param {{values: [number, number]}} piece The piece to be played.
+             * @param {Array<{value: number, side: string}>} boardEnds The open ends of the board.
+             * @returns {boolean} True if the move is valid.
+             */
+            isValidMove: (piece, boardEnds) => {
+                if (!boardEnds || boardEnds.length === 0) return true;
+                return boardEnds.some(end => piece.values.includes(end.value));
+            },
+
+            /**
+             * Calculates the open ends of the domino chain on the board.
+             * @param {Array<Object>} boardLayout The current layout of pieces on the board.
+             * @returns {Array<{value: number, side: string}>} An array of open ends.
+             */
+            getBoardEnds: (boardLayout) => {
+                if (!boardLayout || boardLayout.length === 0) return [];
+                const firstLayout = boardLayout[0];
+                const firstPiece = firstLayout.piece;
+
+                if (boardLayout.length === 1) {
+                    return firstPiece.isDouble 
+                        ? [{ value: firstPiece.values[0], side: 'start' }, { value: firstPiece.values[0], side: 'end' }]
+                        : [{ value: firstPiece.values[0], side: 'start' }, { value: firstPiece.values[1], side: 'end' }];
+                }
+
+                const lastLayout = boardLayout[boardLayout.length - 1];
+                const lastPiece = lastLayout.piece;
+
+                const openStart = firstLayout.unmatchedValue;
+                const openEnd = lastLayout.unmatchedValue;
+
+                return [{ value: openStart, side: 'start' }, { value: openEnd, side: 'end' }];
+            },
+
+            /**
+             * FIX: Rewrote this function entirely to correctly calculate piece placement.
+             * It now considers the orientation (double or normal) of both the anchor and the new piece.
+             * @param {Array<Object>} boardLayout - The current board state.
+             * @param {Object} playedPiece - The piece being played.
+             * @param {number} playValue - The value that connects the piece to the board.
+             * @param {boolean} isStart - If the piece is being played at the start of the chain.
+             * @returns {Object} The new layout object for the played piece.
+             */
+            calculateNextPieceLayout: (boardLayout, playedPiece, playValue, isStart) => {
+                // Initial piece placement
+                if (boardLayout.length === 0) {
+                    return {
+                        piece: playedPiece, x: 0, y: 0,
+                        rotation: playedPiece.isDouble ? 90 : 0,
+                        unmatchedValue: playedPiece.isDouble ? playedPiece.values[0] : null // Special case for first piece
+                    };
+                }
+                
+                const anchorLayout = isStart ? boardLayout[0] : boardLayout[boardLayout.length - 1];
+                const anchorPiece = anchorLayout.piece;
+
+                // Orient the new piece so the matching value is at the connection point
+                const orientedPiece = playedPiece.values[0] === playValue
+                    ? { ...playedPiece, values: [playedPiece.values[0], playedPiece.values[1]] }
+                    : { ...playedPiece, values: [playedPiece.values[1], playedPiece.values[0]] };
+
+                let newRotation, newX, newY;
+                const unmatchedValue = orientedPiece.values[1];
+
+                const isAnchorDouble = anchorPiece.isDouble;
+                const isNewPieceDouble = orientedPiece.isDouble;
+                
+                // A double is placed vertically (height=L, width=S), normal piece horizontally (height=S, width=L)
+                const anchorRotation = anchorLayout.rotation; // 0 or 180 for normal, 90 for double
+                
+                if (isAnchorDouble) { // Connecting to a double
+                    // Doubles are always played cross-wise
+                    newRotation = 0; // The new piece will be horizontal
+                    const offset = (CONSTANTS.DOMINO_BOARD_WIDTH / 2) + (CONSTANTS.DOMINO_BOARD_HEIGHT / 2) + CONSTANTS.PIECE_SPACING;
+                    if (isStart) { // This logic needs refinement based on which side of the double is being played on
+                         newX = anchorLayout.x - offset;
+                    } else {
+                         newX = anchorLayout.x + offset;
+                    }
+                    newY = anchorLayout.y;
+                } else { // Connecting to a normal piece
+                    newRotation = isNewPieceDouble ? 90 : 0;
+                    const anchorIsHorizontal = anchorLayout.rotation === 0 || anchorLayout.rotation === 180;
+                    
+                    const anchorSize = anchorIsHorizontal ? CONSTANTS.DOMINO_BOARD_HEIGHT : CONSTANTS.DOMINO_BOARD_WIDTH;
+                    const newPieceSize = newRotation === 0 ? CONSTANTS.DOMINO_BOARD_HEIGHT : CONSTANTS.DOMINO_BOARD_WIDTH;
+
+                    const offset = (anchorSize / 2) + (newPieceSize / 2) + CONSTANTS.PIECE_SPACING;
+                    
+                    if (isStart) {
+                        newX = anchorLayout.x - offset;
+                    } else {
+                        newX = anchorLayout.x + offset;
+                    }
+                    newY = anchorLayout.y;
+                }
+
+                // Make piece face outwards
+                if (!isStart) {
+                    // No change needed with current orientation logic
+                } else {
+                     if (newRotation === 0) newRotation = 180;
+                }
+
+                return { piece: orientedPiece, x: newX, y: newY, rotation: newRotation, unmatchedValue };
+            },
+
+            /**
+             * Calculates the total pips in a player's hand.
+             * @param {Array<Object>} hand The player's hand.
+             * @returns {number} The sum of pips.
+             */
+            calculateHandScore: (hand) => {
+                return hand.reduce((total, piece) => total + piece.values[0] + piece.values[1], 0);
+            },
+        };
+        
+        //==================================================
+        // UI COMPONENTS
+        //==================================================
+        
+        const MenuIcon = () => ( <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg> );
+        const UsersIcon = () => ( <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> );
+        const ChatIcon = () => ( <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg> );
+        const ActionsIcon = () => ( <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg> );
+        const ConsoleIcon = () => ( <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg> );
+
+        const Pip = ({ count }) => {
+            const pips = [];
+            if ([1, 3, 5].includes(count)) pips.push(<div key="g" className="dot dot-g"></div>);
+            if ([2, 3, 4, 5, 6].includes(count)) pips.push(<div key="a" className="dot dot-a"></div>, <div key="b" className="dot dot-b"></div>);
+            if ([4, 5, 6].includes(count)) pips.push(<div key="c" className="dot dot-c"></div>, <div key="d" className="dot dot-d"></div>);
+            if (count === 6) pips.push(<div key="e" className="dot dot-e"></div>, <div key="f" className="dot dot-f"></div>);
+            return <div className="pip-grid">{pips}</div>;
+        };
+        
+        const PingIcon = ({ ping }) => {
+            let color = 'text-red-500'; let bars = 1;
+            if (ping < 150) { color = 'text-yellow-400'; bars = 2; }
+            if (ping < 70) { color = 'text-green-500'; bars = 3; }
+            return (
+                <div className={`flex items-end space-x-px ${color}`}>
+                    <div className={`w-1 h-1 rounded-sm ${bars >= 1 ? 'bg-current' : 'bg-gray-600'}`}></div>
+                    <div className={`w-1 h-2 rounded-sm ${bars >= 2 ? 'bg-current' : 'bg-gray-600'}`}></div>
+                    <div className={`w-1 h-3 rounded-sm ${bars >= 3 ? 'bg-current' : 'bg-gray-600'}`}></div>
+                </div>
+            );
+        };
+        
+        const Domino = React.memo(({ piece, className, ...props }) => (
+            <div className={`domino hand-domino ${className}`} {...props}>
+                <div className="domino-half"><Pip count={piece.values[0]} /></div>
+                <div className="domino-divider"></div>
+                <div className="domino-half"><Pip count={piece.values[1]} /></div>
+            </div>
+        ));
+        
+        const BoardDomino = React.memo(({ piece, style }) => (
+            <div className={`domino board-domino absolute transform-gpu`} style={style}>
+                <div className="domino-half"><Pip count={piece.values[0]} /></div>
+                <div className="domino-divider"></div>
+                <div className="domino-half"><Pip count={piece.values[1]} /></div>
+            </div>
+        ));
+
+        /**
+         * The player's hand component.
+         */
+        const PlayerHand = ({ hand, canPlay, validMoves, onPieceDragStart, draggingPieceId }) => (
+            <div className="hand-scroll-container flex justify-start items-center p-2 bg-black bg-opacity-30 rounded-lg overflow-x-auto w-full">
+                {hand.filter(p => p.id !== draggingPieceId).map(piece => (
+                    <div key={piece.id} onMouseDown={(e) => canPlay && validMoves[piece.id] && onPieceDragStart(e, piece)} onTouchStart={(e) => canPlay && validMoves[piece.id] && onPieceDragStart(e, piece)}>
+                        <Domino piece={piece} className={`${!canPlay || !validMoves[piece.id] ? 'disabled' : ''}`}/>
+                    </div>
+                ))}
+            </div>
+        );
+
+        /**
+         * The main game board component with panning and zooming.
+         */
+        const Board = ({ boardLayout, view, setView, boardRef, dropZones }) => {
+            const [isPanning, setIsPanning] = React.useState(false);
+            const [lastPos, setLastPos] = React.useState({ x: 0, y: 0 });
+
+            React.useEffect(() => {
+                const boardEl = boardRef.current;
+                if (!boardEl) return;
+
+                const handleWheel = (e) => {
+                    e.preventDefault();
+                    const scaleAmount = -e.deltaY * 0.001;
+                    setView(prev => ({
+                        ...prev,
+                        scale: Math.min(Math.max(0.2, prev.scale + scaleAmount), 3)
+                    }));
+                };
+                
+                boardEl.addEventListener('wheel', handleWheel, { passive: false });
+                return () => boardEl.removeEventListener('wheel', handleWheel);
+            }, [boardRef, setView]);
+
+            const handlePanStart = (clientX, clientY, target) => {
+                if (target.closest('.domino')) return;
+                setIsPanning(true);
+                setLastPos({ x: clientX, y: clientY });
+            };
+
+            const handlePanMove = (clientX, clientY) => {
+                if (!isPanning) return;
+                const dx = clientX - lastPos.x;
+                const dy = clientY - lastPos.y;
+                setView(prev => ({ ...prev, x: prev.x + dx, y: prev.y + dy }));
+                setLastPos({ x: clientX, y: clientY });
+            };
+
+            const handlePanEnd = () => setIsPanning(false);
+            
+            const handleTouchStart = (e) => {
+                if (e.touches.length === 1) {
+                    handlePanStart(e.touches[0].clientX, e.touches[0].clientY, e.target);
+                } else if (e.touches.length === 2) {
+                    setIsPanning(false);
+                    const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+                    setLastPos({ pinchDist: dist });
+                }
+            };
+            
+            const handleTouchMove = (e) => {
+                if (isPanning && e.touches.length === 1) {
+                    handlePanMove(e.touches[0].clientX, e.touches[0].clientY);
+                } else if (e.touches.length === 2 && lastPos.pinchDist) {
+                     const newDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+                     const scaleAmount = (newDist - lastPos.pinchDist) * 0.005;
+                     setView(prev => ({ ...prev, scale: Math.min(Math.max(0.2, prev.scale + scaleAmount))}));
+                     setLastPos({ pinchDist: newDist });
+                }
+            };
+            
+            return (
+                <div 
+                    ref={boardRef} 
+                    className="w-full h-full overflow-hidden relative cursor-grab bg-green-800"
+                    onMouseDown={(e) => handlePanStart(e.clientX, e.clientY, e.target)}
+                    onMouseMove={(e) => handlePanMove(e.clientX, e.clientY)}
+                    onMouseUp={handlePanEnd}
+                    onMouseLeave={handlePanEnd}
+                    onTouchStart={handleTouchStart}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handlePanEnd}
+                    style={{ 
+                        touchAction: 'none',
+                        backgroundImage: `url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="d" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="rgba(0,0,0,0.2)"/></pattern></defs><rect width="100%" height="100%" fill="url(%23d)"/></svg>')`,
+                        border: `${CONSTANTS.BOARD_WOOD_BORDER}px solid #855E42`, // Wooden-like border
+                        boxSizing: 'border-box'
+                    }}
+                >
+                    <div 
+                        className="absolute top-0 left-0"
+                        style={{ transform: `translate(${view.x}px, ${view.y}px) scale(${view.scale})` }}
+                    >
+                       <div className="relative" style={{ width: boardRef.current?.clientWidth, height: boardRef.current?.clientHeight }}>
+                            <div className="absolute" style={{left: '50%', top: '50%'}}>
+                                {boardLayout.map(({ piece, x, y, rotation }, index) => (
+                                    <BoardDomino key={`${piece.id}-${index}`} piece={piece} style={{ 
+                                        position: 'absolute', 
+                                        left: `${x}px`, top: `${y}px`, 
+                                        transform: `translate(-50%, -50%) rotate(${rotation}deg)` 
+                                    }}/>
+                                ))}
+                                {dropZones.map(({x, y, side}) => <div key={side} className="drop-zone" style={{left: `${x}px`, top: `${y}px`}} data-side={side}/>)}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        /**
+         * Lobby screen for creating or joining a game.
+         */
+        const Lobby = ({ onCreateRoom, onJoinRoom, error }) => {
+            const [playerName, setPlayerName] = React.useState('');
+            const [roomId, setRoomId] = React.useState('');
+            const [mode, setMode] = React.useState('doubles');
+            const handleCreate = () => { if (playerName.trim()) onCreateRoom(mode, playerName.trim()); };
+            const handleJoin = () => { if (playerName.trim() && roomId.trim()) onJoinRoom(roomId.trim().toUpperCase(), playerName.trim()); };
+            
+            return (
+                <div className="h-screen w-screen flex flex-col justify-center items-center bg-gray-900 text-white p-4">
+                    <h1 className="text-5xl font-bold mb-8">Dominó Multiplayer</h1>
+                    {error && <p className="bg-red-500 text-white p-3 rounded-md mb-4">{error}</p>}
+                    <div className="w-full max-w-sm bg-gray-800 p-6 rounded-lg shadow-lg">
+                        <input type="text" value={playerName} onChange={(e) => setPlayerName(e.target.value)} placeholder="Seu nome" className="w-full p-3 mb-4 bg-gray-700 text-white rounded border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+                        <div className="mb-6">
+                            <h2 className="text-xl font-semibold mb-3">Criar Nova Sala</h2>
+                            <select value={mode} onChange={(e) => setMode(e.target.value)} className="w-full p-3 mb-4 bg-gray-700 text-white rounded border border-gray-600"><option value="doubles">Duplas (4p)</option><option value="individual">Individual (2p)</option></select>
+                            <button onClick={handleCreate} disabled={!playerName.trim()} className="w-full py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-bold transition-colors disabled:bg-gray-500">Criar Sala</button>
+                        </div>
+                        <div>
+                            <h2 className="text-xl font-semibold mb-3">Entrar numa Sala</h2>
+                            <input type="text" value={roomId} onChange={(e) => setRoomId(e.target.value)} placeholder="ID da Sala" className="w-full p-3 mb-4 bg-gray-700 text-white rounded border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500" autoCapitalize="characters"/>
+                            <button onClick={handleJoin} disabled={!playerName.trim() || !roomId.trim()} className="w-full py-3 bg-green-600 hover:bg-green-700 rounded-lg font-bold transition-colors disabled:bg-gray-500">Entrar na Sala</button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+        
+        /**
+         * Player list modal showing scores and status.
+         */
+        const PlayerListModal = ({ players, playerOrder, onClose }) => {
+            const sortedPlayerOrder = React.useMemo(() => {
+                return [...playerOrder].sort((aId, bId) => (players[bId].score || 0) - (players[aId].score || 0));
+            }, [players, playerOrder]);
+
+            return (
+                <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center" style={{zIndex: CONSTANTS.Z_INDEX.MODALS}} onClick={onClose}>
+                    <div className="bg-gray-800 text-white rounded-lg shadow-2xl p-6 w-full max-w-xs" onClick={e => e.stopPropagation()}>
+                        <h2 className="text-2xl font-bold mb-4 border-b border-gray-600 pb-2">Jogadores (Pódio)</h2>
+                        <ul className="space-y-3">
+                            {sortedPlayerOrder.map(pid => {
+                                const player = players[pid];
+                                if(!player) return null;
+                                return (
+                                    <li key={pid} className="flex justify-between items-center bg-gray-700 p-3 rounded-md">
+                                        <span className="font-semibold">{player.name} ({player.score || 0} vitórias)</span>
+                                        <PingIcon ping={player.isOnline ? player.ping : 999} />
+                                    </li>
+                                )
+                             })}
+                        </ul>
+                        <button onClick={onClose} className="w-full mt-6 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-bold">Fechar</button>
+                    </div>
+                </div>
+            );
+        };
+        
+        /**
+         * Screen shown at the end of a game.
+         */
+        const EndGameScreen = ({ players, playerOrder, winner, myId, onLeaveGame, onNewGame }) => {
+            const sortedPlayerOrder = React.useMemo(() => {
+                return [...playerOrder].sort((aId, bId) => (players[bId].score || 0) - (players[aId].score || 0));
+            }, [players, playerOrder]);
+            const isHost = playerOrder[0] === myId;
+            return (
+                <div className="fixed inset-0 bg-gray-900 bg-opacity-95 flex flex-col justify-center items-center p-4" style={{zIndex: CONSTANTS.Z_INDEX.MODALS}}>
+                     <h1 className="text-4xl font-bold mb-2 text-yellow-400">Fim de Jogo!</h1>
+                     <h2 className="text-2xl mb-6">Vencedor: {players[winner]?.name || winner}</h2>
+                     <div className="w-full max-w-md bg-gray-800 p-6 rounded-lg">
+                         <h3 className="text-xl font-bold mb-4 text-center">Pódio Final</h3>
+                          <ul className="space-y-3">
+                             {sortedPlayerOrder.map((pid, index) => {
+                                 const player = players[pid];
+                                 if(!player) return null;
+                                 return (
+                                     <li key={pid} className="flex justify-between items-center bg-gray-700 p-3 rounded-md">
+                                         <span className="font-semibold">{index + 1}. {player.name} ({player.score || 0} vitórias)</span>
+                                         <PingIcon ping={player.isOnline ? player.ping : 999} />
+                                     </li>
+                                 )
+                              })}
+                         </ul>
+                     </div>
+                     <div className="mt-8 flex space-x-4">
+                         <button onClick={onLeaveGame} className="px-6 py-2 bg-red-600 hover:bg-red-700 rounded-lg font-bold">Sair da Sala</button>
+                         {isHost && <button onClick={onNewGame} className="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-bold">Jogar Novamente</button>}
+                     </div>
+                </div>
+            );
+        };
+        
+        /**
+         * Side menu for navigation.
+         */
+        const SideMenu = ({ onLeave, onClose }) => (
+            <div className="fixed inset-0 bg-black bg-opacity-50" style={{zIndex: CONSTANTS.Z_INDEX.MODALS}} onClick={onClose}>
+                <div className="absolute top-0 left-0 h-full w-64 bg-gray-800 shadow-lg p-4" onClick={e => e.stopPropagation()}>
+                    <h2 className="text-xl font-bold mb-6">Menu</h2>
+                    <nav className="flex flex-col space-y-3">
+                        <button onClick={onLeave} className="text-left p-2 rounded hover:bg-gray-700">Voltar ao Lobby</button>
+                    </nav>
+                </div>
+            </div>
+        );
+
+        /**
+         * FEATURE: Actions modal with Admin panel.
+         * Shows game ID and provides admin controls.
+         */
+        const ActionsModal = ({ game, myId, onKick, onReset, onForfeit, onClose, onSetRule, onLeaveGame, onToggleConsole }) => {
+            const [view, setView] = React.useState('player');
+            const { log } = useDevLog();
+            const isAdmin = game.playerOrder[0] === myId;
+            const addNotification = useNotifications().addNotification;
+
+            const copyGameId = () => {
+                navigator.clipboard.writeText(game.id).then(() => {
+                    addNotification(`ID da Sala ${game.id} copiado!`, 'success');
+                    log(`Game ID copied: ${game.id}`, 'info');
+                }).catch(err => {
+                    addNotification('Falha ao copiar ID.', 'error');
+                    log(`Failed to copy game ID: ${err}`, 'error');
+                });
+            };
+
+            return (
+                <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center" style={{zIndex: CONSTANTS.Z_INDEX.MODALS}} onClick={onClose}>
+                    <div className="bg-gray-800 text-white rounded-lg shadow-2xl p-6 w-full max-w-sm" onClick={e => e.stopPropagation()}>
+                        <h2 className="text-2xl font-bold mb-4">Ações da Partida</h2>
+                        {isAdmin && (
+                            <div className="flex border-b border-gray-600 mb-4">
+                                <button onClick={() => setView('player')} className={`flex-1 py-2 ${view === 'player' ? 'border-b-2 border-blue-500' : ''}`}>Jogador</button>
+                                <button onClick={() => setView('admin')} className={`flex-1 py-2 ${view === 'admin' ? 'border-b-2 border-blue-500' : ''}`}>Admin</button>
+                                <button onClick={() => setView('rules')} className={`flex-1 py-2 ${view === 'rules' ? 'border-b-2 border-blue-500' : ''}`}>Regras</button>
+                            </div>
+                        )}
+                        
+                        {view === 'player' && (
+                            <div className="space-y-4">
+                                <button onClick={onForfeit} className="w-full text-left p-3 rounded bg-orange-700 hover:bg-orange-600">Desistir da Partida</button>
+                                <button onClick={onLeaveGame} className="w-full text-left p-3 rounded bg-red-800 hover:bg-red-700">Sair da Sala</button>
+                            </div>
+                        )}
+
+                        {view === 'admin' && isAdmin && (
+                            <div className="space-y-4">
+                                <div className="bg-gray-700 p-3 rounded-lg">
+                                    <h3 className="font-bold mb-2">Informações da Sala</h3>
+                                    <div className="flex items-center justify-between">
+                                       <p className="text-sm">ID: <span className="font-mono bg-gray-900 px-2 py-1 rounded">{game.id}</span></p>
+                                       <button onClick={copyGameId} className="text-xs bg-blue-600 hover:bg-blue-500 px-3 py-1 rounded">Copiar</button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 className="font-bold mt-4 mb-2">Expulsar Jogador:</h3>
+                                    {game.playerOrder.filter(pid => pid !== myId).map(pid => (
+                                        <button key={pid} onClick={() => onKick(pid)} className="w-full flex justify-between items-center p-3 rounded bg-gray-700 hover:bg-red-600 mb-2">
+                                            <span>{game.players[pid].name}</span> <span>Expulsar</span>
+                                        </button>
+                                    ))}
+                                    {game.playerOrder.length === 1 && <p className="text-sm text-gray-400">Nenhum outro jogador na sala.</p>}
+                                </div>
+                                <button onClick={onReset} className="w-full text-left p-3 rounded bg-yellow-600 text-black hover:bg-yellow-500">Reiniciar Jogo</button>
+                                <button onClick={onToggleConsole} className="w-full text-left p-3 rounded bg-indigo-600 hover:bg-indigo-500 flex items-center space-x-2">
+                                    <ConsoleIcon /><span>Mostrar/Ocultar Console</span>
+                                </button>
+                            </div>
+                        )}
+
+                        {view === 'rules' && isAdmin && (
+                            <div className="space-y-4">
+                               <h3 className="font-bold">Regra de Início</h3>
+                               <select onChange={e => onSetRule('startCondition', e.target.value)} value={game.gameRules?.startCondition || 'any'} className="w-full p-2 bg-gray-700 text-white rounded border border-gray-600">
+                                   <option value="any">Maior Peça (Qualquer)</option>
+                                   <option value="any-double">Maior Bucha</option>
+                                   <option value="specific-double">Bucha Específica</option>
+                               </select>
+                               {game.gameRules?.startCondition === 'specific-double' && (
+                                   <select onChange={e => onSetRule('requiredDouble', parseInt(e.target.value, 10))} value={game.gameRules?.requiredDouble || 6} className="w-full p-2 bg-gray-700 text-white rounded border border-gray-600 mt-2">
+                                       {[6,5,4,3,2,1,0].map(v => <option key={v} value={v}>Bucha de {v}</option>)}
+                                   </select>
+                               )}
+                            </div>
+                        )}
+                         <button onClick={onClose} className="w-full mt-6 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-bold">Fechar</button>
+                    </div>
+                </div>
+            );
+        };
+        
+        /**
+         * Chat modal for in-game communication.
+         */
+        const ChatModal = ({ messages, myId, players, onSendMessage, onClose }) => {
+            const [text, setText] = React.useState('');
+            const endOfMessagesRef = React.useRef(null);
+            
+            React.useEffect(() => {
+                endOfMessagesRef.current?.scrollIntoView({ behavior: 'smooth' });
+            }, [messages]);
+
+            const handleSend = () => {
+                if(text.trim()) {
+                    onSendMessage(text.trim());
+                    setText('');
+                }
+            };
+            return (
+                <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center" style={{zIndex: CONSTANTS.Z_INDEX.MODALS}} onClick={onClose}>
+                    <div className="bg-gray-800 text-white rounded-lg shadow-2xl w-full max-w-md h-3/4 flex flex-col" onClick={e => e.stopPropagation()}>
+                        <h2 className="text-2xl font-bold p-4 border-b border-gray-600">Chat da Sala</h2>
+                        <div className="flex-1 p-4 overflow-y-auto space-y-4">
+                            {(messages || []).map((msg, i) => (
+                                <div key={i} className={`flex ${msg.senderId === myId ? 'justify-end' : 'justify-start'}`}>
+                                    <div className={`rounded-lg px-3 py-2 max-w-xs ${msg.senderId === myId ? 'bg-blue-600' : 'bg-gray-600'}`}>
+                                        <p className="text-xs font-bold">{players[msg.senderId]?.name || '...'}</p>
+                                        <p className="break-words">{msg.text}</p>
+                                    </div>
+                                </div>
+                            ))}
+                            <div ref={endOfMessagesRef} />
+                        </div>
+                        <div className="p-4 border-t border-gray-600 flex space-x-2">
+                            <input type="text" value={text} onChange={e => setText(e.target.value)} onKeyPress={e => e.key === 'Enter' && handleSend()} placeholder="Digite uma mensagem..." className="flex-1 p-2 bg-gray-700 rounded border border-gray-600"/>
+                            <button onClick={handleSend} className="px-4 py-2 bg-blue-600 rounded">Enviar</button>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        /**
+         * FEATURE: A toast notification component.
+         */
+        const Toast = ({ message, type, onDismiss }) => {
+            const [isExiting, setIsExiting] = React.useState(false);
+
+            React.useEffect(() => {
+                const timer = setTimeout(() => {
+                    setIsExiting(true);
+                    setTimeout(onDismiss, 500);
+                }, CONSTANTS.NOTIFICATION_TIMEOUT - 500);
+                return () => clearTimeout(timer);
+            }, [onDismiss]);
+            
+            const colors = {
+                info: 'bg-blue-500', success: 'bg-green-500',
+                warning: 'bg-yellow-500', error: 'bg-red-500',
+            };
+
+            return (
+                <div 
+                    className={`toast ${isExiting ? 'out' : ''} ${colors[type]} text-white py-2 px-4 rounded-lg shadow-lg mb-2`}
+                    onClick={() => { setIsExiting(true); setTimeout(onDismiss, 500); }}
+                >
+                    {message}
+                </div>
+            );
+        };
+        
+        /**
+         * FEATURE: Container for all toast notifications.
+         */
+        const NotificationContainer = () => {
+            const { notifications, addNotification } = useNotifications(); // Mis-using addNotification to get the context to re-render.
+            const [internalNotifications, setInternalNotifications] = React.useState([]);
+
+            React.useEffect(() => {
+                setInternalNotifications(notifications);
+            }, [notifications]);
+            
+            const handleDismiss = id => {
+                setInternalNotifications(prev => prev.filter(n => n.id !== id));
+            };
+
+            if (internalNotifications.length === 0) return null;
+
+            return (
+                <div className="fixed bottom-4 right-4" style={{ zIndex: CONSTANTS.Z_INDEX.NOTIFICATIONS }}>
+                    {internalNotifications.map(n => (
+                        <Toast key={n.id} {...n} onDismiss={() => handleDismiss(n.id)} />
+                    ))}
+                </div>
+            );
+        };
+
+        /**
+         * FEATURE: Draggable and resizable console for developers/admins.
+         */
+        const DevConsole = ({ onClose }) => {
+            const { logs } = useDevLog();
+            const logColors = {
+                log: 'text-gray-300', info: 'text-blue-300',
+                warn: 'text-yellow-300', error: 'text-red-300',
+            };
+            return(
+                <div className="fixed bottom-4 left-4 w-1/3 h-1/3 bg-black bg-opacity-80 border border-gray-600 rounded-lg shadow-2xl flex flex-col resize-both overflow-auto" style={{ zIndex: CONSTANTS.Z_INDEX.DEV_CONSOLE }}>
+                    <div className="p-2 bg-gray-800 flex justify-between items-center cursor-move">
+                        <h3 className="font-bold text-sm">Console de Admin</h3>
+                        <button onClick={onClose} className="text-xs bg-red-600 px-2 py-1 rounded">X</button>
+                    </div>
+                    <div className="p-2 overflow-y-auto font-mono text-xs flex-grow">
+                        {logs.map(log => (
+                            <div key={log.timestamp.getTime() + Math.random()} className={`pb-1 border-b border-gray-700 mb-1 ${logColors[log.level]}`}>
+                               <span>[{log.timestamp.toLocaleTimeString()}] {log.message}</span>
+                               {log.context && <pre className="text-gray-400 text-xxs whitespace-pre-wrap">{log.context}</pre>}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+        
+        /**
+         * FEATURE: Big text announcer in the middle of the screen for important game states.
+         */
+        const GameAnnouncer = ({ text }) => {
+            const [visible, setVisible] = React.useState(false);
+            const [animationClass, setAnimationClass] = React.useState('');
+
+            React.useEffect(() => {
+                if (text) {
+                    setVisible(true);
+                    setAnimationClass('announcer-in');
+                    const timer = setTimeout(() => {
+                        setAnimationClass('announcer-out');
+                        setTimeout(() => setVisible(false), 400);
+                    }, 2000); // Display for 2 seconds
+                    return () => clearTimeout(timer);
+                }
+            }, [text]);
+
+            if (!visible) return null;
+
+            return (
+                <div className="fixed inset-0 flex justify-center items-center pointer-events-none" style={{ zIndex: CONSTANTS.Z_INDEX.ANNOUNCER }}>
+                    <div className={`bg-black bg-opacity-70 text-white font-bold text-3xl md:text-5xl py-4 px-8 rounded-xl shadow-lg ${animationClass}`}>
+                        {text}
+                    </div>
+                </div>
+            );
+        };
+
+        /**
+         * The main Game Room component.
+         * This is the orchestrator for the entire game screen.
+         */
+        const GameRoom = ({ game, userId, onPlayPiece, onPassTurn, onNewGame, onLeaveGame, onKickPlayer, onSendMessage, onRequestForfeit, onSetRule }) => {
+            const [isMenuOpen, setMenuOpen] = React.useState(false);
+            const [isActionsOpen, setActionsOpen] = React.useState(false);
+            const [isChatOpen, setChatOpen] = React.useState(false);
+            const [isPlayerListVisible, setPlayerListVisible] = React.useState(false);
+            const [isConsoleVisible, setConsoleVisible] = React.useState(false);
+            const [draggedPieceInfo, setDraggedPieceInfo] = React.useState(null);
+            const [announcerText, setAnnouncerText] = React.useState('');
+            const boardRef = React.useRef(null);
+            const [view, setView] = React.useState({ x: 0, y: 0, scale: 1 });
+            const prevTurnRef = React.useRef(game.currentPlayerId);
+            
+            const me = game.players[userId];
+            const isMyTurn = game.currentPlayerId === userId;
+            const boardEnds = React.useMemo(() => GameLogic.getBoardEnds(game.boardLayout), [game.boardLayout]);
+
+            const { addNotification } = useNotifications();
+            const { log } = useDevLog();
+
+            // Announcer logic
+            React.useEffect(() => {
+                if (game.currentPlayerId !== prevTurnRef.current) {
+                    prevTurnRef.current = game.currentPlayerId;
+                    if(isMyTurn) {
+                        setAnnouncerText('Sua Vez de Jogar!');
+                        addNotification('É a sua vez!', 'info');
+                    }
+                }
+            }, [game.currentPlayerId, isMyTurn, addNotification]);
+
+
+            const validMoves = React.useMemo(() => {
+                if (!me?.hand) return {};
+                return me.hand.reduce((acc, piece) => {
+                    acc[piece.id] = GameLogic.isValidMove(piece, boardEnds);
+                    return acc;
+                }, {});
+            }, [me?.hand, boardEnds]);
+            const canPlayAtAll = React.useMemo(() => Object.values(validMoves).some(isValid => isValid), [validMoves]);
+            
+            const handlePieceDragStart = (e, piece) => {
+                e.preventDefault();
+                log(`Drag started for piece ${piece.id}`, 'info');
+                const isTouchEvent = e.type.startsWith('touch');
+                setDraggedPieceInfo({ piece, x: isTouchEvent ? e.touches[0].clientX : e.clientX, y: isTouchEvent ? e.touches[0].clientY : e.clientY });
+            };
+
+            const handleDragMove = (e) => {
+                if (!draggedPieceInfo) return;
+                const isTouchEvent = e.type.startsWith('touch');
+                const clientX = isTouchEvent ? e.touches[0].clientX : e.clientX;
+                const clientY = isTouchEvent ? e.touches[0].clientY : e.clientY;
+                setDraggedPieceInfo(prev => ({ ...prev, x: clientX, y: clientY }));
+            };
+
+            const handleDragEnd = (e) => {
+                if (!draggedPieceInfo || !boardRef.current) return;
+                
+                log(`Drag ended for piece ${draggedPieceInfo.piece.id}`, 'info');
+
+                if (game.boardLayout.length === 0) {
+                    onPlayPiece(draggedPieceInfo.piece, null);
+                    setDraggedPieceInfo(null);
+                    return;
+                }
+                
+                const boardRect = boardRef.current.getBoundingClientRect();
+                const endX = e.clientX || e.changedTouches[0].clientX;
+                const endY = e.clientY || e.changedTouches[0].clientY;
+                
+                const cursorRelativeToCenterX = (endX - boardRect.left) - (boardRect.width / 2);
+                const cursorRelativeToCenterY = (endY - boardRect.top) - (boardRect.height / 2);
+
+                const dropX = (cursorRelativeToCenterX - view.x) / view.scale;
+                const dropY = (cursorRelativeToCenterY - view.y) / view.scale;
+                
+                let closestSide = null;
+                let minDistance = Infinity;
+                
+                for(const zone of dropZones) {
+                    const distance = Math.hypot(dropX - zone.x, dropY - zone.y);
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        closestSide = zone.side;
+                    }
+                }
+                
+                if(closestSide !== null && minDistance < 80 / view.scale){
+                    log(`Dropped piece on side: ${closestSide}`, 'info', { distance: minDistance });
+                    onPlayPiece(draggedPieceInfo.piece, closestSide);
+                } else {
+                    log(`Drop failed, no valid zone`, 'warn', { distance: minDistance });
+                }
+                
+                setDraggedPieceInfo(null);
+            };
+            
+            const dropZones = React.useMemo(() => {
+                if (!game.boardLayout || game.boardLayout.length === 0 || !isMyTurn) return [];
+
+                const zones = [];
+                const startLayout = game.boardLayout[0];
+                const endLayout = game.boardLayout[game.boardLayout.length - 1];
+
+                // Determine effective size based on rotation
+                const getVisualOffset = (layout) => (layout.rotation === 90 || layout.rotation === 270 ? CONSTANTS.DOMINO_BOARD_WIDTH : CONSTANTS.DOMINO_BOARD_HEIGHT);
+                
+                const startOffset = (getVisualOffset(startLayout) / 2) + 40; // 40 is half of drop-zone width
+                zones.push({ x: startLayout.x - startOffset, y: startLayout.y, side: 'start' });
+
+                if (game.boardLayout.length === 1 && !startLayout.piece.isDouble) {
+                     const endOffset = (getVisualOffset(startLayout) / 2) + 40;
+                     zones.push({ x: startLayout.x + endOffset, y: startLayout.y, side: 'end'});
+                } else if(game.boardLayout.length > 1) {
+                    const endOffset = (getVisualOffset(endLayout) / 2) + 40;
+                    zones.push({ x: endLayout.x + endOffset, y: endLayout.y, side: 'end' });
+                }
+                return zones;
+            }, [game.boardLayout, isMyTurn]);
+
+
+            const playerPositions = [...game.playerOrder];
+            while (playerPositions.length > 0 && playerPositions[0] !== userId) playerPositions.push(playerPositions.shift());
+            const [ , opponentLeft, opponentTop, opponentRight ] = playerPositions;
+
+            if (!me) {
+                 return (
+                     <div className="h-screen w-screen flex flex-col justify-center items-center">
+                         <p className="text-2xl">Recarregando dados... Você foi expulso?</p>
+                          <button onClick={onLeaveGame} className="mt-4 px-6 py-2 bg-blue-600 rounded">Voltar ao Lobby</button>
+                     </div>
+                 );
+            }
+            const maxPlayers = game.mode === 'doubles' ? 4 : 2;
+
+            if (game.state === 'finished' && game.winner) {
+                return <EndGameScreen players={game.players} playerOrder={game.playerOrder} winner={game.winner} myId={userId} onLeaveGame={onLeaveGame} onNewGame={onNewGame} />
+            }
+
+            return (
+                <div onMouseMove={handleDragMove} onMouseUp={handleDragEnd} onTouchMove={handleDragMove} onTouchEnd={handleDragEnd} className="w-screen h-screen">
+                    {isMenuOpen && <SideMenu onLeave={onLeaveGame} onClose={() => setMenuOpen(false)} />}
+                    {isActionsOpen && <ActionsModal game={game} myId={userId} onKick={onKickPlayer} onReset={onNewGame} onForfeit={onRequestForfeit} onClose={() => setActionsOpen(false)} onSetRule={onSetRule} onLeaveGame={onLeaveGame} onToggleConsole={() => setConsoleVisible(v => !v)} />}
+                    {isChatOpen && <ChatModal messages={game.chat || []} myId={userId} players={game.players} onSendMessage={onSendMessage} onClose={() => setChatOpen(false)} />}
+                    {isPlayerListVisible && <PlayerListModal players={game.players} playerOrder={game.playerOrder} onClose={() => setPlayerListVisible(false)} />}
+                    {isConsoleVisible && <DevConsole onClose={() => setConsoleVisible(false)} />}
+                    <GameAnnouncer text={announcerText} />
+
+                    <div className="relative h-screen w-screen flex flex-col items-center justify-between p-2 md:p-4 bg-gray-800">
+                        <div className="absolute top-4 left-4 flex space-x-2" style={{zIndex: CONSTANTS.Z_INDEX.UI_BUTTONS}}>
+                          <button onClick={() => setMenuOpen(true)} className="bg-gray-800 bg-opacity-50 p-2 rounded-full text-white hover:bg-gray-700 transition-colors"><MenuIcon /></button>
+                        </div>
+                        <div className="absolute top-4 right-4 flex space-x-1 md:space-x-2" style={{zIndex: CONSTANTS.Z_INDEX.UI_BUTTONS}}>
+                            <button onClick={() => setChatOpen(true)} className="bg-gray-800 bg-opacity-50 p-2 rounded-full text-white hover:bg-gray-700 transition-colors"><ChatIcon /></button>
+                            <button onClick={() => setActionsOpen(true)} className="bg-gray-800 bg-opacity-50 p-2 rounded-full text-white hover:bg-gray-700 transition-colors"><ActionsIcon /></button>
+                            <button onClick={() => setPlayerListVisible(true)} className="bg-gray-800 bg-opacity-50 p-2 rounded-full text-white hover:bg-gray-700 transition-colors"><UsersIcon /></button>
+                        </div>
+                        
+                        {/* FIX: Set z-index for avatars above the board container */}
+                        <div style={{ zIndex: CONSTANTS.Z_INDEX.AVATARS }}>
+                          {game.players[opponentTop] && <Opponent player={game.players[opponentTop]} currentTurnId={game.currentPlayerId} position="absolute top-2 left-1/2 -translate-x-1/2" passed={game.lastAction?.type === 'pass' && game.lastAction?.playerId === opponentTop} />}
+                          {game.players[opponentLeft] && <Opponent player={game.players[opponentLeft]} currentTurnId={game.currentPlayerId} position="absolute left-2 top-1/2 -translate-y-1/2" passed={game.lastAction?.type === 'pass' && game.lastAction?.playerId === opponentLeft} />}
+                          {game.players[opponentRight] && <Opponent player={game.players[opponentRight]} currentTurnId={game.currentPlayerId} position="absolute right-2 top-1/2 -translate-y-1/2" passed={game.lastAction?.type === 'pass' && game.lastAction?.playerId === opponentRight} />}
+                        </div>
+
+                        <div className="flex-grow w-full flex items-center justify-center my-16 p-4" style={{ zIndex: CONSTANTS.Z_INDEX.BOARD }}>
+                            <Board boardLayout={game.boardLayout || []} view={view} setView={setView} boardRef={boardRef} dropZones={isMyTurn ? dropZones : []} />
+                        </div>
+                        
+                        <div className="w-full p-2" style={{ zIndex: CONSTANTS.Z_INDEX.UI_BUTTONS }}>
+                            {game.state === 'waiting' ? (
+                                <div className="text-center p-4 bg-blue-900 rounded-lg">
+                                    <h2 className="text-2xl font-bold text-yellow-400 animate-pulse">Aguardando jogadores... ({game.playerOrder.length}/{maxPlayers})</h2>
+                                    <p className="text-lg mt-2">ID da Sala: <strong className="select-all">{game.id}</strong></p>
+                                </div>
+                            ) : game.state === 'playing' ? (
+                                <>
+                                    <PlayerHand hand={me.hand} canPlay={isMyTurn} validMoves={validMoves} onPieceDragStart={handlePieceDragStart} draggingPieceId={draggedPieceInfo?.piece.id} />
+                                    <div className="text-center mt-2 h-12">
+                                        {isMyTurn && !canPlayAtAll && game.boardLayout.length > 0 && (
+                                            <button onClick={onPassTurn} className="px-6 py-2 bg-yellow-500 text-black font-bold rounded-lg shadow-lg hover:bg-yellow-400 transition-all">
+                                                Passar a Vez
+                                            </button>
+                                        )}
+                                    </div>
+                                </>
+                            ): null}
+                        </div>
+                    </div>
+                    {draggedPieceInfo && <BoardDomino piece={draggedPieceInfo.piece} style={{position: 'fixed', left: `${draggedPieceInfo.x}px`, top: `${draggedPieceInfo.y}px`, transform: 'translate(-50%, -50%)', zIndex: CONSTANTS.Z_INDEX.DRAGGED_PIECE, pointerEvents: 'none'}} />}
+                </div>
+            );
+        };
+        
+        const Opponent = ({ player, currentTurnId, position, passed }) => {
+            if (!player) return null;
+            const isTurn = currentTurnId === player.id;
+            return (
+                <div className={`p-2 rounded-lg text-center transition-all duration-300 shadow-lg relative ${isTurn ? 'bg-yellow-400 text-black scale-110 ring-2 ring-white' : 'bg-gray-700'} ${position}`}>
+                    <div className="font-bold">{player.name} {player.team && `(Time ${player.team})`}</div>
+                    <div className="text-sm">{player.hand?.length || 0} peças</div>
+                     {passed && <div className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-bounce">Passou</div>}
+                </div>
+            );
+        };
+
+        
+        //==================================================
+        // MAIN APP COMPONENT
+        //==================================================
+        const App = () => {
+            const [user, setUser] = React.useState(null);
+            const [isAuthReady, setAuthReady] = React.useState(false);
+            const [game, setGame] = React.useState(null);
+            const [error, setError] = React.useState('');
+            const [currentRoomId, setCurrentRoomId] = React.useState(() => localStorage.getItem('dominoRoomId'));
+
+            // Wrapped App in providers
+            return (
+              <DevLogProvider>
+                <NotificationProvider>
+                    <MainApp 
+                        user={user} setUser={setUser}
+                        isAuthReady={isAuthReady} setAuthReady={setAuthReady}
+                        game={game} setGame={setGame}
+                        error={error} setError={setError}
+                        currentRoomId={currentRoomId} setCurrentRoomId={setCurrentRoomId}
+                    />
+                    <NotificationContainer />
+                </NotificationProvider>
+              </DevLogProvider>
+            );
+        };
+
+        const MainApp = ({ user, setUser, isAuthReady, setAuthReady, game, setGame, error, setError, currentRoomId, setCurrentRoomId }) => {
+            
+            const { addNotification } = useNotifications();
+            const { log } = useDevLog();
+
+            // Authentication Effect
+            React.useEffect(() => {
+                const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+                    if (currentUser) {
+                        log(`User authenticated: ${currentUser.uid}`, 'info');
+                        setUser(currentUser);
+                    } else {
+                        try {
+                            log('No user found, attempting anonymous sign-in.', 'info');
+                            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                                await signInWithCustomToken(auth, __initial_auth_token);
+                            } else {
+                                await signInAnonymously(auth);
+                            }
+                        } catch (e) {
+                            console.error("Authentication Error:", e);
+                            log(`Authentication failed: ${e.message}`, 'error', e);
+                            setError("Falha na autenticação. Verifique as credenciais do Firebase.");
+                        }
+                    }
+                    if(!isAuthReady) setAuthReady(true);
+                });
+                return () => unsubscribe();
+            }, []);
+            
+            // Ping and Presence Effect
+             React.useEffect(() => {
+                 if (!user || !currentRoomId) return;
+                 log(`Setting up presence and ping for room ${currentRoomId}`, 'info');
+                 const interval = setInterval(() => {
+                     updateDoc(doc(firestoreDB, 'games', currentRoomId), { [`players.${user.uid}.ping`]: 10 + Math.random() * 60 });
+                 }, 5000); // Increased interval to reduce writes
+                 
+                 // RTDB for presence is better but this is a simple firestore solution
+                 updateDoc(doc(firestoreDB, 'games', currentRoomId), { [`players.${user.uid}.isOnline`]: true });
+
+                 return () => {
+                    clearInterval(interval);
+                    // This might not run on tab close, RTDB is needed for robust presence
+                    if(game && game.players[user.uid]) {
+                        updateDoc(doc(firestoreDB, 'games', currentRoomId), { [`players.${user.uid}.isOnline`]: false });
+                    }
+                 };
+             }, [user, currentRoomId, log]);
+
+
+            // Game State Subscription Effect
+            React.useEffect(() => {
+                if (!currentRoomId || !user) { 
+                    setGame(null); 
+                    if(currentRoomId) localStorage.removeItem('dominoRoomId'); 
+                    return; 
+                }
+                
+                log(`Subscribing to game state for room: ${currentRoomId}`, 'info');
+                localStorage.setItem('dominoRoomId', currentRoomId);
+                const unsubGame = onSnapshot(doc(firestoreDB, 'games', currentRoomId), (docSnap) => {
+                    if (docSnap.exists()) {
+                        const gameData = docSnap.data();
+                        log('Game state updated.', 'log', { state: gameData.state, currentPlayer: gameData.currentPlayerId });
+                        
+                        // Check if I was kicked
+                        if(game && game.players[user.uid] && !gameData.players[user.uid]){
+                            addNotification("Você foi removido da sala.", "warning");
+                            log('Current user was removed from the game.', 'warn');
+                            setCurrentRoomId(null);
+                            setGame(null);
+                            return;
+                        }
+
+                        // Check for new players joining
+                        if(game && Object.keys(gameData.players).length > Object.keys(game.players).length){
+                            const newPlayers = Object.keys(gameData.players).filter(pId => !game.players[pId]);
+                            if (newPlayers.length > 0 && gameData.players[newPlayers[0]]) {
+                                addNotification(`${gameData.players[newPlayers[0]].name} entrou na sala.`, 'info');
+                            }
+                        }
+
+                        setGame({ id: docSnap.id, ...gameData });
+                    } else { 
+                        addNotification("A sala foi fechada pelo anfitrião.", "warning");
+                        log(`Room ${currentRoomId} no longer exists.`, 'warn');
+                        setError("A sala foi fechada."); 
+                        setCurrentRoomId(null); 
+                    }
+                }, (err) => { 
+                    console.error(err); 
+                    log(`Firestore snapshot error: ${err.message}`, 'error', err);
+                    setError("Erro de conexão com a sala."); 
+                    setCurrentRoomId(null); 
+                });
+                
+                return () => {
+                    log(`Unsubscribing from game state: ${currentRoomId}`, 'info');
+                    unsubGame();
+                };
+            }, [currentRoomId, user]);
+            
+            /**
+             * Handles a player leaving the game room.
+             * If the host leaves, the game is deleted.
+             */
+            const handleLeaveGame = async () => {
+              if (game && user && game.players[user.uid]) {
+                  log(`User ${user.uid} is leaving room ${game.id}`, 'info');
+                  const batch = writeBatch(firestoreDB);
+                  const gameRef = doc(firestoreDB, 'games', game.id);
+                  // If I'm the host or the last one, delete the game
+                  if (game.playerOrder.length <= 1 || game.playerOrder[0] === user.uid) {
+                      batch.delete(gameRef);
+                      log(`Deleting game ${game.id} because host left.`, 'warn');
+                  } else {
+                      const newPlayerOrder = game.playerOrder.filter(pId => pId !== user.uid);
+                      batch.update(gameRef, {
+                          [`players.${user.uid}`]: deleteField(),
+                          playerOrder: newPlayerOrder,
+                          // If game was playing, reset to waiting for a new player
+                          state: game.state === 'playing' ? 'waiting' : game.state,
+                          // If it was the leaving player's turn, pass to the next
+                          currentPlayerId: game.currentPlayerId === user.uid ? newPlayerOrder[game.playerOrder.indexOf(user.uid) % newPlayerOrder.length] : game.currentPlayerId
+                      });
+                  }
+                  await batch.commit();
+              }
+              setCurrentRoomId(null);
+              setGame(null);
+            };
+
+            const handleCreateRoom = async (mode, playerName) => {
+                if (!user) return;
+                setError('');
+                const roomId = Math.random().toString(36).substring(2, 6).toUpperCase();
+                log(`Creating new room ${roomId}`, 'info', { mode, playerName });
+                const newPlayer = { id: user.uid, name: playerName, hand: [], team: mode === 'doubles' ? 'A' : null, isOnline: true, ping: 50, score: 0 };
+                const newGame = {
+                    state: 'waiting', mode,
+                    players: { [user.uid]: newPlayer }, playerOrder: [user.uid],
+                    boardLayout: [],
+                    currentPlayerId: null, winner: null,
+                    createdAt: serverTimestamp(), passCount: 0, chat: [], appId,
+                    gameRules: { startCondition: 'any', requiredDouble: 6 }
+                };
+                await setDoc(doc(firestoreDB, 'games', roomId), newGame);
+                setCurrentRoomId(roomId);
+            };
+
+            const handleJoinRoom = async (roomId, playerName) => {
+                if (!user) return;
+                setError('');
+                const gameRef = doc(firestoreDB, 'games', roomId);
+                log(`Attempting to join room ${roomId}`, 'info', { playerName });
+
+                try {
+                    const gameSnap = await getDoc(gameRef);
+                    if (!gameSnap.exists()) {
+                        log(`Join failed: Room ${roomId} not found`, 'error');
+                        return setError("Sala não encontrada.");
+                    }
+                    
+                    const roomData = gameSnap.data();
+                    const maxPlayers = roomData.mode === 'doubles' ? 4 : 2;
+
+                    if (Object.keys(roomData.players).length >= maxPlayers && !roomData.players[user.uid]) {
+                        log(`Join failed: Room ${roomId} is full`, 'error');
+                        return setError("Esta sala está cheia.");
+                    }
+                    
+                    if (roomData.players[user.uid]) { // Rejoining
+                        log(`User ${user.uid} is rejoining room ${roomId}`, 'info');
+                        await updateDoc(gameRef, { [`players.${user.uid}.isOnline`]: true, [`players.${user.uid}.name`]: playerName });
+                        setCurrentRoomId(roomId);
+                        return;
+                    }
+
+                    let team = roomData.mode === 'doubles' ? (Object.values(roomData.players).filter(p => p.team === 'A').length <= Object.values(roomData.players).filter(p => p.team === 'B').length ? 'A' : 'B') : null;
+                    const newPlayer = { id: user.uid, name: playerName, hand: [], team, isOnline: true, ping: 50, score: 0 };
+                    
+                    const newPlayerOrder = [...roomData.playerOrder, user.uid];
+                    
+                    const updatedData = {
+                       [`players.${user.uid}`]: newPlayer,
+                        playerOrder: newPlayerOrder
+                    };
+                    
+                    // If room is now full, start the game
+                    if (newPlayerOrder.length === maxPlayers) {
+                        log(`Room ${roomId} is full. Starting game.`, 'info');
+                        const hands = GameLogic.dealHands(newPlayerOrder);
+                        const updatedPlayersForStart = { ...roomData.players, [user.uid]: newPlayer };
+                        newPlayerOrder.forEach(pid => { updatedPlayersForStart[pid].hand = hands[pid]; });
+                        const startingPlayerId = GameLogic.findStartingPlayer(updatedPlayersForStart, roomData.gameRules);
+                        
+                        updatedData.state = 'playing';
+                        updatedData.players = updatedPlayersForStart;
+                        updatedData.currentPlayerId = startingPlayerId;
+                    }
+                    
+                    const batch = writeBatch(firestoreDB);
+                    batch.update(gameRef, updatedData);
+                    await batch.commit();
+                    setCurrentRoomId(roomId);
+
+                } catch (e) {
+                    console.error("Error joining room: ", e);
+                    log(`Error joining room: ${e.message}`, 'error', e);
+                    setError("Ocorreu um erro ao entrar na sala.");
+                }
+            };
+            
+            const handlePlayPiece = async (piece, side) => {
+                if (!game || game.currentPlayerId !== user?.uid) return;
+                
+                const myPlayer = game.players[user.uid];
+                const newHand = myPlayer.hand.filter(p => p.id !== piece.id);
+                let newBoardLayout, newUpdates = {};
+                
+                log(`Player ${user.uid} plays piece ${piece.id} on side ${side}`, 'info');
+
+                if (game.boardLayout.length === 0) {
+                     const { startCondition, requiredDouble } = game.gameRules;
+                     if (startCondition === 'any-double' && !piece.isDouble) return addNotification("Regra: Apenas buchas podem iniciar.", "warning");
+                     if (startCondition === 'specific-double' && (!piece.isDouble || piece.values[0] !== requiredDouble)) return addNotification(`Regra: Deve iniciar com a bucha de ${requiredDouble}.`, "warning");
+                     
+                     newBoardLayout = [GameLogic.calculateNextPieceLayout([], piece, null, false)];
+                } else {
+                    const boardEnds = GameLogic.getBoardEnds(game.boardLayout);
+                    const playEnd = boardEnds.find(end => end.side === side);
+                    if (!playEnd || !piece.values.includes(playEnd.value)) {
+                        log(`Invalid move detected for piece ${piece.id}`, 'error', { pieceValues: piece.values, playEndValue: playEnd.value });
+                        return;
+                    }
+                    const isStart = side === 'start';
+                    const newPieceLayout = GameLogic.calculateNextPieceLayout(game.boardLayout, piece, playEnd.value, isStart);
+                    
+                    newBoardLayout = isStart 
+                        ? [newPieceLayout, ...game.boardLayout] 
+                        : [...game.boardLayout, newPieceLayout];
+                }
+
+                // Check for win condition
+                if (newHand.length === 0) {
+                    log(`Player ${user.uid} won the round.`, 'info');
+                    newUpdates.state = 'finished';
+                    newUpdates.winner = game.mode === 'doubles' ? myPlayer.team : user.uid;
+                    newUpdates.currentPlayerId = null;
+                    const winningPids = game.mode === 'doubles' ? game.playerOrder.filter(pid => game.players[pid].team === myPlayer.team) : [user.uid];
+                    winningPids.forEach(pid => { newUpdates[`players.${pid}.score`] = increment(1); });
+                } else {
+                    const currentIndex = game.playerOrder.indexOf(user.uid);
+                    newUpdates.currentPlayerId = game.playerOrder[(currentIndex + 1) % game.playerOrder.length];
+                }
+
+                await updateDoc(doc(firestoreDB, 'games', game.id), {
+                    boardLayout: newBoardLayout, passCount: 0,
+                    [`players.${user.uid}.hand`]: newHand,
+                    lastAction: {type: 'play', playerId: user.uid, pieceId: piece.id, playedAt: serverTimestamp()},
+                    ...newUpdates
+                });
+            };
+
+            const handlePassTurn = async () => {
+                if (!game || game.currentPlayerId !== user?.uid) return;
+                
+                log(`Player ${user.uid} passed turn.`, 'info');
+                const newPassCount = (game.passCount || 0) + 1;
+                const updates = {
+                    lastAction: {type: 'pass', playerId: user.uid, passedAt: serverTimestamp()},
+                    passCount: newPassCount
+                };
+                
+                // Game is blocked/closed
+                if (newPassCount >= game.playerOrder.length) {
+                    log(`Game blocked. Pass count: ${newPassCount}`, 'warn');
+                    updates.state = 'finished';
+                    updates.currentPlayerId = null;
+
+                    // Determine winner by points
+                    let minScore = Infinity;
+                    let winners = [];
+                    game.playerOrder.forEach(pid => {
+                        const score = GameLogic.calculateHandScore(game.players[pid].hand);
+                        if (score < minScore) {
+                            minScore = score;
+                            winners = [pid];
+                        } else if (score === minScore) {
+                            winners.push(pid);
+                        }
+                    });
+                    
+                    if (winners.length > 1) { // Tie
+                        updates.winner = 'Empate (Jogo Fechado)';
+                    } else {
+                        const winnerId = winners[0];
+                        const winnerPlayer = game.players[winnerId];
+                        updates.winner = game.mode === 'doubles' ? winnerPlayer.team : winnerId;
+                        const winningPids = game.mode === 'doubles' ? game.playerOrder.filter(pid => game.players[pid].team === winnerPlayer.team) : [winnerId];
+                        winningPids.forEach(pid => { updates[`players.${pid}.score`] = increment(1); });
+                    }
+
+                } else { // Normal pass
+                    const currentIndex = game.playerOrder.indexOf(user.uid);
+                    updates.currentPlayerId = game.playerOrder[(currentIndex + 1) % game.playerOrder.length];
+                }
+                await updateDoc(doc(firestoreDB, 'games', game.id), updates);
+            };
+            
+            const handleNewGame = async () => { // Host requests a new round
+                if (!game || game.playerOrder[0] !== user?.uid) return;
+                
+                log(`Host ${user.uid} is starting a new game/round.`, 'info');
+                const maxPlayers = game.mode === 'doubles' ? 4 : 2;
+                if(game.playerOrder.length < maxPlayers) {
+                   addNotification("Aguarde a sala encher para reiniciar.", "warning");
+                   return;
+                }
+
+                const hands = GameLogic.dealHands(game.playerOrder);
+                const players = { ...game.players };
+                game.playerOrder.forEach(pid => { if(players[pid]) players[pid].hand = hands[pid]; });
+                const startingPlayerId = GameLogic.findStartingPlayer(players, game.gameRules);
+
+                await updateDoc(doc(firestoreDB, 'games', game.id), {
+                    state: 'playing', players, boardLayout: [],
+                    winner: null, passCount: 0, currentPlayerId: startingPlayerId,
+                });
+            };
+
+            const handleKickPlayer = async (playerIdToKick) => {
+                if(!game || game.playerOrder[0] !== user?.uid) return;
+                log(`Host is kicking player ${playerIdToKick}`, 'warn');
+                addNotification(`${game.players[playerIdToKick].name} foi expulso.`, 'warning');
+                const newPlayerOrder = game.playerOrder.filter(pid => pid !== playerIdToKick);
+                await updateDoc(doc(firestoreDB, 'games', game.id), {
+                    playerOrder: newPlayerOrder,
+                    [`players.${playerIdToKick}`]: deleteField(),
+                    state: 'waiting' // Game must wait for new player
+                });
+            };
+            
+            const handleRequestForfeit = async () => {
+                if(!game || !user) return;
+                log(`Player ${user.uid} is forfeiting.`, 'warn');
+                const myPlayer = game.players[user.uid];
+                let winner, winningPids = [];
+                if (game.mode === 'doubles') {
+                    const winningTeam = myPlayer.team === 'A' ? 'B' : 'A';
+                    winner = `Time ${winningTeam}`;
+                    winningPids = game.playerOrder.filter(pid => game.players[pid].team === winningTeam);
+                } else {
+                    const opponent = game.playerOrder.find(p => p !== user.uid);
+                    if(opponent) { winner = opponent; winningPids = [opponent]; } else { winner = "Ninguém"; }
+                }
+
+                const updates = { state: 'finished', winner, currentPlayerId: null };
+                winningPids.forEach(pid => { updates[`players.${pid}.score`] = increment(1); });
+                await updateDoc(doc(firestoreDB, 'games', game.id), updates);
+            };
+            
+            const handleSendMessage = async (text) => {
+                if(!game || !user) return;
+                const newMessage = { senderId: user.uid, text, timestamp: Date.now() };
+                await updateDoc(doc(firestoreDB, 'games', game.id), { chat: arrayUnion(newMessage) });
+            };
+
+            const handleSetRule = async (rule, value) => {
+                 if(!game || !user || game.playerOrder[0] !== user.uid) return;
+                 log(`Host changed rule: ${rule} to ${value}`, 'info');
+                 await updateDoc(doc(firestoreDB, 'games', game.id), { [`gameRules.${rule}`]: value });
+                 addNotification('Regra do jogo atualizada.', 'success');
+            };
+            
+            if (!isAuthReady) {
+                return <div className="h-screen w-screen flex justify-center items-center"><p>Autenticando...</p></div>;
+            }
+
+            return (
+              <div className="h-screen w-screen bg-gray-900">
+                {game && user && game.players[user.uid] ? (
+                    <GameRoom 
+                        game={game} userId={user.uid} onPlayPiece={handlePlayPiece} 
+                        onPassTurn={handlePassTurn} onNewGame={handleNewGame} onLeaveGame={handleLeaveGame}
+                        onKickPlayer={handleKickPlayer} onSendMessage={handleSendMessage}
+                        onRequestForfeit={handleRequestForfeit} onSetRule={handleSetRule}
+                    />
+                ) : (
+                    <Lobby onCreateRoom={handleCreateRoom} onJoinRoom={handleJoinRoom} error={error} />
+                )}
+              </div>
+            );
+        }
+
+        //==================================================
+        // RENDER APP
+        //==================================================
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo de Forja de Minerais</title>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        body.light {
+            background-color: #f0f0f0;
+            color: #000;
+        }
+        body.dark {
+            background-color: #1e1e1e;
+            color: #fff;
+        }
+        #game-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            transition: background-color 0.3s;
+        }
+        body.light #game-container {
+            background-color: #fff;
+        }
+        body.dark #game-container {
+            background-color: #333;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 5px 10px;
+            margin: 2px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        body.light button {
+            background-color: #4CAF50;
+            color: white;
+        }
+        body.dark button {
+            background-color: #66BB6A;
+            color: #000;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .tabs {
+            margin-bottom: 10px;
+        }
+        .tab-button {
+            padding: 8px 16px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        body.light .tab-button {
+            background-color: #ddd;
+            color: #000;
+        }
+        body.dark .tab-button {
+            background-color: #555;
+            color: #fff;
+        }
+        body.light .tab-button.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+        body.dark .tab-button.active {
+            background-color: #66BB6A;
+            color: #000;
+        }
+        #theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        #back-button {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body class="light">
+    <button id="theme-toggle" onclick="toggleTheme()">🌙 Dark Mode</button>
+    <div id="game-container">
+        <h1>Jogo de Forja de Minerais</h1>
+
+        <!-- Seção de Mineração -->
+        <div class="section">
+            <h2>Mineração</h2>
+            <button onclick="mine()">Minerar</button>
+        </div>
+
+        <!-- Seção de Inventário -->
+        <div class="section">
+            <h2>Inventário</h2>
+            <div id="inventory-display">
+                <h3>Minerais Crus</h3>
+                <ul id="raw-items"></ul>
+                <h3>Minerais Derretidos</h3>
+                <ul id="molten-items"></ul>
+                <h3>Lingotes</h3>
+                <ul id="ingot-items"></ul>
+                <h3>Essências</h3>
+                <ul id="essence-items"></ul>
+                <h3>Ligas</h3>
+                <ul id="alloy-items"></ul>
+            </div>
+        </div>
+
+        <!-- Seção de Forja -->
+        <div class="section">
+            <h2>Forja</h2>
+            <div class="tabs">
+                <button class="tab-button active" onclick="switchTab('smelting')">Fundição</button>
+                <button class="tab-button" onclick="switchTab('casting')">Moldagem</button>
+                <button class="tab-button" onclick="switchTab('essence')">Extrair Essência</button>
+                <button class="tab-button" onclick="switchTab('mixing')">Mistura</button>
+            </div>
+            <div id="smelting" class="tab-content active">
+                <h3>Fundição</h3>
+                <ul id="smelting-list"></ul>
+            </div>
+            <div id="casting" class="tab-content">
+                <h3>Moldagem</h3>
+                <ul id="casting-list"></ul>
+            </div>
+            <div id="essence" class="tab-content">
+                <h3>Extrair Essência</h3>
+                <ul id="essence-list"></ul>
+            </div>
+            <div id="mixing" class="tab-content">
+                <h3>Mistura</h3>
+                <ul id="mixing-list"></ul>
+            </div>
+        </div>
+
+        <!-- Botão de Voltar -->
+        <button id="back-button" onclick="window.location.href='../jogos.html'">Voltar para Jogos</button>
+    </div>
+
+    <script>
+        // Carregar tema do cookie ao iniciar
+        window.onload = function() {
+            const theme = Cookies.get("theme") || "light";
+            document.body.className = theme;
+            updateThemeToggleText();
+        };
+
+        // Função para alternar tema
+        function toggleTheme() {
+            const isDark = document.body.classList.contains("dark");
+            document.body.className = isDark ? "light" : "dark";
+            Cookies.set("theme", isDark ? "light" : "dark", { expires: 365 });
+            updateThemeToggleText();
+        }
+
+        // Atualizar texto do botão de tema
+        function updateThemeToggleText() {
+            const toggleButton = document.getElementById("theme-toggle");
+            toggleButton.textContent = document.body.classList.contains("dark") ? "☀️ Light Mode" : "🌙 Dark Mode";
+        }
+
+        // Inventário do jogador
+        let inventory = {};
+
+        // Lista de minerais com raridades
+        const minerals = [
+            { name: "Iron", rarity: 0.4 },
+            { name: "Copper", rarity: 0.2 },
+            { name: "Gold", rarity: 0.05 },
+            { name: "Carbon", rarity: 0.1 },
+            { name: "Tin", rarity: 0.1 },
+            { name: "Zinc", rarity: 0.1 },
+            { name: "Uranium", rarity: 0.05 }
+        ];
+
+        // Receitas de ligas
+        const recipes = {
+            "Steel Ingot": ["Iron Ingot", "Carbon Ingot"],
+            "Bronze Ingot": ["Copper Ingot", "Tin Ingot"],
+            "Brass Ingot": ["Copper Ingot", "Zinc Ingot"]
+        };
+
+        // Função para minerar
+        function mine() {
+            const rand = Math.random();
+            let cumulative = 0;
+            for (const mineral of minerals) {
+                cumulative += mineral.rarity;
+                if (rand <= cumulative) {
+                    const item = `Raw ${mineral.name}`;
+                    inventory[item] = (inventory[item] || 0) + 1;
+                    break;
+                }
+            }
+            updateDisplays();
+        }
+
+        // Função para fundir
+        function smelt(item) {
+            if (inventory[item] > 0 && item.startsWith("Raw ")) {
+                inventory[item]--;
+                const molten = `Molten ${item.replace("Raw ", "")}`;
+                inventory[molten] = (inventory[molten] || 0) + 1;
+                if (inventory[item] === 0) delete inventory[item];
+                updateDisplays();
+            }
+        }
+
+        // Função para moldar
+        function cast(item) {
+            if (inventory[item] > 0 && item.startsWith("Molten ")) {
+                inventory[item]--;
+                const ingot = `${item.replace("Molten ", "")} Ingot`;
+                inventory[ingot] = (inventory[ingot] || 0) + 1;
+                if (inventory[item] === 0) delete inventory[item];
+                updateDisplays();
+            }
+        }
+
+        // Função para extrair essência
+        function extractEssence(item) {
+            if (inventory[item] > 0 && item.endsWith(" Ingot") && !Object.keys(recipes).includes(item)) {
+                inventory[item]--;
+                const essence = `${item.replace(" Ingot", "")} Essence`;
+                inventory[essence] = (inventory[essence] || 0) + 1;
+                if (inventory[item] === 0) delete inventory[item];
+                updateDisplays();
+            }
+        }
+
+        // Função para criar ligas
+        function makeRecipe(recipe) {
+            const requirements = recipes[recipe];
+            if (requirements.every(req => inventory[req] > 0)) {
+                requirements.forEach(req => {
+                    inventory[req]--;
+                    if (inventory[req] === 0) delete inventory[req];
+                });
+                inventory[recipe] = (inventory[recipe] || 0) + 1;
+                updateDisplays();
+            }
+        }
+
+        // Atualizar exibição do inventário e forja
+        function updateDisplays() {
+            updateInventoryDisplay();
+            updateSmeltingList();
+            updateCastingList();
+            updateEssenceList();
+            updateMixingList();
+        }
+
+        function updateInventoryDisplay() {
+            const rawItems = document.getElementById("raw-items");
+            const moltenItems = document.getElementById("molten-items");
+            const ingotItems = document.getElementById("ingot-items");
+            const essenceItems = document.getElementById("essence-items");
+            const alloyItems = document.getElementById("alloy-items");
+
+            rawItems.innerHTML = "";
+            moltenItems.innerHTML = "";
+            ingotItems.innerHTML = "";
+            essenceItems.innerHTML = "";
+            alloyItems.innerHTML = "";
+
+            for (const [item, qty] of Object.entries(inventory)) {
+                const li = document.createElement("li");
+                li.textContent = `${item}: ${qty}`;
+                if (item.startsWith("Raw ")) rawItems.appendChild(li);
+                else if (item.startsWith("Molten ")) moltenItems.appendChild(li);
+                else if (item.endsWith(" Ingot")) {
+                    if (Object.keys(recipes).includes(item)) alloyItems.appendChild(li);
+                    else ingotItems.appendChild(li);
+                }
+                else if (item.endsWith(" Essence")) essenceItems.appendChild(li);
+            }
+        }
+
+        function updateSmeltingList() {
+            const list = document.getElementById("smelting-list");
+            list.innerHTML = "";
+            for (const [item, qty] of Object.entries(inventory)) {
+                if (item.startsWith("Raw ")) {
+                    const li = document.createElement("li");
+                    li.innerHTML = `${item} (${qty}) <button onclick="smelt('${item}')">Fundir</button>`;
+                    list.appendChild(li);
+                }
+            }
+        }
+
+        function updateCastingList() {
+            const list = document.getElementById("casting-list");
+            list.innerHTML = "";
+            for (const [item, qty] of Object.entries(inventory)) {
+                if (item.startsWith("Molten ")) {
+                    const li = document.createElement("li");
+                    li.innerHTML = `${item} (${qty}) <button onclick="cast('${item}')">Moldar</button>`;
+                    list.appendChild(li);
+                }
+            }
+        }
+
+        function updateEssenceList() {
+            const list = document.getElementById("essence-list");
+            list.innerHTML = "";
+            for (const [item, qty] of Object.entries(inventory)) {
+                if (item.endsWith(" Ingot") && !Object.keys(recipes).includes(item)) {
+                    const li = document.createElement("li");
+                    li.innerHTML = `${item} (${qty}) <button onclick="extractEssence('${item}')">Extrair Essência</button>`;
+                    list.appendChild(li);
+                }
+            }
+        }
+
+        function updateMixingList() {
+            const list = document.getElementById("mixing-list");
+            list.innerHTML = "";
+            for (const [recipe, requirements] of Object.entries(recipes)) {
+                const canMake = requirements.every(req => inventory[req] > 0);
+                const li = document.createElement("li");
+                li.innerHTML = `${recipe} (Requer: ${requirements.join(", ")}) <button onclick="makeRecipe('${recipe}')" ${canMake ? "" : "disabled"}>Fazer</button>`;
+                list.appendChild(li);
+            }
+        }
+
+        // Função para alternar abas
+        function switchTab(tabId) {
+            document.querySelectorAll(".tab-content").forEach(tab => tab.classList.remove("active"));
+            document.querySelectorAll(".tab-button").forEach(btn => btn.classList.remove("active"));
+            document.getElementById(tabId).classList.add("active");
+            document.querySelector(`[onclick="switchTab('${tabId}')"]`).classList.add("active");
+        }
+
+        // Inicializar exibição
+        updateDisplays();
+    </script>
+</body>
+</html>

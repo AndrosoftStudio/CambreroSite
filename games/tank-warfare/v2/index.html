@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="description" content="Tank Warfare - Batalha épica de tanques multiplayer online">
+    <meta name="keywords" content="tank, warfare, multiplayer, game, online">
+    <meta name="author" content="Tank Warfare Team">
+    <title>Tank Warfare - Batalha de Tanques Online</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    
+    <!-- Mercado Pago SDK -->
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
+
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/game.css">
+    <link rel="stylesheet" href="css/ui.css">
+    <link rel="stylesheet" href="css/animations.css">
+</head>
+<body>
+    <!-- Tela de Login -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-container">
+            <div class="login-logo">
+                <canvas id="logoCanvas" width="120" height="120"></canvas>
+            </div>
+            <h1 class="login-title">Tank Warfare</h1>
+            <p class="login-subtitle" data-i18n="login.subtitle">Entre na batalha agora!</p>
+            <button class="google-login-btn" id="googleLoginBtn">
+                <svg width="20" height="20" viewBox="0 0 48 48">
+                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                </svg>
+                <span data-i18n="login.google">Entrar com Google</span>
+            </button>
+            <div class="login-footer">
+                <p class="login-terms">
+                    <span data-i18n="login.terms">Ao entrar, você concorda com nossos</span>
+                    <a href="#" data-i18n="login.terms.link">Termos de Serviço</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header Principal -->
+    <header class="main-header" id="mainHeader" style="display: none;">
+        <div class="header-left">
+            <button class="menu-btn" id="menuBtn">
+                <span class="menu-icon"></span>
+            </button>
+            <div class="online-players">
+                <div class="online-dot"></div>
+                <span id="onlineCount">0</span>
+                <span data-i18n="header.online">online</span>
+            </div>
+            <div class="ping-indicator" id="pingIndicator">
+                <div class="ping-bar"></div>
+                <div class="ping-bar"></div>
+                <div class="ping-bar"></div>
+            </div>
+        </div>
+        <div class="header-center">
+            <div class="game-logo-small">Tank Warfare</div>
+        </div>
+        <div class="header-right">
+            <div class="currency-display">
+                <span class="currency-icon">💰</span>
+                <span id="playerCoins">0</span>
+            </div>
+            <div class="currency-display">
+                <span class="currency-icon">💎</span>
+                <span id="playerGems">0</span>
+            </div>
+            <button class="profile-btn" id="profileBtn">
+                <img src="assets/default-avatar.png" alt="Profile" id="profileImage">
+            </button>
+        </div>
+    </header>
+
+    <!-- Menu Lateral -->
+    <nav class="side-menu" id="sideMenu">
+        <div class="menu-content">
+            <!-- Menu items serão inseridos via JavaScript -->
+        </div>
+    </nav>
+
+    <!-- Container Principal -->
+    <main class="main-container" id="mainContainer">
+        <!-- Conteúdo das páginas será carregado dinamicamente aqui -->
+    </main>
+
+    <!-- Modal de Matchmaking -->
+    <div class="modal-overlay" id="matchmakingModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Selecionar Modo</h2>
+                <button class="modal-close" id="modalCloseBtn">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body" id="modalContent"></div>
+            <div class="modal-footer">
+                <button class="play-button" id="playButton" disabled>
+                    <span class="play-icon">▶</span>
+                    <span data-i18n="play">JOGAR</span>
+                </button>
+                <div class="matchmaking-info" id="matchmakingInfo" style="display: none;">
+                    <div class="searching-animation">
+                        <div class="tank-search"></div>
+                    </div>
+                    <p class="searching-text" data-i18n="matchmaking.searching">Procurando jogadores...</p>
+                    <div class="players-counter">
+                        <span id="playersFound">0</span>/<span id="playersNeeded">2</span>
+                        <span data-i18n="matchmaking.players">jogadores</span>
+                    </div>
+                    <button class="cancel-search" id="cancelSearchBtn" data-i18n="matchmaking.cancel">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tela de Jogo -->
+    <div class="game-screen" id="gameScreen">
+        <canvas id="gameCanvas"></canvas>
+        <div class="game-ui" id="gameUI">
+            <!-- HUD será inserido dinamicamente -->
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="tank-loader">
+                <div class="tank-body"></div>
+                <div class="tank-turret"></div>
+                <div class="tank-cannon"></div>
+            </div>
+            <div class="loading-text" id="loadingText">Carregando...</div>
+            <div class="loading-progress">
+                <div class="loading-bar" id="loadingBar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sistema de Notificações -->
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <!-- Template de Notificação -->
+    <template id="notificationTemplate">
+        <div class="notification">
+            <div class="notification-icon"></div>
+            <div class="notification-content">
+                <div class="notification-title"></div>
+                <div class="notification-message"></div>
+            </div>
+            <button class="notification-close">×</button>
+        </div>
+    </template>
+
+    <!-- Scripts Modulares -->
+    <script src="js/config/firebase.config.js"></script>
+    <script src="js/config/mercadopago.config.js"></script>
+    <script src="js/config/game.config.js"></script>
+    
+    <script src="js/core/auth.js"></script>
+    <script src="js/core/database.js"></script>
+    <script src="js/core/storage.js"></script>
+    
+    <script src="js/systems/player.js"></script>
+    <script src="js/systems/matchmaking.js"></script>
+    <script src="js/systems/ranking.js"></script>
+    <script src="js/systems/shop.js"></script>
+    <script src="js/systems/payment.js"></script>
+    <script src="js/systems/i18n.js"></script>
+    <script src="js/systems/analytics.js"></script>
+    
+    <script src="js/game/tank.js"></script>
+    <script src="js/game/projectile.js"></script>
+    <script src="js/game/powerup.js"></script>
+    <script src="js/game/map.js"></script>
+    <script src="js/game/controls.js"></script>
+    <script src="js/game/renderer.js"></script>
+    <script src="js/game/physics.js"></script>
+    <script src="js/game/network.js"></script>
+    <script src="js/game/game.js"></script>
+    
+    <script src="js/ui/screens.js"></script>
+    <script src="js/ui/menu.js"></script>
+    <script src="js/ui/hud.js"></script>
+    <script src="js/ui/notifications.js"></script>
+    
+    <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Minha Conta - Cambrero">
+    <title>Minha Conta - Cambrero</title>
+    <link rel="icon" type="image/png" href="https://cambrero.com/images/ícone.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #27ae60;
+            --text-color: #333;
+            --bg-color: #f0f4f8;
+            --card-bg: #fff;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        body.dark-mode {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --text-color: #e0e0e0;
+            --bg-color: #1a1d2e;
+            --card-bg: #25293a;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            background: var(--card-bg);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo img {
+            width: 1.5rem;
+            height: 1.5rem;
+            object-fit: contain;
+        }
+
+        .back-btn {
+            background: var(--secondary-color);
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-btn:hover {
+            background: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .profile-header {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .profile-picture {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 4px solid var(--secondary-color);
+            margin: 0 auto 1rem;
+            display: block;
+            object-fit: cover;
+        }
+
+        .profile-header h1 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            font-size: 2rem;
+        }
+
+        .profile-header p {
+            color: var(--text-color);
+            opacity: 0.8;
+            font-size: 1.1rem;
+        }
+
+        .account-section {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--bg-color);
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 500;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-value {
+            color: var(--text-color);
+            opacity: 0.8;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .action-btn {
+            background: var(--accent-color);
+            color: white;
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .action-btn:hover {
+            background: #219a52;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .action-btn.danger {
+            background: #e74c3c;
+        }
+
+        .action-btn.danger:hover {
+            background: #c0392b;
+        }
+
+        .badge {
+            background: var(--secondary-color);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .theme-toggle:hover {
+            background: var(--secondary-color);
+            transform: scale(1.1);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-color);
+            opacity: 0.7;
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem 3%;
+            }
+
+            .container {
+                padding: 0 1rem;
+            }
+
+            .profile-header, .account-section {
+                padding: 1.5rem;
+            }
+
+            .profile-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navegação -->
+    <nav class="navbar">
+        <div class="logo">
+            <img src="https://cambrero.com/images/ícone.png" alt="Ícone Cambrero">
+            Cambrero
+        </div>
+        
+        <a href="https://cambrero.com" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </a>
+    </nav>
+
+    <!-- Container Principal -->
+    <div class="container">
+        <div id="loading" class="loading">
+            <i class="fas fa-spinner fa-spin" style="font-size: 2rem;"></i>
+            <p>Carregando informações da conta...</p>
+        </div>
+
+        <div id="accountContent" style="display: none;">
+            <!-- Cabeçalho do Perfil -->
+            <div class="profile-header">
+                <img id="profilePicture" src="https://placehold.co/100x100/3498db/ffffff?text=U" alt="Foto de Perfil" class="profile-picture">
+                <h1 id="profileName">Nome do Usuário</h1>
+                <p id="profileEmail">email@exemplo.com</p>
+                <span class="badge">Conta Google</span>
+            </div>
+
+            <!-- Informações da Conta -->
+            <div class="account-section">
+                <h2 class="section-title">
+                    <i class="fas fa-user-circle"></i>
+                    Informações da Conta
+                </h2>
+                
+                <div class="info-item">
+                    <div class="info-label">
+                        <i class="fas fa-envelope"></i>
+                        Email
+                    </div>
+                    <div class="info-value" id="accountEmail">-</div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">
+                        <i class="fas fa-calendar-alt"></i>
+                        Membro desde
+                    </div>
+                    <div class="info-value" id="memberSince">-</div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">
+                        <i class="fas fa-clock"></i>
+                        Último acesso
+                    </div>
+                    <div class="info-value" id="lastAccess">Agora</div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">
+                        <i class="fas fa-shield-alt"></i>
+                        Status da conta
+                    </div>
+                    <div class="info-value">
+                        <span class="badge">Ativa</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estatísticas -->
+            <div class="account-section">
+                <h2 class="section-title">
+                    <i class="fas fa-chart-bar"></i>
+                    Suas Estatísticas
+                </h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="daysActive">0</div>
+                        <div class="stat-label">Dias Ativo</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-number" id="contentViewed">0</div>
+                        <div class="stat-label">Conteúdos Acessados</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-number" id="gamesPlayed">0</div>
+                        <div class="stat-label">Jogos Jogados</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ações da Conta -->
+            <div class="account-section">
+                <h2 class="section-title">
+                    <i class="fas fa-cogs"></i>
+                    Ações da Conta
+                </h2>
+                
+                <div class="action-buttons">
+                    <a href="https://cambrero.com/config/config.html" class="action-btn">
+                        <i class="fas fa-cog"></i>
+                        Configurações
+                    </a>
+                    
+                    <button class="action-btn" onclick="exportData()">
+                        <i class="fas fa-download"></i>
+                        Exportar Dados
+                    </button>
+                    
+                    <button class="action-btn" onclick="refreshAccount()">
+                        <i class="fas fa-sync-alt"></i>
+                        Atualizar Informações
+                    </button>
+                    
+                    <button class="action-btn danger" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Terminar Sessão
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botão de Modo Escuro -->
+    <button class="theme-toggle" id="themeToggle">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <script>
+        // Cookie Functions
+        function setCookie(name, value, days) {
+            let expires = "";
+            if (days) {
+                const date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            // Set cookie for the main domain to work across subdomains
+            document.cookie = `${name}=${value || ""}${expires}; path=/; domain=.cambrero.com; SameSite=Lax`;
+        }
+
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i].trim();
+                if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+
+        function deleteCookie(name) {
+            setCookie(name, '', -1);
+        }
+
+        // Theme Logic
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+
+        function applyTheme(theme) {
+            if (theme === 'dark') {
+                body.classList.add('dark-mode');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                body.classList.remove('dark-mode');
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const newTheme = body.classList.contains('dark-mode') ? 'light' : 'dark';
+            setCookie('theme', newTheme, 365);
+            applyTheme(newTheme);
+            console.log('Theme changed to:', newTheme);
+        });
+
+        // Account Functions
+        function loadAccountData() {
+            const userData = getCookie('google_user');
+            
+            if (!userData) {
+                window.location.href = 'https://login.cambrero.com';
+                return;
+            }
+
+            try {
+                const user = JSON.parse(userData);
+                
+                // Update profile info
+                document.getElementById('profilePicture').src = user.picture || 'https://placehold.co/100x100/3498db/ffffff?text=' + user.name.charAt(0).toUpperCase();
+                document.getElementById('profileName').textContent = user.name;
+                document.getElementById('profileEmail').textContent = user.email;
+                document.getElementById('accountEmail').textContent = user.email;
+                
+                // Calculate member since (when first cookie was set)
+                const memberSince = getCookie('member_since');
+                if (!memberSince) {
+                    const now = new Date().toLocaleDateString('pt-BR');
+                    setCookie('member_since', now, 365);
+                    document.getElementById('memberSince').textContent = now;
+                } else {
+                    document.getElementById('memberSince').textContent = memberSince;
+                }
+                
+                // Load stats (mock data for demo)
+                const stats = {
+                    daysActive: Math.floor(Math.random() * 30) + 1,
+                    contentViewed: Math.floor(Math.random() * 50) + 5,
+                    gamesPlayed: Math.floor(Math.random() * 20) + 1
+                };
+                
+                document.getElementById('daysActive').textContent = stats.daysActive;
+                document.getElementById('contentViewed').textContent = stats.contentViewed;
+                document.getElementById('gamesPlayed').textContent = stats.gamesPlayed;
+                
+                // Show content and hide loading
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('accountContent').style.display = 'block';
+                
+            } catch (error) {
+                console.error('Erro ao carregar dados da conta:', error);
+                window.location.href = 'https://login.cambrero.com';
+            }
+        }
+
+        function refreshAccount() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('accountContent').style.display = 'none';
+            
+            setTimeout(() => {
+                loadAccountData();
+            }, 1500);
+        }
+
+        function exportData() {
+            const userData = getCookie('google_user');
+            if (!userData) return;
+            
+            try {
+                const user = JSON.parse(userData);
+                const data = {
+                    profile: {
+                        name: user.name,
+                        email: user.email,
+                        memberSince: getCookie('member_since') || new Date().toLocaleDateString('pt-BR')
+                    },
+                    preferences: {
+                        theme: getCookie('theme') || 'light'
+                    },
+                    exportDate: new Date().toISOString()
+                };
+                
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'cambrero-account-data.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                alert('Dados exportados com sucesso!');
+            } catch (error) {
+                console.error('Erro ao exportar dados:', error);
+                alert('Erro ao exportar dados.');
+            }
+        }
+
+        function logout() {
+            if (confirm('Tem certeza que deseja terminar a sessão?')) {
+                deleteCookie('google_user');
+                deleteCookie('google_token');
+                window.location.href = 'https://cambrero.com';
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            applyTheme(getCookie('theme') || 'light');
+            loadAccountData();
+        });
+    </script>
+</body>
+</html>

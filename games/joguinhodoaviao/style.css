@@ -1,0 +1,154 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    touch-action: none;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to bottom, #87CEEB, #4682B4);
+}
+
+canvas {
+    display: block;
+}
+
+#hud {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    color: white;
+    font-size: 18px;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+    background: linear-gradient(135deg, rgba(0,0,0,0.6), rgba(0,0,0,0.4));
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+#hud div {
+    margin: 8px 0;
+}
+
+#speedDisplay {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-size: 22px;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+    background: linear-gradient(135deg, rgba(0,0,0,0.6), rgba(0,0,0,0.4));
+    padding: 10px 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+#pauseBtn, .control-btn {
+    position: fixed;
+    width: 50px;
+    height: 50px;
+    background: rgba(255,255,255,0.3);
+    border: none;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+#pauseBtn {
+    top: 20px;
+    right: 20px;
+}
+
+#boostBtn {
+    bottom: 20px;
+    right: 20px;
+}
+
+#brakeBtn {
+    bottom: 20px;
+    left: 20px;
+}
+
+#pauseBtn:hover, .control-btn:hover {
+    background: rgba(255,255,255,0.5);
+    transform: scale(1.1);
+}
+
+#pauseBtn .material-icons, .control-btn .material-icons {
+    font-size: 28px;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.85);
+    color: white;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.overlay.active {
+    display: flex;
+    opacity: 1;
+}
+
+.overlay h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+}
+
+.overlay .stats {
+    text-align: center;
+    font-size: 1.2em;
+}
+
+.overlay .stats p {
+    margin: 5px 0;
+}
+
+.overlay button {
+    margin: 15px;
+    padding: 12px 25px;
+    font-size: 1.1em;
+    background: linear-gradient(135deg, #2196F3, #1976D2);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.overlay button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+#gameOverScreen h1 {
+    color: #ff4444;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@media (max-width: 480px) {
+    #hud { font-size: 14px; padding: 10px; }
+    #speedDisplay { font-size: 16px; padding: 8px 15px; }
+    #pauseBtn, .control-btn { width: 40px; height: 40px; }
+    .overlay h1 { font-size: 1.8em; }
+    .overlay button { padding: 10px 20px; font-size: 1em; }
+}

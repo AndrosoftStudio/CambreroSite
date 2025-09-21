@@ -1,0 +1,631 @@
+/* ========================================
+   TANK WARFARE - GAME STYLES
+   ======================================== */
+
+/* ========== GAME SCREEN ========== */
+.game-screen {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #1a1a1a;
+    z-index: 5000;
+}
+
+.game-screen.active {
+    display: block;
+}
+
+/* ========== GAME CANVAS ========== */
+#gameCanvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: crosshair;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+}
+
+/* ========== GAME UI OVERLAY ========== */
+.game-ui {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+.game-ui > * {
+    pointer-events: auto;
+}
+
+/* ========== HUD TOP ========== */
+.game-hud-top {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.game-timer {
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(10px);
+    padding: 12px 24px;
+    border-radius: 30px;
+    color: white;
+    font-size: 20px;
+    font-weight: 700;
+    min-width: 100px;
+    text-align: center;
+    border: 2px solid rgba(255,255,255,0.1);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.game-score {
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(10px);
+    padding: 12px 24px;
+    border-radius: 30px;
+    color: white;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    border: 2px solid rgba(255,255,255,0.1);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.team-score {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+}
+
+.team-score.blue { color: #2196F3; }
+.team-score.red { color: #F44336; }
+
+.score-value {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+/* ========== HUD BOTTOM ========== */
+.game-hud-bottom {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+    align-items: flex-end;
+}
+
+.player-stats {
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    border-radius: 16px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border: 2px solid rgba(255,255,255,0.1);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.stat-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.stat-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+}
+
+.stat-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    width: 80px;
+    color: rgba(255,255,255,0.7);
+}
+
+.stat-progress {
+    width: 180px;
+    height: 10px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 5px;
+    overflow: hidden;
+    position: relative;
+}
+
+.stat-fill {
+    height: 100%;
+    transition: width 0.3s ease;
+    position: relative;
+}
+
+.stat-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.health-fill { background: linear-gradient(90deg, #4CAF50, #8BC34A); }
+.ammo-fill { background: linear-gradient(90deg, #FFC107, #FF9800); }
+.fuel-fill { background: linear-gradient(90deg, #2196F3, #03A9F4); }
+.shield-fill { background: linear-gradient(90deg, #9C27B0, #E91E63); }
+
+.stat-value {
+    font-size: 11px;
+    margin-left: 8px;
+    color: rgba(255,255,255,0.9);
+}
+
+/* ========== POWERUP DISPLAY ========== */
+.powerup-display {
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(10px);
+    padding: 16px;
+    border-radius: 16px;
+    min-width: 100px;
+    text-align: center;
+    border: 2px solid rgba(255,255,255,0.1);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.powerup-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 8px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 24px;
+    animation: powerupPulse 1s infinite;
+}
+
+@keyframes powerupPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.powerup-timer {
+    color: white;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.powerup-name {
+    color: rgba(255,255,255,0.7);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+}
+
+/* ========== MINIMAP ========== */
+.minimap {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 200px;
+    height: 200px;
+    background: rgba(0,0,0,0.8);
+    border: 2px solid rgba(255,255,255,0.2);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.minimap-canvas {
+    width: 100%;
+    height: 100%;
+}
+
+/* ========== KILL FEED ========== */
+.kill-feed {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 300px;
+    max-height: 200px;
+    overflow: hidden;
+}
+
+.kill-item {
+    background: rgba(0,0,0,0.7);
+    padding: 8px 12px;
+    margin-bottom: 4px;
+    border-radius: 8px;
+    color: white;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: slideInRight 0.3s ease;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.kill-item.fade-out {
+    animation: fadeOut 0.5s ease forwards;
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
+
+.killer-name { color: #4CAF50; font-weight: 600; }
+.victim-name { color: #F44336; font-weight: 600; }
+.kill-icon { color: #FFC107; }
+
+/* ========== MOBILE CONTROLS ========== */
+.mobile-controls {
+    display: none;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    pointer-events: none;
+    padding: 20px;
+}
+
+.mobile-controls.active {
+    display: block;
+}
+
+/* Joystick */
+.joystick {
+    position: absolute;
+    bottom: 30px;
+    left: 30px;
+    width: 150px;
+    height: 150px;
+    pointer-events: auto;
+}
+
+.joystick-base {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+    border: 3px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+}
+
+.joystick-stick {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background: radial-gradient(circle, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+/* Fire Button */
+.fire-button {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(circle, rgba(244, 67, 54, 0.9), rgba(244, 67, 54, 0.7));
+    border: 3px solid white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 30px;
+    font-weight: 700;
+    pointer-events: auto;
+    user-select: none;
+    box-shadow: 0 4px 20px rgba(244, 67, 54, 0.5);
+}
+
+.fire-button:active {
+    transform: scale(0.95);
+    background: radial-gradient(circle, rgba(244, 67, 54, 1), rgba(244, 67, 54, 0.8));
+}
+
+/* Boost Button */
+.boost-button {
+    position: absolute;
+    bottom: 140px;
+    right: 30px;
+    width: 70px;
+    height: 70px;
+    background: radial-gradient(circle, rgba(33, 150, 243, 0.9), rgba(33, 150, 243, 0.7));
+    border: 3px solid white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 24px;
+    pointer-events: auto;
+    user-select: none;
+}
+
+.boost-button:active {
+    transform: scale(0.95);
+}
+
+/* ========== RESPAWN SCREEN ========== */
+.respawn-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+}
+
+.respawn-overlay.active {
+    display: flex;
+}
+
+.respawn-content {
+    text-align: center;
+    color: white;
+}
+
+.respawn-title {
+    font-size: 48px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #F44336;
+}
+
+.respawn-timer {
+    font-size: 72px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.respawn-stats {
+    background: rgba(0,0,0,0.5);
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 20px;
+}
+
+.respawn-stat {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.respawn-stat-label {
+    color: rgba(255,255,255,0.7);
+}
+
+.respawn-stat-value {
+    font-weight: 600;
+}
+
+/* ========== VICTORY/DEFEAT SCREEN ========== */
+.end-game-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.9);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 6000;
+}
+
+.end-game-overlay.active {
+    display: flex;
+}
+
+.end-game-content {
+    background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+    padding: 40px;
+    border-radius: 24px;
+    text-align: center;
+    max-width: 600px;
+    border: 3px solid;
+    animation: zoomIn 0.5s ease;
+}
+
+@keyframes zoomIn {
+    from {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.victory .end-game-content {
+    border-color: #4CAF50;
+    box-shadow: 0 0 50px rgba(76, 175, 80, 0.5);
+}
+
+.defeat .end-game-content {
+    border-color: #F44336;
+    box-shadow: 0 0 50px rgba(244, 67, 54, 0.5);
+}
+
+.end-game-title {
+    font-size: 48px;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.victory .end-game-title {
+    background: linear-gradient(135deg, #4CAF50, #8BC34A);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.defeat .end-game-title {
+    background: linear-gradient(135deg, #F44336, #E91E63);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.match-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin: 30px 0;
+}
+
+.match-stat {
+    background: rgba(255,255,255,0.05);
+    padding: 15px;
+    border-radius: 12px;
+}
+
+.match-stat-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 5px;
+}
+
+.match-stat-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,0.5);
+}
+
+.rewards {
+    background: rgba(255,255,255,0.1);
+    padding: 20px;
+    border-radius: 12px;
+    margin: 20px 0;
+}
+
+.reward-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: white;
+}
+
+.reward-icon {
+    font-size: 24px;
+}
+
+.continue-button {
+    padding: 15px 40px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: all 0.3s ease;
+}
+
+.continue-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
+}
+
+/* ========== RESPONSIVE GAME UI ========== */
+@media (max-width: 768px) {
+    .game-hud-top {
+        top: 10px;
+        gap: 10px;
+    }
+    
+    .game-timer {
+        padding: 8px 16px;
+        font-size: 16px;
+    }
+    
+    .game-score {
+        padding: 8px 16px;
+        gap: 12px;
+    }
+    
+    .game-hud-bottom {
+        bottom: 10px;
+        gap: 10px;
+    }
+    
+    .player-stats {
+        padding: 12px;
+    }
+    
+    .stat-progress {
+        width: 120px;
+    }
+    
+    .kill-feed {
+        display: none;
+    }
+    
+    .minimap {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .mobile-controls {
+        display: block;
+    }
+}

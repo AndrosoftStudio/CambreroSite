@@ -1,0 +1,1786 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Damas Multiplayer - Cambrero Games</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --success: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --warning: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --danger: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            --dark: #1a1a2e;
+            --darker: #16213e;
+            --light: #eee;
+            --white: #ffffff;
+            --text-primary: #2c3e50;
+            --text-secondary: #7f8c8d;
+            --shadow: 0 10px 30px rgba(0,0,0,0.2);
+            --shadow-lg: 0 20px 60px rgba(0,0,0,0.3);
+            --border-radius: 15px;
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body.dark-mode {
+            --primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --text-primary: #ecf0f1;
+            --text-secondary: #bdc3c7;
+            --light: #2c3e50;
+            --white: #34495e;
+            --dark: #ecf0f1;
+            --darker: #bdc3c7;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--light);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            transition: var(--transition);
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        body.dark-mode .navbar {
+            background: rgba(26, 26, 46, 0.95);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: var(--primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .nav-btn {
+            background: var(--primary);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .nav-btn.secondary {
+            background: var(--secondary);
+        }
+
+        .nav-btn.accent {
+            background: var(--accent);
+        }
+
+        /* Auth Container */
+        #auth-container {
+            display: flex;
+            align-items: center;
+        }
+
+        /* Google Login Button */
+        .google-login-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #4285f4;
+            color: white;
+            border: none;
+            padding: 0.7rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .google-login-btn:hover {
+            background: #3367d6;
+            transform: translateY(-2px);
+        }
+
+        /* Profile Menu */
+        .profile-menu {
+            position: relative;
+        }
+
+        .profile-btn {
+            border: 2px solid var(--secondary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            overflow: hidden;
+            background: none;
+            padding: 0;
+        }
+
+        .profile-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-dropdown {
+            display: none;
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: var(--white);
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            width: 220px;
+            padding: 1rem;
+            z-index: 1001;
+        }
+
+        .profile-dropdown.active {
+            display: block;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: background-color 0.2s ease;
+            border-radius: 8px;
+        }
+
+        .dropdown-item:hover {
+            background: var(--light);
+        }
+
+        /* Side Panel */
+        .side-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            transition: var(--transition);
+            z-index: 1001;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        body.dark-mode .side-panel {
+            background: rgba(26, 26, 46, 0.95);
+        }
+
+        .side-panel.active {
+            right: 0;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .panel-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        .close-btn:hover {
+            transform: rotate(90deg);
+        }
+
+        /* Overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+        }
+
+        .overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        /* Main Menu */
+        .main-menu {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .menu-title {
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 3rem;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .menu-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .menu-card i {
+            font-size: 3rem;
+            background: var(--primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .menu-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .menu-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Game Container */
+        .game-container {
+            margin-top: 100px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: calc(100vh - 100px);
+        }
+
+        /* Game Status */
+        .game-status {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            text-align: center;
+            min-width: 400px;
+            transition: var(--transition);
+        }
+
+        .status-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .game-controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            background: var(--primary);
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: var(--border-radius);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .control-btn.success {
+            background: var(--success);
+        }
+
+        .control-btn.warning {
+            background: var(--warning);
+        }
+
+        .game-input {
+            padding: 1rem;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+            background: var(--white);
+            color: var(--text-primary);
+            min-width: 200px;
+        }
+
+        .game-input:focus {
+            outline: none;
+            border-color: rgba(102, 126, 234, 0.8);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        /* Players Container */
+        .players-container {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+
+        .player-card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            min-width: 150px;
+            transition: var(--transition);
+        }
+
+        .player-card.active {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Board */
+        .board-container {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 2rem;
+        }
+
+        #board {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 2px;
+            width: min(70vw, 600px);
+            height: min(70vw, 600px);
+            margin: 0 auto;
+            background: #8B4513;
+            padding: 10px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .square {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border-radius: 8px;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .square.light {
+            background: linear-gradient(135deg, #f0d9b5 0%, #e8c7a0 100%);
+        }
+
+        .square.dark {
+            background: linear-gradient(135deg, #b58863 0%, #8B4513 100%);
+        }
+
+        .square:hover {
+            transform: scale(1.02);
+            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .square.possible-move {
+            box-shadow: inset 0 0 20px rgba(67, 233, 123, 0.6);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .piece {
+            width: 85%;
+            height: 85%;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            transition: var(--transition);
+            position: relative;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .piece:hover {
+            transform: scale(1.1) translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        }
+
+        .piece.red {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            border: 3px solid #c8102e;
+        }
+
+        .piece.black {
+            background: linear-gradient(135deg, #2c2c54 0%, #40407a 100%);
+            border: 3px solid #1a1a2e;
+        }
+
+        .piece.selected {
+            transform: scale(1.15);
+            box-shadow: 0 0 0 4px #ffd700, 0 10px 30px rgba(0,0,0,0.4);
+        }
+
+        .piece.king::before {
+            content: '👑';
+            position: absolute;
+            font-size: 1.2rem;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+        }
+
+        /* Menu Items */
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .menu-item:hover {
+            background: var(--light);
+            color: var(--secondary);
+            transform: translateX(5px);
+        }
+
+        .menu-item i {
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+            color: var(--secondary);
+        }
+
+        /* Game Info */
+        .game-info {
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .info-value {
+            font-weight: 700;
+            color: var(--text-primary);
+            font-family: 'Monaco', monospace;
+            background: rgba(102, 126, 234, 0.1);
+            padding: 0.25rem 0.75rem;
+            border-radius: 8px;
+        }
+
+        .copy-btn {
+            background: var(--accent);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            margin-left: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(79, 172, 254, 0.4);
+        }
+
+        /* Settings */
+        .settings-section {
+            margin-bottom: 2rem;
+        }
+
+        .settings-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #ccc;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .toggle-switch.active {
+            background: var(--primary);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .toggle-switch.active::after {
+            left: 33px;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--primary);
+            border: none;
+            padding: 1rem;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            font-size: 1.2rem;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+            z-index: 100;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 2rem;
+            background: var(--success);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            z-index: 1002;
+            transform: translateX(400px);
+            transition: var(--transition);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background: var(--danger);
+        }
+
+        .notification.warning {
+            background: var(--warning);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .side-panel {
+                width: 100%;
+                right: -100%;
+            }
+            
+            .navbar {
+                padding: 1rem;
+            }
+            
+            .game-status {
+                min-width: auto;
+                margin: 0 1rem 2rem;
+            }
+            
+            .game-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            #board {
+                width: 90vw;
+                height: 90vw;
+            }
+            
+            .players-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .menu-title {
+                font-size: 2rem;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">🎯 Damas Pro</div>
+        <div class="nav-buttons">
+            <button class="nav-btn" id="menuBtn">
+                <i class="fas fa-bars"></i> Menu
+            </button>
+            <button class="nav-btn secondary" id="gameInfoBtn">
+                <i class="fas fa-info-circle"></i> Detalhes
+            </button>
+            <button class="nav-btn accent" id="settingsBtn">
+                <i class="fas fa-cog"></i> Config
+            </button>
+        </div>
+        
+        <!-- Auth Container -->
+        <div id="auth-container">
+            <a href="https://login.cambrero.com" id="googleLoginBtn" class="google-login-btn">
+                <i class="fab fa-google"></i> Entrar
+            </a>
+
+            <div id="profileMenu" class="profile-menu" style="display: none;">
+                <button id="profileBtn" class="profile-btn">
+                    <img src="https://placehold.co/40x40/3498db/ffffff?text=U" alt="Foto de Perfil" id="profilePic">
+                </button>
+                <div id="profileDropdown" class="profile-dropdown">
+                    <div class="dropdown-header">
+                        <strong id="profileName">Nome do Usuário</strong>
+                        <span id="profileEmail">email@exemplo.com</span>
+                    </div>
+                    <a href="#" class="dropdown-item" id="viewAccount">
+                        <i class="fas fa-user-circle"></i> Ver Conta
+                    </a>
+                    <a href="#" id="logoutBtn" class="dropdown-item">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Panel Lateral - Menu -->
+    <div class="side-panel" id="menuPanel">
+        <div class="panel-header">
+            <h2 class="panel-title">Menu Principal</h2>
+            <button class="close-btn" id="closeMenu">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="menu-item" onclick="window.location.href='https://games.cambrero.com'">
+            <i class="fas fa-home"></i> Home
+        </div>
+        <div class="game-controls" style="flex-direction: column; gap: 1rem; margin-top: 2rem;">
+            <button class="control-btn success" id="createGameBtn">
+                <i class="fas fa-plus"></i> Criar Nova Sala
+            </button>
+            <input type="text" class="game-input" id="gameCodeInput" placeholder="Código da Sala">
+            <button class="control-btn warning" id="joinGameBtn">
+                <i class="fas fa-sign-in-alt"></i> Entrar na Sala
+            </button>
+            <button class="control-btn" id="leaveGameBtn" style="background: var(--danger);">
+                <i class="fas fa-sign-out-alt"></i> Sair da Sala
+            </button>
+        </div>
+    </div>
+
+    <!-- Panel Lateral - Detalhes do Jogo -->
+    <div class="side-panel" id="gameInfoPanel">
+        <div class="panel-header">
+            <h2 class="panel-title">Detalhes da Sala</h2>
+            <button class="close-btn" id="closeGameInfo">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="game-info">
+            <div class="info-item">
+                <span class="info-label">Código da Sala:</span>
+                <div>
+                    <span class="info-value" id="roomCodeDisplay">-</span>
+                    <button class="copy-btn" id="copyCodeBtn">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Status:</span>
+                <span class="info-value" id="gameStatusDisplay">Aguardando</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Sua Cor:</span>
+                <span class="info-value" id="playerColorDisplay">-</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Turno Atual:</span>
+                <span class="info-value" id="currentTurnDisplay">-</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Peças Vermelhas:</span>
+                <span class="info-value" id="redPiecesCount">12</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Peças Pretas:</span>
+                <span class="info-value" id="blackPiecesCount">12</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel Lateral - Configurações -->
+    <div class="side-panel" id="settingsPanel">
+        <div class="panel-header">
+            <h2 class="panel-title">Configurações</h2>
+            <button class="close-btn" id="closeSettings">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="settings-section">
+            <h3 class="settings-title">Aparência</h3>
+            <div class="setting-item">
+                <span>Tema Escuro</span>
+                <div class="toggle-switch" id="darkModeToggle"></div>
+            </div>
+            <div class="setting-item">
+                <span>Animações</span>
+                <div class="toggle-switch active" id="animationsToggle"></div>
+            </div>
+        </div>
+        <div class="settings-section">
+            <h3 class="settings-title">Jogo</h3>
+            <div class="setting-item">
+                <span>Sons</span>
+                <div class="toggle-switch active" id="soundToggle"></div>
+            </div>
+            <div class="setting-item">
+                <span>Mostrar Movimentos Possíveis</span>
+                <div class="toggle-switch active" id="showMovesToggle"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Menu -->
+    <div class="main-menu" id="mainMenu">
+        <h1 class="menu-title">🎯 Damas Pro</h1>
+        <div class="menu-grid">
+            <div class="menu-card" id="enterGameCard">
+                <i class="fas fa-sign-in-alt"></i>
+                <h3>Entrar</h3>
+                <p>Entre em uma sala existente</p>
+            </div>
+            <div class="menu-card" id="createRoomCard">
+                <i class="fas fa-plus"></i>
+                <h3>Criar Sala</h3>
+                <p>Crie uma nova sala para jogar</p>
+            </div>
+            <div class="menu-card" id="shopCard">
+                <i class="fas fa-shopping-cart"></i>
+                <h3>Loja</h3>
+                <p>Personalize seu jogo</p>
+            </div>
+            <div class="menu-card" id="profileCard">
+                <i class="fas fa-user"></i>
+                <h3>Perfil</h3>
+                <p>Veja suas estatísticas</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Container -->
+    <div class="game-container hidden" id="gameContainer">
+        <!-- Status do Jogo -->
+        <div class="game-status fade-in">
+            <div class="status-text" id="statusText">Conectado! Crie ou entre em uma sala para jogar</div>
+        </div>
+
+        <!-- Cards dos Jogadores -->
+        <div class="players-container" id="playersContainer">
+            <div class="player-card" id="redPlayerCard">
+                <div class="player-avatar" style="background: var(--danger);">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="player-name">Jogador Vermelho</div>
+                <div class="player-pieces">12 peças</div>
+            </div>
+            <div class="player-card" id="blackPlayerCard">
+                <div class="player-avatar" style="background: var(--dark);">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="player-name">Jogador Preto</div>
+                <div class="player-pieces">12 peças</div>
+            </div>
+        </div>
+
+        <!-- Tabuleiro -->
+        <div class="board-container fade-in">
+            <div id="board"></div>
+        </div>
+    </div>
+
+    <!-- Toggle de Tema -->
+    <button class="theme-toggle" id="themeToggle">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- Notificação -->
+    <div class="notification" id="notification">
+        <span id="notificationText"></span>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot, updateDoc, collection } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDfcZ60iyls9hWDKiE53dMwjgjKJeF7JHQ",
+            authDomain: "damasgrokpro.firebaseapp.com",
+            projectId: "damasgrokpro",
+            storageBucket: "damasgrokpro.firebasestorage.app",
+            messagingSenderId: "587478111907",
+            appId: "1:587478111907:web:13c92c19e2a6fbb0ef9116"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Estado do jogo
+        let gameState = {
+            currentGameId: null,
+            currentPlayer: null,
+            playerId: null,
+            board: [],
+            selectedPiece: null,
+            turn: 'red',
+            gameStatus: 'waiting',
+            settings: {
+                darkMode: false,
+                animations: true,
+                sound: true,
+                showMoves: true
+            }
+        };
+
+        // Elementos DOM
+        const elements = {
+            mainMenu: document.getElementById('mainMenu'),
+            gameContainer: document.getElementById('gameContainer'),
+            board: document.getElementById('board'),
+            statusText: document.getElementById('statusText'),
+            menuBtn: document.getElementById('menuBtn'),
+            gameInfoBtn: document.getElementById('gameInfoBtn'),
+            settingsBtn: document.getElementById('settingsBtn'),
+            menuPanel: document.getElementById('menuPanel'),
+            gameInfoPanel: document.getElementById('gameInfoPanel'),
+            settingsPanel: document.getElementById('settingsPanel'),
+            overlay: document.getElementById('overlay'),
+            createGameBtn: document.getElementById('createGameBtn'),
+            joinGameBtn: document.getElementById('joinGameBtn'),
+            leaveGameBtn: document.getElementById('leaveGameBtn'),
+            gameCodeInput: document.getElementById('gameCodeInput'),
+            roomCodeDisplay: document.getElementById('roomCodeDisplay'),
+            copyCodeBtn: document.getElementById('copyCodeBtn'),
+            themeToggle: document.getElementById('themeToggle'),
+            notification: document.getElementById('notification'),
+            notificationText: document.getElementById('notificationText'),
+            // Auth elements
+            googleLoginBtn: document.getElementById('googleLoginBtn'),
+            profileMenu: document.getElementById('profileMenu'),
+            profileBtn: document.getElementById('profileBtn'),
+            profileDropdown: document.getElementById('profileDropdown'),
+            profileName: document.getElementById('profileName'),
+            profileEmail: document.getElementById('profileEmail'),
+            profilePic: document.getElementById('profilePic'),
+            logoutBtn: document.getElementById('logoutBtn'),
+            // Menu cards
+            enterGameCard: document.getElementById('enterGameCard'),
+            createRoomCard: document.getElementById('createRoomCard'),
+            shopCard: document.getElementById('shopCard'),
+            profileCard: document.getElementById('profileCard')
+        };
+
+        // Cookie Functions (compatível com seu sistema)
+        function setCookie(name, value, days) {
+            let expires = "";
+            if (days) {
+                const date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = `${name}=${value || ""}${expires}; path=/; domain=.cambrero.com; SameSite=Lax`;
+        }
+
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i].trim();
+                if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+
+        function deleteCookie(name) {
+            setCookie(name, '', -1);
+        }
+
+        // Utility Functions
+        function generateGameCode() {
+            return Math.random().toString(36).substr(2, 8).toUpperCase();
+        }
+
+        function generatePlayerId() {
+            return 'player_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        function showNotification(message, type = 'success') {
+            elements.notificationText.textContent = message;
+            elements.notification.className = `notification ${type} show`;
+            setTimeout(() => {
+                elements.notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Auto Login com Cookie (compatível com seu sistema)
+        function checkLoginStatus() {
+            console.log('Verificando status de login...');
+            const userData = getCookie('google_user');
+            
+            if (userData) {
+                try {
+                    const user = JSON.parse(userData);
+                    console.log('Usuário encontrado nos cookies:', user);
+                    
+                    // Check if token is still valid (not older than 7 days)
+                    const now = new Date().getTime();
+                    const loginTime = user.timestamp || 0;
+                    const sevenDays = 7 * 24 * 60 * 60 * 1000;
+                    
+                    if (now - loginTime < sevenDays) {
+                        console.log('Token válido, atualizando UI para usuário logado');
+                        gameState.playerId = user.id || generatePlayerId();
+                        updateUIForLoggedInUser(user);
+                        showNotification(`Bem-vindo de volta, ${user.name || 'Jogador'}!`);
+                        return true;
+                    } else {
+                        console.log('Token expirado, limpando cookies');
+                        showLoginButton();
+                        deleteCookie('google_user');
+                        deleteCookie('google_token');
+                    }
+                } catch (error) {
+                    console.error('Erro ao processar dados do usuário:', error);
+                    showLoginButton();
+                    deleteCookie('google_user');
+                    deleteCookie('google_token');
+                }
+            } else {
+                console.log('Nenhum dado de usuário encontrado nos cookies');
+                showLoginButton();
+            }
+            
+            // Fallback: gerar ID temporário
+            if (!gameState.playerId) {
+                gameState.playerId = generatePlayerId();
+                showNotification('Conectado como jogador temporário!', 'warning');
+            }
+            return false;
+        }
+
+        function showLoginButton() {
+            console.log('Mostrando botão de login');
+            if (elements.googleLoginBtn) {
+                elements.googleLoginBtn.style.display = 'flex';
+            }
+            if (elements.profileMenu) {
+                elements.profileMenu.style.display = 'none';
+            }
+        }
+
+        function updateUIForLoggedInUser(userData) {
+            console.log('Atualizando UI para usuário logado:', userData);
+            
+            if (elements.googleLoginBtn) {
+                elements.googleLoginBtn.style.display = 'none';
+            }
+            if (elements.profileMenu) {
+                elements.profileMenu.style.display = 'flex';
+            }
+            
+            if (elements.profileName) {
+                elements.profileName.textContent = userData.name || 'Usuário';
+            }
+            if (elements.profileEmail) {
+                elements.profileEmail.textContent = userData.email || '';
+            }
+            if (elements.profilePic) {
+                const profilePicture = userData.picture || `https://placehold.co/40x40/3498db/ffffff?text=${(userData.name || 'U').charAt(0).toUpperCase()}`;
+                elements.profilePic.src = profilePicture;
+            }
+        }
+
+        // Theme Functions (compatível com seu sistema)
+        function applyTheme(theme) {
+            if (theme === 'dark') {
+                document.body.classList.add('dark-mode');
+                if (elements.themeToggle) {
+                    elements.themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                }
+                gameState.settings.darkMode = true;
+            } else {
+                document.body.classList.remove('dark-mode');
+                if (elements.themeToggle) {
+                    elements.themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                }
+                gameState.settings.darkMode = false;
+            }
+            
+            // Sync with toggle
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            if (darkModeToggle) {
+                darkModeToggle.classList.toggle('active', gameState.settings.darkMode);
+            }
+        }
+
+        function toggleTheme() {
+            const newTheme = document.body.classList.contains('dark-mode') ? 'light' : 'dark';
+            setCookie('theme', newTheme, 365);
+            applyTheme(newTheme);
+            saveSettings();
+        }
+
+        // Settings Functions
+        function saveSettings() {
+            localStorage.setItem('checkersSettings', JSON.stringify(gameState.settings));
+        }
+
+        function loadSettings() {
+            const saved = localStorage.getItem('checkersSettings');
+            if (saved) {
+                gameState.settings = { ...gameState.settings, ...JSON.parse(saved) };
+            }
+            
+            // Apply theme from cookie (priority over localStorage)
+            const cookieTheme = getCookie('theme');
+            if (cookieTheme) {
+                applyTheme(cookieTheme);
+            } else {
+                applyTheme(gameState.settings.darkMode ? 'dark' : 'light');
+            }
+            
+            // Apply other settings
+            document.getElementById('animationsToggle').classList.toggle('active', gameState.settings.animations);
+            document.getElementById('soundToggle').classList.toggle('active', gameState.settings.sound);
+            document.getElementById('showMovesToggle').classList.toggle('active', gameState.settings.showMoves);
+        }
+
+        function toggleSetting(settingName) {
+            if (settingName === 'darkMode') {
+                toggleTheme();
+                return;
+            }
+            
+            gameState.settings[settingName] = !gameState.settings[settingName];
+            
+            const toggle = document.getElementById(`${settingName}Toggle`);
+            if (toggle) {
+                toggle.classList.toggle('active', gameState.settings[settingName]);
+            }
+            
+            saveSettings();
+        }
+
+        // Game Logic
+        function initBoard() {
+            gameState.board = Array(8).fill().map(() => Array(8).fill(null));
+            
+            // Peças pretas (parte superior)
+            for (let row = 0; row < 3; row++) {
+                for (let col = (row % 2 === 0 ? 1 : 0); col < 8; col += 2) {
+                    gameState.board[row][col] = { color: 'black', king: false };
+                }
+            }
+            
+            // Peças vermelhas (parte inferior)
+            for (let row = 5; row < 8; row++) {
+                for (let col = (row % 2 === 0 ? 1 : 0); col < 8; col += 2) {
+                    gameState.board[row][col] = { color: 'red', king: false };
+                }
+            }
+        }
+
+        function renderBoard() {
+            elements.board.innerHTML = '';
+            
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    const square = document.createElement('div');
+                    square.className = `square ${(row + col) % 2 === 0 ? 'light' : 'dark'}`;
+                    square.dataset.row = row;
+                    square.dataset.col = col;
+
+                    const piece = gameState.board[row][col];
+                    if (piece) {
+                        const pieceEl = document.createElement('div');
+                        pieceEl.className = `piece ${piece.color}`;
+                        if (piece.king) pieceEl.classList.add('king');
+                        
+                        if (gameState.selectedPiece && 
+                            gameState.selectedPiece.row === row && 
+                            gameState.selectedPiece.col === col) {
+                            pieceEl.classList.add('selected');
+                        }
+                        
+                        pieceEl.addEventListener('click', () => selectPiece(row, col));
+                        square.appendChild(pieceEl);
+                    } else {
+                        square.addEventListener('click', () => movePiece(row, col));
+                    }
+
+                    elements.board.appendChild(square);
+                }
+            }
+            
+            updatePieceCounts();
+            highlightPossibleMoves();
+        }
+
+        function highlightPossibleMoves() {
+            if (!gameState.settings.showMoves || !gameState.selectedPiece) return;
+            
+            const possibleMoves = getPossibleMoves(gameState.selectedPiece.row, gameState.selectedPiece.col);
+            possibleMoves.forEach(move => {
+                const square = document.querySelector(`[data-row="${move.row}"][data-col="${move.col}"]`);
+                if (square) square.classList.add('possible-move');
+            });
+        }
+
+        function getPossibleMoves(row, col) {
+            const piece = gameState.board[row][col];
+            if (!piece) return [];
+            
+            const moves = [];
+            const directions = piece.king ? 
+                [[-1, -1], [-1, 1], [1, -1], [1, 1]] : 
+                piece.color === 'red' ? [[-1, -1], [-1, 1]] : [[1, -1], [1, 1]];
+
+            directions.forEach(([dRow, dCol]) => {
+                const newRow = row + dRow;
+                const newCol = col + dCol;
+                
+                if (isValidSquare(newRow, newCol) && !gameState.board[newRow][newCol]) {
+                    moves.push({ row: newRow, col: newCol, type: 'move' });
+                }
+                
+                // Verificar captura
+                const jumpRow = row + (dRow * 2);
+                const jumpCol = col + (dCol * 2);
+                if (isValidSquare(jumpRow, jumpCol) && 
+                    !gameState.board[jumpRow][jumpCol] &&
+                    gameState.board[newRow][newCol] &&
+                    gameState.board[newRow][newCol].color !== piece.color) {
+                    moves.push({ row: jumpRow, col: jumpCol, type: 'capture', captureRow: newRow, captureCol: newCol });
+                }
+            });
+
+            return moves;
+        }
+
+        function isValidSquare(row, col) {
+            return row >= 0 && row < 8 && col >= 0 && col < 8;
+        }
+
+        function selectPiece(row, col) {
+            const piece = gameState.board[row][col];
+            if (!piece || piece.color !== gameState.currentPlayer || gameState.turn !== gameState.currentPlayer) {
+                return;
+            }
+
+            gameState.selectedPiece = { row, col };
+            renderBoard();
+            
+            if (gameState.settings.sound) {
+                playSound('select');
+            }
+        }
+
+        async function movePiece(toRow, toCol) {
+            if (!gameState.selectedPiece || gameState.turn !== gameState.currentPlayer) return;
+
+            const fromRow = gameState.selectedPiece.row;
+            const fromCol = gameState.selectedPiece.col;
+            const piece = gameState.board[fromRow][fromCol];
+            const possibleMoves = getPossibleMoves(fromRow, fromCol);
+            
+            const validMove = possibleMoves.find(move => move.row === toRow && move.col === toCol);
+            if (!validMove) return;
+
+            // Executar movimento
+            gameState.board[toRow][toCol] = piece;
+            gameState.board[fromRow][fromCol] = null;
+
+            // Captura
+            if (validMove.type === 'capture') {
+                gameState.board[validMove.captureRow][validMove.captureCol] = null;
+                if (gameState.settings.sound) playSound('capture');
+            } else {
+                if (gameState.settings.sound) playSound('move');
+            }
+
+            // Promover a rei
+            if ((piece.color === 'red' && toRow === 0) || (piece.color === 'black' && toRow === 7)) {
+                piece.king = true;
+                if (gameState.settings.sound) playSound('king');
+                showNotification('Uma peça foi promovida a rei! 👑', 'success');
+            }
+
+            gameState.selectedPiece = null;
+            gameState.turn = gameState.turn === 'red' ? 'black' : 'red';
+            
+            await updateGameState();
+            renderBoard();
+            checkWinner();
+        }
+
+        function checkWinner() {
+            const redPieces = gameState.board.flat().filter(p => p && p.color === 'red').length;
+            const blackPieces = gameState.board.flat().filter(p => p && p.color === 'black').length;
+            
+            if (redPieces === 0) {
+                gameState.gameStatus = 'black-wins';
+                showNotification('🎉 Jogador Preto venceu!', 'success');
+                elements.statusText.textContent = 'Jogo Finalizado - Vitória do Preto!';
+            } else if (blackPieces === 0) {
+                gameState.gameStatus = 'red-wins';
+                showNotification('🎉 Jogador Vermelho venceu!', 'success');
+                elements.statusText.textContent = 'Jogo Finalizado - Vitória do Vermelho!';
+            }
+        }
+
+        function updatePieceCounts() {
+            const redPieces = gameState.board.flat().filter(p => p && p.color === 'red').length;
+            const blackPieces = gameState.board.flat().filter(p => p && p.color === 'black').length;
+            
+            document.getElementById('redPiecesCount').textContent = redPieces;
+            document.getElementById('blackPiecesCount').textContent = blackPieces;
+            
+            document.querySelector('#redPlayerCard .player-pieces').textContent = `${redPieces} peças`;
+            document.querySelector('#blackPlayerCard .player-pieces').textContent = `${blackPieces} peças`;
+            
+            // Destacar jogador ativo
+            document.getElementById('redPlayerCard').classList.toggle('active', gameState.turn === 'red');
+            document.getElementById('blackPlayerCard').classList.toggle('active', gameState.turn === 'black');
+        }
+
+        function playSound(type) {
+            const frequencies = {
+                move: 440,
+                capture: 660,
+                select: 330,
+                king: 880
+            };
+            
+            if (!gameState.settings.sound) return;
+            
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = frequencies[type] || 440;
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.1);
+            } catch (error) {
+                console.log('Audio not supported');
+            }
+        }
+
+        // Helper function to flatten board for Firebase
+        function boardToFirestore(board) {
+            const flatBoard = {};
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    const key = `${row}_${col}`;
+                    const piece = board[row][col];
+                    if (piece) {
+                        flatBoard[key] = {
+                            color: piece.color,
+                            king: piece.king
+                        };
+                    }
+                }
+            }
+            return flatBoard;
+        }
+
+        // Helper function to reconstruct board from Firebase
+        function boardFromFirestore(flatBoard) {
+            const board = Array(8).fill().map(() => Array(8).fill(null));
+            for (const [key, piece] of Object.entries(flatBoard || {})) {
+                const [row, col] = key.split('_').map(Number);
+                if (row >= 0 && row < 8 && col >= 0 && col < 8) {
+                    board[row][col] = {
+                        color: piece.color,
+                        king: piece.king
+                    };
+                }
+            }
+            return board;
+        }
+
+        // Firebase Functions
+        async function createGame() {
+            if (!gameState.playerId) {
+                showNotification('Faça login para criar um jogo!', 'warning');
+                return;
+            }
+            
+            try {
+                const gameCode = generateGameCode();
+                initBoard();
+                
+                const gameData = {
+                    board: boardToFirestore(gameState.board),
+                    turn: 'red',
+                    status: 'waiting',
+                    players: {
+                        red: gameState.playerId,
+                        black: null
+                    },
+                    createdAt: new Date(),
+                    lastUpdate: new Date()
+                };
+                
+                await setDoc(doc(db, 'games', gameCode), gameData);
+                
+                gameState.currentGameId = gameCode;
+                gameState.currentPlayer = 'red';
+                gameState.gameStatus = 'waiting';
+                
+                updateGameInfo();
+                listenToGame(gameCode);
+                showGame();
+                
+                showNotification(`Sala criada! Código: ${gameCode}`, 'success');
+                elements.statusText.textContent = `Sala criada! Aguardando oponente... (${gameCode})`;
+                
+                closePanels();
+            } catch (error) {
+                console.error('Erro ao criar jogo:', error);
+                showNotification('Erro ao criar sala! Verifique sua conexão.', 'error');
+            }
+        }
+
+        async function joinGame() {
+            const gameCode = elements.gameCodeInput.value.trim().toUpperCase();
+            if (!gameCode) {
+                showNotification('Digite um código de sala!', 'warning');
+                return;
+            }
+            
+            if (!gameState.playerId) {
+                showNotification('Faça login para entrar em um jogo!', 'warning');
+                return;
+            }
+            
+            try {
+                const gameDoc = await getDoc(doc(db, 'games', gameCode));
+                if (!gameDoc.exists()) {
+                    showNotification('Sala não encontrada!', 'error');
+                    return;
+                }
+                
+                const gameData = gameDoc.data();
+                if (gameData.players.black) {
+                    showNotification('Sala já está cheia!', 'error');
+                    return;
+                }
+                
+                await updateDoc(doc(db, 'games', gameCode), {
+                    'players.black': gameState.playerId,
+                    status: 'playing',
+                    lastUpdate: new Date()
+                });
+                
+                gameState.currentGameId = gameCode;
+                gameState.currentPlayer = 'black';
+                gameState.gameStatus = 'playing';
+                
+                updateGameInfo();
+                listenToGame(gameCode);
+                showGame();
+                
+                showNotification('Entrou na sala!', 'success');
+                elements.statusText.textContent = 'Jogo iniciado! Sua vez se for preto.';
+                elements.gameCodeInput.value = '';
+                
+                closePanels();
+            } catch (error) {
+                console.error('Erro ao entrar no jogo:', error);
+                showNotification('Erro ao entrar na sala! Verifique sua conexão.', 'error');
+            }
+        }
+
+        function listenToGame(gameCode) {
+            onSnapshot(doc(db, 'games', gameCode), (doc) => {
+                if (doc.exists()) {
+                    const data = doc.data();
+                    gameState.board = boardFromFirestore(data.board);
+                    gameState.turn = data.turn;
+                    gameState.gameStatus = data.status;
+                    
+                    updateGameInfo();
+                    updateStatusText();
+                    renderBoard();
+                }
+            });
+        }
+
+        async function updateGameState() {
+            if (!gameState.currentGameId) return;
+            
+            try {
+                await updateDoc(doc(db, 'games', gameState.currentGameId), {
+                    board: boardToFirestore(gameState.board),
+                    turn: gameState.turn,
+                    status: gameState.gameStatus,
+                    lastUpdate: new Date()
+                });
+            } catch (error) {
+                console.error('Erro ao atualizar jogo:', error);
+            }
+        }
+
+        async function leaveGame() {
+            if (!gameState.currentGameId) {
+                showNotification('Você não está em nenhuma sala!', 'warning');
+                return;
+            }
+            
+            gameState.currentGameId = null;
+            gameState.currentPlayer = null;
+            gameState.gameStatus = 'waiting';
+            gameState.selectedPiece = null;
+            
+            updateGameInfo();
+            showMainMenu();
+            
+            showNotification('Saiu da sala!', 'success');
+            closePanels();
+        }
+
+        // UI Functions
+        function showMainMenu() {
+            elements.mainMenu.classList.remove('hidden');
+            elements.gameContainer.classList.add('hidden');
+        }
+
+        function showGame() {
+            elements.mainMenu.classList.add('hidden');
+            elements.gameContainer.classList.remove('hidden');
+            renderBoard();
+        }
+
+        function updateGameInfo() {
+            elements.roomCodeDisplay.textContent = gameState.currentGameId || '-';
+            document.getElementById('gameStatusDisplay').textContent = 
+                gameState.gameStatus === 'waiting' ? 'Aguardando' :
+                gameState.gameStatus === 'playing' ? 'Em Jogo' : 'Finalizado';
+            document.getElementById('playerColorDisplay').textContent = 
+                gameState.currentPlayer ? 
+                (gameState.currentPlayer === 'red' ? 'Vermelho' : 'Preto') : '-';
+            document.getElementById('currentTurnDisplay').textContent = 
+                gameState.turn === 'red' ? 'Vermelho' : 'Preto';
+        }
+
+        function updateStatusText() {
+            if (!gameState.currentGameId) {
+                elements.statusText.textContent = 'Conectado! Crie ou entre em uma sala para jogar';
+                return;
+            }
+            
+            if (gameState.gameStatus === 'waiting') {
+                elements.statusText.textContent = `Aguardando oponente... (${gameState.currentGameId})`;
+            } else if (gameState.gameStatus === 'playing') {
+                const isMyTurn = gameState.turn === gameState.currentPlayer;
+                elements.statusText.textContent = isMyTurn ? 
+                    '🎯 Sua vez de jogar!' : 
+                    `Aguardando jogada do ${gameState.turn === 'red' ? 'Vermelho' : 'Preto'}...`;
+            }
+        }
+
+        function openPanel(panelId) {
+            closePanels();
+            document.getElementById(panelId).classList.add('active');
+            elements.overlay.classList.add('active');
+        }
+
+        function closePanels() {
+            document.querySelectorAll('.side-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            elements.overlay.classList.remove('active');
+        }
+
+        function copyRoomCode() {
+            if (!gameState.currentGameId) {
+                showNotification('Nenhuma sala ativa!', 'warning');
+                return;
+            }
+            
+            navigator.clipboard.writeText(gameState.currentGameId).then(() => {
+                showNotification('Código copiado!', 'success');
+            }).catch(() => {
+                showNotification('Erro ao copiar código!', 'error');
+            });
+        }
+
+        // Event Listeners
+        
+        // Navigation
+        elements.menuBtn.addEventListener('click', () => openPanel('menuPanel'));
+        elements.gameInfoBtn.addEventListener('click', () => openPanel('gameInfoPanel'));
+        elements.settingsBtn.addEventListener('click', () => openPanel('settingsPanel'));
+        
+        document.querySelectorAll('.close-btn').forEach(btn => {
+            btn.addEventListener('click', closePanels);
+        });
+        
+        elements.overlay.addEventListener('click', closePanels);
+        
+        // Game controls
+        elements.createGameBtn.addEventListener('click', createGame);
+        elements.joinGameBtn.addEventListener('click', joinGame);
+        elements.leaveGameBtn.addEventListener('click', leaveGame);
+        elements.copyCodeBtn.addEventListener('click', copyRoomCode);
+        
+        // Main menu cards
+        elements.enterGameCard.addEventListener('click', () => openPanel('menuPanel'));
+        elements.createRoomCard.addEventListener('click', createGame);
+        elements.shopCard.addEventListener('click', () => showNotification('Loja em breve!', 'warning'));
+        elements.profileCard.addEventListener('click', () => showNotification('Perfil em breve!', 'warning'));
+        
+        // Theme
+        elements.themeToggle.addEventListener('click', toggleTheme);
+        
+        // Settings toggles
+        document.getElementById('darkModeToggle').addEventListener('click', () => toggleSetting('darkMode'));
+        document.getElementById('animationsToggle').addEventListener('click', () => toggleSetting('animations'));
+        document.getElementById('soundToggle').addEventListener('click', () => toggleSetting('sound'));
+        document.getElementById('showMovesToggle').addEventListener('click', () => toggleSetting('showMoves'));
+        
+        // Auth
+        if (elements.profileBtn && elements.profileDropdown) {
+            elements.profileBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                elements.profileDropdown.classList.toggle('active');
+            });
+        }
+
+        document.addEventListener('click', () => {
+            if (elements.profileDropdown && elements.profileDropdown.classList.contains('active')) {
+                elements.profileDropdown.classList.remove('active');
+            }
+        });
+
+        if (elements.logoutBtn) {
+            elements.logoutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                deleteCookie('google_user');
+                deleteCookie('google_token');
+                showLoginButton();
+                showNotification('Logout realizado com sucesso!');
+            });
+        }
+        
+        // Enter para entrar na sala
+        elements.gameCodeInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                joinGame();
+            }
+        });
+
+        // Atalhos de teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closePanels();
+            } else if (e.key === 'm' && e.ctrlKey) {
+                e.preventDefault();
+                openPanel('menuPanel');
+            } else if (e.key === 'i' && e.ctrlKey) {
+                e.preventDefault();
+                openPanel('gameInfoPanel');
+            }
+        });
+
+        // Inicialização
+        function init() {
+            console.log('Inicializando aplicação...');
+            
+            // Load settings first
+            loadSettings();
+            
+            // Check login status
+            checkLoginStatus();
+            
+            // Update game info
+            updateGameInfo();
+            
+            // Show main menu
+            showMainMenu();
+            
+            // Create initial empty board display
+            for (let i = 0; i < 64; i++) {
+                const square = document.createElement('div');
+                square.className = `square ${(Math.floor(i / 8) + (i % 8)) % 2 === 0 ? 'light' : 'dark'}`;
+                elements.board.appendChild(square);
+            }
+            
+            showNotification('Sistema carregado com sucesso! 🎯', 'success');
+        }
+
+        // Iniciar aplicação
+        init();
+    </script>
+</body>
+</html>
